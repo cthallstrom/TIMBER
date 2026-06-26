@@ -528,7 +528,7 @@ def analyze(jesvar):
   if isMC:
     tagVars.Add("gcFatJet_truth", "fatjet_matching(region, nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, gcFatJet_hadronFlavour)")
   
-  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, gcFatJet_truth, BTagM,gcJet_P4,gcFatJet_P4,gcJet_UParTM)")
+  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, gcFatJet_truth, BTagM,gcJet_P4,gcFatJet_P4,gcJet_UParTM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
   tagVars.Add("gcFatJet_PNWMtags", "gcFatJet_tags[0]")
   tagVars.Add("gcFatJet_GPTtags", "gcFatJet_tags[1]")
   tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
@@ -560,46 +560,37 @@ def analyze(jesvar):
 
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
   
-  #rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, gcJet_BTagM, Isolated_AK4)')
-  #rframeVars.Add('RJR_vecs', 'returnVectors(&W_rfc, &t_rfc, rdfslot_, gcJet_BTagM, Isolated_AK4)')
+  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, gcJet_BTagM, Isolated_AK4)')
 
   rframeVars.Add("R_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_TTbar_CosAngle", 'RJR_doubles[1]')
   rframeVars.Add("R_TTbar_DeltaPhiAngle", 'RJR_doubles[2]')
-  #rframeVars.Add("R_TTbar_4VectLAB", 'RJR_vecs[0]')
   
   rframeVars.Add("R_VLQ1_Mass", 'RJR_doubles[3]')
   rframeVars.Add("R_VLQ1_CosAngle", 'RJR_doubles[4]')
   rframeVars.Add("R_VLQ1_DeltaPhiAngle", 'RJR_doubles[5]')
-  #rframeVars.Add("R_VLQ1_4VectLAB", 'RJR_vecs[1]')
-  #rframeVars.Add("R_VLQ1_4VectTTbar", 'RJR_vecs[2]')
 
   rframeVars.Add("R_VLQ2_Mass", 'RJR_doubles[6]')
   rframeVars.Add("R_VLQ2_CosAngle", 'RJR_doubles[7]')
   rframeVars.Add("R_VLQ2_DeltaPhiAngle", 'RJR_doubles[8]')
-  #rframeVars.Add("R_VLQ2_4VectLAB", 'RJR_vecs[3]')
-  #rframeVars.Add("R_VLQ2_4VectTTbar", 'RJR_vecs[4]')
 
   rframeVars.Add("R_W_Mass", 'RJR_doubles[8]')
   rframeVars.Add("R_W_CosAngle", 'RJR_doubles[9]')
   rframeVars.Add("R_W_DeltaPhiAngle", 'RJR_doubles[10]')
-  #rframeVars.Add("R_W_4VectLAB", 'RJR_vecs[5]')
-  #rframeVars.Add("R_W_4VectTTbar", 'RJR_vecs[6]')
-  #rframeVars.Add("R_W_4VectT", 'RJR_vecs[7]')
 
   rframeVars.Add("R_J0_Mass", 'RJR_doubles[11]')
   rframeVars.Add("R_J0_CosAngle", 'RJR_doubles[12]')
   rframeVars.Add("R_J0_DeltaPhiAngle", 'RJR_doubles[14]')
-  #rframeVars.Add("R_J0_4VectLAB", 'RJR_vecs[8]')
-  #rframeVars.Add("R_J0_4VectTTbar", 'RJR_vecs[9]')
-  #rframeVars.Add("R_J0_4VectT", 'RJR_vecs[10]')
   
   rframeVars.Add("R_TTbar_DeltaPhiVisible","RJR_doubles[15]")
   rframeVars.Add("R_TTbar_DeltaPhiDecayVisible","RJR_doubles[16]")
   rframeVars.Add("R_TTbar_PhiBoostVisible","RJR_doubles[17]")
   rframeVars.Add("R_TTbar_VisibleShape","RJR_doubles[18]")
 
-  rframeVars.Add("R_treeMODE", 'RJR_doubles[19]')  
+  rframeVars.Add("R_VLQ2_energy","RJR_doubles[19]")
+  rframeVars.Add("R_J0_energy","RJR_doubles[20]")
+
+  rframeVars.Add("R_treeMODE", 'RJR_doubles[21]')  
   
   # # -------------------------------------
 
