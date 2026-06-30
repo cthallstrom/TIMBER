@@ -345,7 +345,7 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
   return fatjet_truth;
 }
 
-auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<float> gcFatJet_PNWM_Z, RVec<float> gcFatJet_PNWM_H, RVec<float> gcFatJet_PNWM_QCD, RVec<float> gcFatJet_GPT_T, RVec<float> gcFatJet_GPT_W, RVec<float> gcFatJet_GPT_ZH, RVec<float> gcFatJet_GPT_QCD, RVec<float> gcFatJet_GPT_regressedMass, RVec<float> gcFatJet_GPTWM_T, RVec<float> gcFatJet_GPTWM_W, RVec<float> gcFatJet_GPTWM_Z, RVec<float> gcFatJet_subJetIdx1, RVec<float> gcFatJet_subJetIdx2, RVec<float> SubJet_btagUParTAK4B, RVec<float> gcFatJet_truth, float UparTmed,RVec<TLorentzVector> gcJet_P4,RVec<TLorentzVector> gcFatJet_P4, RVec<float> gcJet_UParTM, RVec<float> gcFatJet_GPTWM_ToQCD, RVec<float> gcFatJet_GPTWM_WoQCD, RVec<float> gcFatJet_GPTWM_ZoQCD) 
+auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<float> gcFatJet_PNWM_Z, RVec<float> gcFatJet_PNWM_H, RVec<float> gcFatJet_PNWM_QCD, RVec<float> gcFatJet_GPT_T, RVec<float> gcFatJet_GPT_W, RVec<float> gcFatJet_GPT_ZH, RVec<float> gcFatJet_GPT_QCD, RVec<float> gcFatJet_GPT_regressedMass, RVec<float> gcFatJet_GPTWM_T, RVec<float> gcFatJet_GPTWM_W, RVec<float> gcFatJet_GPTWM_Z, RVec<float> gcFatJet_subJetIdx1, RVec<float> gcFatJet_subJetIdx2, RVec<float> SubJet_btagUParTAK4B, RVec<float> gcFatJet_truth, float UparTmed,RVec<TLorentzVector> gcJet_P4,RVec<TLorentzVector> gcFatJet_P4, RVec<float> gcJet_UParTM, RVec<float> gcFatJet_GPTWM_ToQCD, RVec<float> gcFatJet_GPTWM_WoQCD, RVec<float> gcFatJet_GPTWM_ZoQCD) //last three args currently unused
 {
   //std::cout << "Entering jet_tagging" << std::endl;
   RVec<int> PNWMtag;
