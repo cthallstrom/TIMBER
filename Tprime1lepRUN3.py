@@ -616,7 +616,7 @@ def analyze(jesvar):
      if col.startswith("PPS") or col.startswith("Proton") or col.startswith("L1_"): continue
      if col.startswith("Gen") or col.startswith("RawPuppi") or col.startswith("Soft") or col.startswith("fixed"): continue
      if col.startswith("Sub")  or col.startswith("Calo") or col.startswith("Chs"): continue
-     if col.startswith("Corr") or col.startswith("Fsr") or col.startswith("Iso") or col.startswith("Tau"): continue
+     if col.startswith("Corr") or col.startswith("Fsr") or col.startswith("Tau"): continue
      if col.startswith("SV") or col.startswith("Puppi") or col.startswith("Photon") or col.startswith("Low"): continue
      if col.startswith("HLT") or col.startswith("HT") or col.startswith("boosted") or col.startswith("Deep"): continue
      if col.startswith("Flag") or col == "Bprime_gen_info" or col == "t_gen_info" or col == "W_gen_info" or col == "metxyoutput": continue
@@ -633,6 +633,12 @@ def analyze(jesvar):
      if col.startswith("RJR_"): continue
      if col.startswith("gcFatJet_tags"): continue
 
+     if col == "Isolated_AK4":
+       columns.append(col)
+       continue
+     elif col.startswith("Iso"):
+       continue
+     
      columns.append(col)
 
   finalFile = "RDF_" + sample + era + "_" + year + "_" + str(testNum1) + ".root"

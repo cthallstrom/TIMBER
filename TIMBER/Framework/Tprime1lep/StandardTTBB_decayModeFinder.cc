@@ -1,3 +1,4 @@
+
 // ------------------------------------------------------------------------------------------
 // 		DEACY/GENTTBAR CALCULATOR:
 // 		- Fxn to determine either deacy mode or genTTbarMass depending on file type
@@ -21,7 +22,7 @@
 
 #include <fstream>
 
-int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pdgId, ROOT::VecOps::RVec<float>& GenPart_mass, ROOT::VecOps::RVec<float>& GenPart_pt, ROOT::VecOps::RVec<float>& GenPart_phi, ROOT::VecOps::RVec<float>& GenPart_eta, ROOT::VecOps::RVec<short>& GenPart_genPartIdxMother, ROOT::VecOps::RVec<int>& GenPart_status)
+RVec<int> decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pdgId, ROOT::VecOps::RVec<float>& GenPart_mass, ROOT::VecOps::RVec<float>& GenPart_pt, ROOT::VecOps::RVec<float>& GenPart_phi, ROOT::VecOps::RVec<float>& GenPart_eta, ROOT::VecOps::RVec<short>& GenPart_genPartIdxMother, ROOT::VecOps::RVec<int>& GenPart_status)
 {
 //	int returnVar = 0;
 //	if(region == "Signal")
@@ -48,6 +49,7 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 	bool isBHTW = false;
 	
 	int decayMode = 0;
+	int VLQ1toT = -99;
 	
 	tPrimeID.clear();
 	bPrimeID.clear();
@@ -192,10 +194,13 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 		// t-b pairs, check for correlating bosons in the right spots
 		else if(abs(listofQuarkIDs.at(0)) == 6 && abs(listofQuarkIDs.at(1)) == 5)
 		{
-			if(listofBosonIDs.at(0) == 23 && abs(listofBosonIDs.at(1)) == 24)
+		        VLQ1toT = 1;
+		  
+		        if(listofBosonIDs.at(0) == 23 && abs(listofBosonIDs.at(1)) == 24)
 			{
 				isTZBW = true;
 				decayMode = 5; // TZBW ID!
+				
 			}
 			else if(listofBosonIDs.at(0) == 25 && abs(listofBosonIDs.at(1)) == 24)
 			{
@@ -206,6 +211,8 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 		// b-t pairs, check for correlating bosons in the right spots
 		else if(abs(listofQuarkIDs.at(1)) == 6 && abs(listofQuarkIDs.at(0)) == 5)
 		{
+		        VLQ1toT = 0;
+		  
 			if(listofBosonIDs.at(1) == 23 && abs(listofBosonIDs.at(0)) == 24)
 			{
 				isTZBW = true;
@@ -230,7 +237,7 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 	{
 		// 2 t quarks, check for matching W's
 		if(abs(listofQuarkIDs.at(0)) == 6 && abs(listofQuarkIDs.at(1)) == 6)
-		{
+		{ 
 			if(abs(listofBosonIDs.at(0)) == 24 && abs(listofBosonIDs.at(1)) == 24)
 			{
 				isTWTW = true;
@@ -264,7 +271,9 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 		// b-t pairs, check for correlating bosons in the right spots
 		else if(abs(listofQuarkIDs.at(0)) == 5 && abs(listofQuarkIDs.at(1)) == 6)
 		{
-			if(listofBosonIDs.at(0) == 23 && abs(listofBosonIDs.at(1)) == 24)
+		        VLQ1toT = 0;
+
+		        if(listofBosonIDs.at(0) == 23 && abs(listofBosonIDs.at(1)) == 24)
 			{
 				isBZTW = true;
 				decayMode = 5; // BZTW ID!
@@ -278,7 +287,9 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 		// t-b pairs, check for correlating bosons in the right spots
 		else if(abs(listofQuarkIDs.at(1)) == 5 && abs(listofQuarkIDs.at(0)) == 6)
 		{
-			if(listofBosonIDs.at(1) == 23 && abs(listofBosonIDs.at(0)) == 24)
+		        VLQ1toT = 1;
+
+		        if(listofBosonIDs.at(1) == 23 && abs(listofBosonIDs.at(0)) == 24)
 			{
 				isBZTW = true;
 				decayMode = 5; // BZTW ID!
@@ -296,7 +307,11 @@ int decayModeSelection(unsigned int nGenPart,ROOT::VecOps::RVec<int>& GenPart_pd
 		}
 	}
 	//decayFile.close();
-	return decayMode;
+	RVec<int> decayModes;
+	decayModes.push_back(decayMode);
+	decayModes.push_back(VLQ1toT);
+
+	return decayModes;
 };
 
 //	else if(region == "TTToSemiLeptonic")
