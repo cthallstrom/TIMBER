@@ -38,23 +38,19 @@ for k,file_str in enumerate(files):
         else:                #t(Z/H)
             i = 1.5
             
-        for imode in range(0,3):  #fill the denoms into the correct ROW
+        for imode in range(0,2):  #fill the denoms into the correct ROW
             truth.Fill(imode,i)
             
         for ijet in range(nJets):
             if t.Isolated_AK4[ijet] == 1 and t.gcJet_BTag[ijet] == 1:
-                print(f"filling bWTag 1.5, {i}")
                 bWTag.Fill(1.5,i)
             else:
-                print(f"filling bWTag 0.5, {i}")
                 bWTag.Fill(0.5,i)
             
-    print(bWTag.GetBinContent(2))
+    bWTag.Print("all")
     bWTag.Divide(bWTag, truth, 1, 1, "B")
     histFile = TFile.Open(f"{fname}_L.root", "recreate")
-    #bWTag.Write()
-    bWTag.SetDirectory(histFile) 
-    histFile.Write()
+    bWTag.Write()
     histFile.Close()
                     
     truth.Reset()
