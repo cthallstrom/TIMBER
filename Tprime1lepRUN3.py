@@ -539,7 +539,6 @@ def analyze(jesvar):
   # recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
   # recoVars.Add("minMleppJet", "minMlj[0]")
   # recoVars.Add("minMlj_idx", "minMlj[1]")
-  # recoVars.Add("NJets", "minMlj[2]") # Need a better name/need to better understand this variable
   # recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
   # recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, MinMlj_idx)")
   # recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
