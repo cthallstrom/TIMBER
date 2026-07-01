@@ -126,6 +126,7 @@ CompileCpp('TIMBER/Framework/Tprime1lep/topographInput.cc')
 CompileCpp('TIMBER/Framework/Tprime1lep/manualreco.cc') 
 CompileCpp('TIMBER/Framework/Tprime1lep/StandardTT_fatjet_matching.cc')
 CompileCpp('TIMBER/Framework/Tprime1lep/StandardTTBB_decayModeFinder.cc')
+CompileCpp('TIMBER/Framework/Tprime1lep/eventReco.cc')
 ROOT.gInterpreter.ProcessLine('#include "TString.h"')
 
 # Enable using 4 threads
@@ -501,8 +502,6 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_GPTWM_T", "reorder(FatJet_globalParT3_withMassTopvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_GPTWM_W", "reorder(FatJet_globalParT3_withMassWvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_GPTWM_Z", "reorder(FatJet_globalParT3_withMassZvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-
-  tagVars.Add("mySubJet_btag", "SubJet_btagUParTAK4B")
   
   if isMC:
     tagVars.Add("gcFatJet_truth", "fatjet_matching(region, nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, gcFatJet_hadronFlavour)")
@@ -538,14 +537,20 @@ def analyze(jesvar):
   recoVars = VarGroup("recoVars")
   
   recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
-  #recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
+  recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
+  recoVars.Add("minMlj", "minMleppJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv, SubJet_btagUParTAK4B)") #Not sure abt the last arg
+  recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
+  recoVars.Add("minMleppJet", "minMlj[0]")
+  recoVars.Add("minMlj_idx", "minMlj[1]")
+  recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
+  recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, minMlj_idx)")
+  recoVars.Add("t_dRWb", "t_five[4]")
+  recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
+  recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
+
   recoVars.Add("minMbj", "minMbJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv)")
-  #recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
   recoVars.Add("minMbJet", "minMbj[0]")
   recoVars.Add("minMbj_idx", "minMbj[1]")
-  #recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
-  #recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, MinMlj_idx)")
-  #recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
   
 
   # # ------------------ Results ------------------

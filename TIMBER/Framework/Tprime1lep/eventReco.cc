@@ -1,7 +1,8 @@
+#include <iostream>
 using namespace std;
 using namespace ROOT::VecOps;
 
-TLorentzVector Wreco(float corrMET_pt, float corrMET_phi, RVec<float> lepton_lv) {
+TLorentzVector WReco(float corrMET_pt, float corrMET_phi, TLorentzVector lepton_lv) {
 
     const double MW = 80.4;
 	double METpx = corrMET_pt * cos(corrMET_phi);
@@ -71,9 +72,9 @@ ROOT::VecOps::RVec<float> tReco(int lepton_source, ROOT::VecOps::RVec<float>& je
 	// Form a leptonic top candidate if the b is close enough
 	if(lepton_source == 1)
 	{
-		if(deltaRbW > 0.8) {bIndex = MinMlj_idx;} // use a close b unless it doesn't exist
+		if(deltaRbW > 0.8) {bIdx = MinMlj_idx;} // use a close b unless it doesn't exist
 		TLorentzVector bottom_lv;
-		bottom_lv.SetPtEtaPhiM(jet_pt.at(bIndex),jet_eta.at(bIndex),jet_phi.at(bIndex),jet_mass.at(bIndex));
+		bottom_lv.SetPtEtaPhiM(jet_pt.at(bIdx),jet_eta.at(bIdx),jet_phi.at(bIdx),jet_mass.at(bIdx));
 		t_lv = bottom_lv + W_lv;
 		t_mass = t_lv.M();
 		t_pt = t_lv.Pt();
@@ -94,8 +95,9 @@ ROOT::VecOps::RVec<float> tReco(int lepton_source, ROOT::VecOps::RVec<float>& je
 
 // need to figure out isNominal and how a lamda function works
 // Find btag value that we will be using and understand what needs to change here for that
-auto minMleppJet_calc = (ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<float>& jet_eta,ROOT::VecOps::RVec<float>& jet_phi, ROOT::VecOps::RVec<float>& jet_mass, TLorentzVector lepton_lv, ROOT::VecOps::RVec<float>Jet_btagDeepFlavB_GCJ)
+auto minMleppJet_calc(ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<float>& jet_eta,ROOT::VecOps::RVec<float>& jet_phi, ROOT::VecOps::RVec<float>& jet_mass, TLorentzVector lepton_lv, ROOT::VecOps::RVec<float>& Jet_btagDeepFlavB_GCJ)
 {
+	//std::cout << "Entered Mlj calculation" << std::endl;
 	float MinMlj_idx = -1; // This gets changed into int in .Define()
 	float minMleppJet = 1e8;
 	ROOT::VecOps::RVec<int> theJetBTag_JetSubCalc_PtOrdered (jet_pt.size(),0);
@@ -115,6 +117,7 @@ auto minMleppJet_calc = (ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<f
 		}
 	}
 	ROOT::VecOps::RVec<float> minMlj = {minMleppJet, MinMlj_idx};
+	//std::cout << minMlj << std::endl;
 	return minMlj;
 }
 
@@ -139,7 +142,7 @@ auto minMbJet_calc = (ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<floa
 	return minMlj;
 }
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 // Fxn to return any and all float TPrime and BPrime variables needed for plotting
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_source, RVec<float>& gcFatJet_pt, RVec<float>& gcFatJet_eta, RVec<float>& gcFatJet_phi, RVec<float>& gcFatJet_mass, RVec<int>& PNWMtags)
@@ -149,23 +152,31 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 	float dRjX = 0;
 	bool isLeptonic_W = false;
 	bool isLeptonic_t = false;
+	RVec<int> PNWM_ID;
 	for(unsigned int ijet=0; ijet < gcFatJet_pt.size(); ijet++)
 	{
 		jet_lv.SetPtEtaPhiM(gcFatJet_pt.at(ijet),gcFatJet_eta.at(ijet),gcFatJet_phi.at(ijet),gcFatJet_mass.at(ijet));
-		if(isLeptonic == 0)
+		if(lepton_source == 0)
 		{
 			dRjX = jet_lv.DeltaR(W_lv);
 			isLeptonic_W = true;
 		}
-		if(isLeptonic == 1)
+		if(lepton_source == 1)
 		{
 			dRjX = jet_lv.DeltaR(t_lv);
 			isLeptonic_t = true;
 		}
 		// Get 3 highest-pT jets that are not close to t/W (deltaR > .8) and store AK8 index and 4-vector
-		if(jets_lv.size() >= 3){continue;}
+		if(jets_lv.size() >= 3){break;}
 		if(jet_lv.DeltaR(t_lv) > 0.8 and isLeptonic_t) {jets_lv.push_back(std::make_pair(jet_lv,ijet));}
 		if(jet_lv.DeltaR(W_lv) > 0.8 and isLeptonic_W) {jets_lv.push_back(std::make_pair(jet_lv,ijet));}
+		//std::cout << ijet << ", " << jet_lv.Pt() << std::endl;
+		if(PNWMtags.at(ijet) == 6) PNWM_ID.push_back(1);
+		else if (PNWMtags.at(ijet) == 0) PNWM_ID.push_back(0);
+		else if(PNWMtags.at(ijet) == 25) PNWM_ID.push_back(2);
+		else if(PNWMtags.at(ijet) == 23) PNWM_ID.push_back(3);
+		else if(PNWMtags.at(ijet) == 24) PNWM_ID.push_back(4);
+		else if(PNWMtags.at(ijet) == 5) PNWM_ID.push_back(5);
 	}
 	
 	float Tprime1_Mass = -999;
@@ -209,15 +220,24 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 		// ----------------------------------------------------------------------------
 		
 		// get the tags
-		float jet1_tag = PNWMtags.at(jets_lv.at(0).second);
-		float jet2_tag = PNWMtags.at(jets_lv.at(1).second);
-		float jet3_tag = PNWMtags.at(jets_lv.at(2).second);
+
 		// pair up the jet tag with the pT index 0,1,2 and sort by tag (orders J, T, H, Z, W, B)
-		std::vector <pair<float,float>> decayJets_DeepAK8;
-		decayJets_DeepAK8.push_back(std::make_pair(jet1_tag,0));
-		decayJets_DeepAK8.push_back(std::make_pair(jet2_tag,1));
-		decayJets_DeepAK8.push_back(std::make_pair(jet3_tag,2));
-		std::sort(decayJets_DeepAK8.begin(),decayJets_DeepAK8.end());
+		std::vector <pair<float,int>> decayJets;
+		decayJets.push_back(std::make_pair(PNWM_ID.at(jets_lv.at(0).second), 0));
+		decayJets.push_back(std::make_pair(PNWM_ID.at(jets_lv.at(1).second), 1));
+		decayJets.push_back(std::make_pair(PNWM_ID.at(jets_lv.at(2).second), 2));
+		std::sort(decayJets.begin(),decayJets.end());
+
+		float jet1_tag = decayJets[0].first;
+		float jet2_tag = decayJets[1].first;
+		float jet3_tag = decayJets[2].first;
+
+		int jet1_idx = decayJets[0].second;
+		int jet2_idx = decayJets[1].second;
+		int jet3_idx = decayJets[2].second;
+
+		std::cout << jet1_idx << ", " << jet2_idx << ", " << jet3_idx << ", " << std::endl;
+		std::cout << jet1_tag << ", " << jet2_tag << ", " << jet3_tag << ", " << std::endl;
 		
 		// Start forming 4 particle groups
 		TLorentzVector Tprime1_lv;
@@ -226,369 +246,378 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 		TLorentzVector Bprime2_lv;
 		if(isLeptonic_t)
 		{
+			std::cout << "Leptonic t" << endl;
             // Mass of (t_lv + jet_lv) - Mass of (sum of other two jets)
-			// Consider a more descriptive name than just numbering them. massDiff12,13,23 perhaps
-			float massDiff1=(t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first).M()-(jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first).M();
-			float massDiff2=(t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first).M()-(jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first).M();
-			float massDiff3=(t_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first).M()-(jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first).M();
-			
+		    float massDiff1=(t_lv+jets_lv.at(jet2_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet3_idx).first).M();
+            float massDiff2=(t_lv+jets_lv.at(jet3_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet2_idx).first).M();
+            float massDiff3=(t_lv+jets_lv.at(jet1_idx).first).M()-(jets_lv.at(jet2_idx).first+jets_lv.at(jet3_idx).first).M();
+
             //Check the dnn tags to see if it is a tH bW decay
-			if(decayJets_DeepAK8.at(0).first==2 && decayJets_DeepAK8.at(1).first==4 && decayJets_DeepAK8.at(2).first==5)
+			if(decayJets.at(0).first==2 && decayJets.at(1).first==4 && decayJets.at(2).first==5)
 			{ // TT -> tH bW, BB -> tW bH
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 2; // assign the H with the leptonic top
-				hadronicTprimeJetIDs_DeepAK8 = {4,5};      // assign the b & W as hadronic
+				validTDecay = true;
+				leptonicTprimeJetIDs = 2; // assign the H with the leptonic top
+				hadronicTprimeJetIDs = {4,5};      // assign the b & W as hadronic
                 // Create VLQ lv's by adding top higgs and W b
-				Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first; // decayJets.second gives the jets_lv index to get 4-vec
-				Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
+				Tprime1_lv = t_lv+jets_lv.at(decayJets.at(0).second).first; // decayJets.second gives the jets_lv index to get 4-vec
+				Tprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
 
                 // find the deltaR of the constituent particles
-				Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-				Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+				Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+				Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				
-				validBDecay_DeepAK8 = true;
-				leptonicBprimeJetIDs_DeepAK8 = 4; // assign the W with leptonic top
-				hadronicBprimeJetIDs_DeepAK8 = {2,5};      // assign bH hadronic
-				Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first; // decayJets.second gives the jets_lv index to get 4-vec
-				Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-				Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+				validBDecay = true;
+				leptonicBprimeJetIDs = 4; // assign the W with leptonic top
+				hadronicBprimeJetIDs = {2,5};      // assign bH hadronic
+				Bprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first; // decayJets.second gives the jets_lv index to get 4-vec
+				Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+				Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+				Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 			
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==2 && decayJets_DeepAK8.at(2).first==2)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==2 && decayJets.at(2).first==2)
 			{ // TTbar --> tH and tH
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 2; // assign an H with leptonic top
-				hadronicTprimeJetIDs_DeepAK8 = {1,2};      // assign tH hadronic
+				validTDecay = true;
+				leptonicTprimeJetIDs = 2; // assign an H with leptonic top
+				hadronicTprimeJetIDs = {1,2};      // assign tH hadronic
 				// options (lepTop + H1) - (T0 + H2) OR (lepTop + H2) - (T0 + H1) checking smallest
 				if(massDiff1 < massDiff2)
 				{ // (lepTop + H1) wins
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // (lepTop + H2) wins
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(2).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==2 && decayJets_DeepAK8.at(2).first==3)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==2 && decayJets.at(2).first==3)
 			{ // TTbar --> tH and tZ
-				validTDecay_DeepAK8 = true;
+				validTDecay = true;
 				// options (lepTop + H1) - (T0 + Z2) OR (lepTop + Z2) - (T0 + H1)
 				if(massDiff1 < massDiff2)
 				{ // (lepTop + H1) wins
-					leptonicTprimeJetIDs_DeepAK8 = 2; // tH
-					hadronicTprimeJetIDs_DeepAK8 = {1,3}; // tZ
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicTprimeJetIDs = 2; // tH
+					hadronicTprimeJetIDs = {1,3}; // tZ
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // (lepTop + Z2) wins
-					leptonicTprimeJetIDs_DeepAK8 = 3;
-					hadronicTprimeJetIDs_DeepAK8 = {1,2};
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
+					leptonicTprimeJetIDs = 3;
+					hadronicTprimeJetIDs = {1,2};
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(2).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
 			}
-			else if(decayJets_DeepAK8.at(0).first==3 && decayJets_DeepAK8.at(1).first==4 && decayJets_DeepAK8.at(2).first==5)
+			else if(decayJets.at(0).first==3 && decayJets.at(1).first==4 && decayJets.at(2).first==5)
 			{ // TT -> tZ bW, BB -> tW bZ
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 3; // tZ
-				hadronicTprimeJetIDs_DeepAK8 = {4,5}; // bW
-				Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-				Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-				Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+				validTDecay = true;
+				leptonicTprimeJetIDs = 3; // tZ
+				hadronicTprimeJetIDs = {4,5}; // bW
+				Tprime1_lv = t_lv+jets_lv.at(decayJets.at(0).second).first;
+				Tprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+				Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+				Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				
-				validBDecay_DeepAK8 = true;
-				leptonicBprimeJetIDs_DeepAK8 = 4; // assign the W with the leptonic top
-				hadronicBprimeJetIDs_DeepAK8 = {3,5};      // assign the b & Z as hadronic
-				Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first; // decayJets.second gives the jets_lv index to get 4-vec
-				Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-				Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+				validBDecay = true;
+				leptonicBprimeJetIDs = 4; // assign the W with the leptonic top
+				hadronicBprimeJetIDs = {3,5};      // assign the b & Z as hadronic
+				Bprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first; // decayJets.second gives the jets_lv index to get 4-vec
+				Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+				Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+				Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==3 && decayJets_DeepAK8.at(2).first==3)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==3 && decayJets.at(2).first==3)
 			{ // TTbar --> tZ tZ
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 3; // tZ
-				hadronicTprimeJetIDs_DeepAK8 = {1,3}; // tZ
+				validTDecay = true;
+				leptonicTprimeJetIDs = 3; // tZ
+				hadronicTprimeJetIDs = {1,3}; // tZ
 				// options (lepTop + Z1) - (T0 + Z2) OR (lepTop + Z2) - (T0 + Z1)
 				if(massDiff1 < massDiff2)
 				{ // (lepTop + Z1) wins
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // (lepTop + Z2) wins
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(2).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==4 && decayJets_DeepAK8.at(2).first==4)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==4 && decayJets.at(2).first==4)
 			{ // BB/XX -> tW tW, jets t W W
-				validBDecay_DeepAK8 = true;
-				leptonicBprimeJetIDs_DeepAK8 = 4; // tW
-				hadronicBprimeJetIDs_DeepAK8 = {1,4}; // tW
+				validBDecay = true;
+				leptonicBprimeJetIDs = 4; // tW
+				hadronicBprimeJetIDs = {1,4}; // tW
 				// options (lepTop + W1) - (T0 + W2) OR (lepTop + W2) - (T0 + W1)
 				if(massDiff1 < massDiff2)
 				{ // (lepTop + W1) wins
-					Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					Bprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // (lepTop + W2) wins
-					Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
+					Bprime1_lv = t_lv+jets_lv.at(decayJets.at(2).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(1).second).first);
 				}
 			}
 			
-			if(!validTDecay_DeepAK8)
+			if(!validTDecay)
 			{ // Not a valid T decay combination
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{  // lepTop + 0 is best
-					leptonicTprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(0).first;
-					hadronicTprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(1).first, decayJets_DeepAK8.at(2).first};
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicTprimeJetIDs = decayJets.at(0).first;
+					hadronicTprimeJetIDs = {decayJets.at(1).first, decayJets.at(2).first};
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(0).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else if(massDiff1 < massDiff2 and massDiff1 < massDiff3)
 				{ // lepTop + 1 is best
-					leptonicTprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(1).first;
-					hadronicTprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(2).first};
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicTprimeJetIDs = decayJets.at(1).first;
+					hadronicTprimeJetIDs = {decayJets.at(0).first, decayJets.at(2).first};
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // lepTop + 2 is best
-					leptonicTprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(2).first;
-					hadronicTprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(1).first};
-					Tprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
+					leptonicTprimeJetIDs = decayJets.at(2).first;
+					hadronicTprimeJetIDs = {decayJets.at(0).first, decayJets.at(1).first};
+					Tprime1_lv = t_lv+jets_lv.at(decayJets.at(2).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
 			}
-			if(!validBDecay_DeepAK8)
+			if(!validBDecay)
 			{ // Not a valid B decay combination
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{  // lepTop + 0 is best
-					leptonicBprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(0).first;
-					hadronicBprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(1).first, decayJets_DeepAK8.at(2).first};
-					Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicBprimeJetIDs = decayJets.at(0).first;
+					hadronicBprimeJetIDs = {decayJets.at(1).first, decayJets.at(2).first};
+					Bprime1_lv = t_lv+jets_lv.at(decayJets.at(0).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else if(massDiff1 < massDiff2 and massDiff1 < massDiff3)
 				{ // lepTop + 1 is best
-					leptonicBprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(1).first;
-					hadronicBprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(2).first};
-					Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicBprimeJetIDs = decayJets.at(1).first;
+					hadronicBprimeJetIDs = {decayJets.at(0).first, decayJets.at(2).first};
+					Bprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // lepTop + 2 is best
-					leptonicBprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(2).first;
-					hadronicBprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(1).first};
-					Bprime1_DeepAK8_lv = t_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime1_DeepAK8_deltaR = t_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
+					leptonicBprimeJetIDs = decayJets.at(2).first;
+					hadronicBprimeJetIDs = {decayJets.at(0).first, decayJets.at(1).first};
+					Bprime1_lv = t_lv+jets_lv.at(decayJets.at(2).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
 			}
 		}
 		else
-		{ // isLeptonic_W
-			float massDiff1=(W_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first).M()-(jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first).M();
-			float massDiff2=(W_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first).M()-(jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first).M();
-			float massDiff3=(W_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first).M()-(jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first).M();
+		{ // isLeptonic_W 
+			std::cout << "leptonic W" << std::endl;
 			
-			if(decayJets_DeepAK8.at(0).first==4 && decayJets_DeepAK8.at(1).first==5 && decayJets_DeepAK8.at(2).first==5)
+		    float massDiff1=(W_lv+jets_lv.at(jet2_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet3_idx).first).M();
+            float massDiff2=(W_lv+jets_lv.at(jet3_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet2_idx).first).M();
+            float massDiff3=(W_lv+jets_lv.at(jet1_idx).first).M()-(jets_lv.at(jet2_idx).first+jets_lv.at(jet3_idx).first).M();
+
+			if(decayJets.at(0).first==4 && decayJets.at(1).first==5 && decayJets.at(2).first==5)
 			{ // bW bW
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 5; // bW
-				hadronicTprimeJetIDs_DeepAK8 = {4,5}; // bW
+				validTDecay = true;
+				leptonicTprimeJetIDs = 5; // bW
+				hadronicTprimeJetIDs = {4,5}; // bW
 				// options (lepW + b1) - (W0 + b2) OR (lepW + b2) - (W0 + b1)
 				if(massDiff1 < massDiff2)
 				{ // (lepW + b1) wins
-					Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					Tprime1_lv = W_lv+jets_lv.at(decayJets.at(1).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // (lepW + b2) wins
-					Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
+					Tprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(1).second).first);
 				}
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==3 && decayJets_DeepAK8.at(2).first==5)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==3 && decayJets.at(2).first==5)
 			{ // TT -> bW tZ, BB -> tW bZ
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 5; // bW
-				hadronicTprimeJetIDs_DeepAK8 = {1,3}; // tZ
-				Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-				Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-				Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
+				validTDecay = true;
+				leptonicTprimeJetIDs = 5; // bW
+				hadronicTprimeJetIDs = {1,3}; // tZ
+				Tprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
+				Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+				Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+				Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(1).second).first);
 				
-				validBDecay_DeepAK8 = true;
-				leptonicBprimeJetIDs_DeepAK8 = 4; // tW
-				hadronicBprimeJetIDs_DeepAK8 = {3,5}; // bZ
-				Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-				Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-				Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+				validBDecay = true;
+				leptonicBprimeJetIDs = 4; // tW
+				hadronicBprimeJetIDs = {3,5}; // bZ
+				Bprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
+				Bprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+				Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+				Bprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==2 && decayJets_DeepAK8.at(2).first==5)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==2 && decayJets.at(2).first==5)
 			{ // TT -> bW tH, BB -> tW bH
-				validTDecay_DeepAK8 = true;
-				leptonicTprimeJetIDs_DeepAK8 = 5; // bW
-				hadronicTprimeJetIDs_DeepAK8 = {1,2}; // tH
-				Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-				Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-				Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
+				validTDecay = true;
+				leptonicTprimeJetIDs = 5; // bW
+				hadronicTprimeJetIDs = {1,2}; // tH
+				Tprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
+				Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+				Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+				Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(1).second).first);
 				
-				validBDecay_DeepAK8 = true;
-				leptonicBprimeJetIDs_DeepAK8 = 4; // tW
-				hadronicBprimeJetIDs_DeepAK8 = {2,5}; // bH
-				Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-				Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-				Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-				Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(2).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+				validBDecay = true;
+				leptonicBprimeJetIDs = 4; // tW
+				hadronicBprimeJetIDs = {2,5}; // bH
+				Bprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
+				Bprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+				Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+				Bprime2_deltaR = jets_lv.at(decayJets.at(2).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 			}
-			else if(decayJets_DeepAK8.at(0).first==1 && decayJets_DeepAK8.at(1).first==1 && decayJets_DeepAK8.at(2).first==4)
+			else if(decayJets.at(0).first==1 && decayJets.at(1).first==1 && decayJets.at(2).first==4)
 			{ // BB -> tW tW, jets t t W
-				validBDecay_DeepAK8 = true;
-				leptonicBprimeJetIDs_DeepAK8 = 1; // tW
-				hadronicBprimeJetIDs_DeepAK8 = {1,4}; // tW
+				validBDecay = true;
+				leptonicBprimeJetIDs = 1; // tW
+				hadronicBprimeJetIDs = {1,4}; // tW
 				// options (lepW + t0) - (W2 + t1) OR (lepW + t1) - (W2 + t0)
 				if(massDiff3 < massDiff1)
 				{ // (lepW + t0) wins
-					Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					Bprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // (lepW + t1) wins
-					Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					Bprime1_lv = W_lv+jets_lv.at(decayJets.at(1).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 			}
-			if(!validTDecay_DeepAK8)
+			if(!validTDecay)
 			{ // not a valid grouping
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{ // lepW + 0 wins
-					leptonicTprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(0).first;
-					hadronicTprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(1).first, decayJets_DeepAK8.at(2).first};
-					Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicTprimeJetIDs = decayJets.at(0).first;
+					hadronicTprimeJetIDs = {decayJets.at(1).first, decayJets.at(2).first};
+					Tprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else if(massDiff1 < massDiff2 and massDiff1 < massDiff3)
 				{ // lepW + 1 wins
-					leptonicTprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(1).first;
-					hadronicTprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(2).first};
-					Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicTprimeJetIDs = decayJets.at(1).first;
+					hadronicTprimeJetIDs = {decayJets.at(0).first, decayJets.at(2).first};
+					Tprime1_lv = W_lv+jets_lv.at(decayJets.at(1).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // lepW + 2 wins
-					leptonicTprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(2).first;
-					hadronicTprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(1).first};
-					Tprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Tprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Tprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Tprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicTprimeJetIDs = decayJets.at(2).first;
+					hadronicTprimeJetIDs = {decayJets.at(0).first, decayJets.at(1).first};
+					Tprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
+					Tprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 			}
-			if(!validBDecay_DeepAK8)
+			if(!validBDecay)
 			{ // not a valid grouping
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{ // lepW + 0 wins
-					leptonicBprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(0).first;
-					hadronicBprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(1).first, decayJets_DeepAK8.at(2).first};
-					Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(0).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(1).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(0).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(1).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicBprimeJetIDs = decayJets.at(0).first;
+					hadronicBprimeJetIDs = {decayJets.at(1).first, decayJets.at(2).first};
+					Bprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(1).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(0).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else if(massDiff1 < massDiff2 and massDiff1 < massDiff3)
 				{ // lepW + 1 wins
-					leptonicBprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(1).first;
-					hadronicBprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(2).first};
-					Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(1).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicBprimeJetIDs = decayJets.at(1).first;
+					hadronicBprimeJetIDs = {decayJets.at(0).first, decayJets.at(2).first};
+					Bprime1_lv = W_lv+jets_lv.at(decayJets.at(1).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(2).second).first;
+					Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(1).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 				else
 				{ // lepW + 2 wins
-					leptonicBprimeJetIDs_DeepAK8 = decayJets_DeepAK8.at(2).first;
-					hadronicBprimeJetIDs_DeepAK8 = {decayJets_DeepAK8.at(0).first, decayJets_DeepAK8.at(1).first};
-					Bprime1_DeepAK8_lv = W_lv+jets_lv.at(decayJets_DeepAK8.at(2).second).first;
-					Bprime2_DeepAK8_lv = jets_lv.at(decayJets_DeepAK8.at(0).second).first+jets_lv.at(decayJets_DeepAK8.at(1).second).first;
-					Bprime1_DeepAK8_deltaR = W_lv.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
-					Bprime2_DeepAK8_deltaR = jets_lv.at(decayJets_DeepAK8.at(0).second).first.DeltaR(jets_lv.at(decayJets_DeepAK8.at(2).second).first);
+					leptonicBprimeJetIDs = decayJets.at(2).first;
+					hadronicBprimeJetIDs = {decayJets.at(0).first, decayJets.at(1).first};
+					Bprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
+					Bprime2_lv = jets_lv.at(decayJets.at(0).second).first+jets_lv.at(decayJets.at(1).second).first;
+					Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
+					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
 			}
 		}
-		if(Tprime1_DeepAK8_lv.M() != -999)
+		if(Tprime1_lv.M() != -999)
 		{
-			Tprime1_DeepAK8_Mass = Tprime1_DeepAK8_lv.M();
-			Tprime2_DeepAK8_Mass = Tprime2_DeepAK8_lv.M();
-			Tprime1_DeepAK8_Pt = Tprime1_DeepAK8_lv.Pt();
-			Tprime2_DeepAK8_Pt = Tprime2_DeepAK8_lv.Pt();
-			Tprime1_DeepAK8_Eta = Tprime1_DeepAK8_lv.Eta();
-			Tprime2_DeepAK8_Eta = Tprime2_DeepAK8_lv.Eta();
-			Tprime1_DeepAK8_Phi = Tprime1_DeepAK8_lv.Phi();
-			Tprime2_DeepAK8_Phi = Tprime2_DeepAK8_lv.Phi();
+			Tprime1_Mass = Tprime1_lv.M();
+			Tprime2_Mass = Tprime2_lv.M();
+			Tprime1_Pt = Tprime1_lv.Pt();
+			Tprime2_Pt = Tprime2_lv.Pt();
+			Tprime1_Eta = Tprime1_lv.Eta();
+			Tprime2_Eta = Tprime2_lv.Eta();
+			Tprime1_Phi = Tprime1_lv.Phi();
+			Tprime2_Phi = Tprime2_lv.Phi();
 		}
-		if(Bprime1_DeepAK8_lv.M() != -999)
+		if(Bprime1_lv.M() != -999)
 		{
-			Bprime1_DeepAK8_Mass = Bprime1_DeepAK8_lv.M();
-			Bprime2_DeepAK8_Mass = Bprime2_DeepAK8_lv.M();
-			Bprime1_DeepAK8_Pt = Bprime1_DeepAK8_lv.Pt();
-			Bprime2_DeepAK8_Pt = Bprime2_DeepAK8_lv.Pt();
-			Bprime1_DeepAK8_Eta = Bprime1_DeepAK8_lv.Eta();
-			Bprime2_DeepAK8_Eta = Bprime2_DeepAK8_lv.Eta();
-			Bprime1_DeepAK8_Phi = Bprime1_DeepAK8_lv.Phi();
-			Bprime2_DeepAK8_Phi = Bprime2_DeepAK8_lv.Phi();
+			Bprime1_Mass = Bprime1_lv.M();
+			Bprime2_Mass = Bprime2_lv.M();
+			Bprime1_Pt = Bprime1_lv.Pt();
+			Bprime2_Pt = Bprime2_lv.Pt();
+			Bprime1_Eta = Bprime1_lv.Eta();
+			Bprime2_Eta = Bprime2_lv.Eta();
+			Bprime1_Phi = Bprime1_lv.Phi();
+			Bprime2_Phi = Bprime2_lv.Phi();
+		}
+
+		if(validTDecay){
+			std::cout << "Top Masses: " << Tprime1_Mass << ", " << Tprime2_Mass << endl;
+		}
+		if(validBDecay){
+			std::cout << "Bottom Masses: " << Bprime1_Mass << ", " << Bprime2_Mass << endl;
 		}
 	}
-	RVec<float> TandBPrimeVec = {Tprime1_DeepAK8_Mass,Tprime2_DeepAK8_Mass,Tprime1_DeepAK8_Pt,Tprime2_DeepAK8_Pt,Tprime1_DeepAK8_Eta,Tprime2_DeepAK8_Eta,Tprime1_DeepAK8_Phi,Tprime2_DeepAK8_Phi,Tprime1_DeepAK8_deltaR,Tprime2_DeepAK8_deltaR,Bprime1_DeepAK8_Mass,Bprime2_DeepAK8_Mass,Bprime1_DeepAK8_Pt,Bprime2_DeepAK8_Pt,Bprime1_DeepAK8_Eta,Bprime2_DeepAK8_Eta,Bprime1_DeepAK8_Phi,Bprime2_DeepAK8_Phi,Bprime1_DeepAK8_deltaR,Bprime2_DeepAK8_deltaR,highPtAK8Jet1_SoftDropCorrectedMass,highPtAK8Jet2_SoftDropCorrectedMass,highPtAK8Jet3_SoftDropCorrectedMass,leptonicTprimeJetIDs_DeepAK8,leptonicBprimeJetIDs_DeepAK8,hadronicTprimeJetIDs_DeepAK8[0],hadronicTprimeJetIDs_DeepAK8[1],hadronicBprimeJetIDs_DeepAK8[0],hadronicBprimeJetIDs_DeepAK8[1]};
+	RVec<float> TandBPrimeVec = {Tprime1_Mass,Tprime2_Mass,Tprime1_Pt,Tprime2_Pt,Tprime1_Eta,Tprime2_Eta,Tprime1_Phi,Tprime2_Phi,Tprime1_deltaR,Tprime2_deltaR,Bprime1_Mass,Bprime2_Mass,Bprime1_Pt,Bprime2_Pt,Bprime1_Eta,Bprime2_Eta,Bprime1_Phi,Bprime2_Phi,Bprime1_deltaR,Bprime2_deltaR,leptonicTprimeJetIDs,leptonicBprimeJetIDs,hadronicTprimeJetIDs[0],hadronicTprimeJetIDs[1],hadronicBprimeJetIDs[0],hadronicBprimeJetIDs[1]};
 	return TandBPrimeVec;
 }
