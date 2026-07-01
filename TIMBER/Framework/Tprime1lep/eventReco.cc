@@ -118,6 +118,27 @@ auto minMleppJet_calc = (ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<f
 	return minMlj;
 }
 
+auto minMbJet_calc = (ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<float>& jet_eta,ROOT::VecOps::RVec<float>& jet_phi, ROOT::VecOps::RVec<float>& jet_mass, TLorentzVector lepton_lv)
+{
+	float minMbj_idx = -1; // This gets changed into int in .Define()
+	float minMbJet = 1e8;
+	TLorentzVector bjet;
+	
+	for(unsigned int ijet=0; ijet < jet_pt.size(); ijet++)
+	{
+	        
+		bjet.SetPtEtaPhiM(jet_pt.at(ijet),jet_eta.at(ijet),jet_phi.at(ijet),jet_mass.at(ijet));
+
+		if((lepton_lv + bjet).M() < minMbJet)
+		{
+			minMbJet = fabs((lepton_lv + bjet).M());
+			minMbj_idx = ijet;
+		}
+	}
+	ROOT::VecOps::RVec<float> minMbj = {minMbJet, minMbj_idx};
+	return minMlj;
+}
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Fxn to return any and all float TPrime and BPrime variables needed for plotting
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------

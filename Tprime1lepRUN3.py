@@ -426,7 +426,7 @@ def analyze(jesvar):
   jCuts = CutGroup('JetCuts')  
   jCuts.Add('Pass HT > 510', 'gcJet_HT > 510')
   jCuts.Add('3 AK8s Pass', 'NFatJets > 2')      # need to ensure three jets exist
- 
+
   # ------------------ Jet pt ordering, counting, lepton association ------------------
   jetVars = VarGroup('JetVars')
   jetVars.Add("gcJet_pt_unsort", "cleanJet_pt[goodcleanJets == true]")
@@ -456,6 +456,9 @@ def analyze(jesvar):
   jetVars.Add("gcFatJet_vetomap", "jetvetofunc(jetvetocorr, gcFatJet_eta, gcFatJet_phi)")
   jetVars.Add("gcFatJet_P4", "fVectorConstructor(gcFatJet_pt,gcFatJet_eta,gcFatJet_phi,gcFatJet_mass)")
 
+  bCuts = CutGroup("BTagCuts")
+  bCuts.Add("Has bTags","NJets_BTagM > 0")
+  
   if isMC:
     jetVars.Add("gcJet_hflav", "reorder(Jet_hadronFlavour[goodcleanJets == true],gcJet_ptargsort)")
     jetVars.Add("gcFatJet_hadronFlavour", "reorder(FatJet_hadronFlavour[goodcleanFatJets == true], gcFatJet_ptargsort)")
@@ -523,25 +526,26 @@ def analyze(jesvar):
     lepSFs.Add('muonidSF', 'muidfunc(muonidcorr,lepton_pt,lepton_eta,lepton_ID)')
     lepSFs.Add('muonisoSF', 'muisofunc(muonisocorr,lepton_pt,lepton_eta,lepton_ID)')
    
-#    jVars.Add("leptonRecoSF", "recofunc(electroncorr, muonidcorr, yrstr, lepton_pt, lepton_eta, isEl)") ## this is not right, but we'll figure out what corrections we need later
-#    jVars.Add("leptonIDSF", "idfunc(muonidcorr,elid_pts,elid_etas,elecidsfs,elecidsfuncs,yrstr, lepton_pt, lepton_eta, isEl)") #at(0) 
-#    jVars.Add("leptonIsoSF", "isofunc(muiso_pts,muiso_etas,muonisosfs,muonisosfunc,elid_pts,elid_etas,elecisosfs,elecisosfunc, lepton_pt, lepton_eta, isEl)")
-#    jVars.Add("leptonHLTSF", "hltfunc(muonhltcorr,elhlt_pts,elhlt_etas,elechltsfs,elechltuncs,yrstr, lepton_pt, lepton_eta, isEl)")
-
-
+  #jVars.Add("leptonRecoSF", "recofunc(electroncorr, muonidcorr, yrstr, lepton_pt, lepton_eta, isEl)") ## this is not right, but we'll figure out what corrections we need later
+  #jVars.Add("leptonIDSF", "idfunc(muonidcorr,elid_pts,elid_etas,elecidsfs,elecidsfuncs,yrstr, lepton_pt, lepton_eta, isEl)") #at(0) 
+  
+  #jVars.Add("leptonIsoSF", "isofunc(muiso_pts,muiso_etas,muonisosfs,muonisosfunc,elid_pts,elid_etas,elecisosfs,elecisosfunc, lepton_pt, lepton_eta, isEl)")
+  #jVars.Add("leptonHLTSF", "hltfunc(muonhltcorr,elhlt_pts,elhlt_etas,elechltsfs,elechltuncs,yrstr, lepton_pt, lepton_eta, isEl)")
+  
+  
   # ------------------ W and t reconstruction -----------------
   # ------------------ DOES NOT WORK RN -----------------
-  # recoVars = VarGroup("recoVars")
-
-  # recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
-  # recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
-  # recoVars.Add("minMlj", "minMleppJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv, SubJet_btagUParTAK4B)") #Not sure abt the last arg
-  # recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
-  # recoVars.Add("minMleppJet", "minMlj[0]")
-  # recoVars.Add("minMlj_idx", "minMlj[1]")
-  # recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
-  # recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, MinMlj_idx)")
-  # recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
+  recoVars = VarGroup("recoVars")
+  
+  recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
+  #recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
+  recoVars.Add("minMbj", "minMbJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv)")
+  #recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
+  recoVars.Add("minMbJet", "minMbj[0]")
+  recoVars.Add("minMbj_idx", "minMbj[1]")
+  #recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
+  #recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, MinMlj_idx)")
+  #recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
   
 
   # # ------------------ Results ------------------
@@ -581,6 +585,10 @@ def analyze(jesvar):
   rframeVars.Add("R_VLQ2_energy","RJR_doubles[19]")
   rframeVars.Add("R_J0_energy","RJR_doubles[20]")
 
+  #rframeVars.Add("R_VLQ1_FatJet1",)
+  #rframeVars.Add("R_VLQ2_FatJet1",)
+  #rframeVars.Add("R_VLQ2_FatJet2",)
+
   rframeVars.Add("R_treeMODE", 'RJR_doubles[21]')  
   
   # # -------------------------------------
@@ -602,7 +610,7 @@ def analyze(jesvar):
   newNode = a.ActiveNode.Apply(jVars)
   a.SetActiveNode(newNode)
   
-  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, tagVars, rframeVars])
+  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts, tagVars, recoVars, rframeVars])
 
   allColumns = a.GetColumnNames()
   columns = [] #allColumns
