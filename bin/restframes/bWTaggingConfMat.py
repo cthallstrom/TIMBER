@@ -13,7 +13,7 @@ for k,file_str in enumerate(files):
     fname = f"pDM_confMat_1p{mass}"
 
     truth = TH2D("jet_truth",";tagger ID;true ID",2,0,2,2,0,2)
-    bWTag = TH2D("jet_bW_vs_(H/Z)t",f";bW or (H/Z)t;true ID",2,0,2,2,0,2)
+    bWTag = TH2D("jet_bW_vs_(HorZ)t",f";bW or (H/Z)t;true ID",2,0,2,2,0,2)
 
     truth.Sumw2() #Sum weights squared -> account for uncertainties. in future we divide this
     bWTag.Sumw2()
@@ -24,30 +24,38 @@ for k,file_str in enumerate(files):
     t = inFile.Get("Events_Nominal")
 
     for ievent in range(t.GetEntries()):
-        
+        print("=======================")
         t.GetEntry(ievent)
         nJets = t.nFatJet
         i = 0
         if t.decayFinds[0] == 1: #bW
+            print("True decay: bW ")
             i = 0.5
         elif t.decayFinds[0] == 5 or t.decayFinds[0] == 6: #tZbW or bWtZ OR tHbW or bWtH
-            if t.decayFinds[1] == 1: #VLQ1toT = 1 -> t(Z/H)bW so VLQ1 is a top decay
-                i = 1.5
-            else:
-                i = 0.5
+            print("True decay is a mix of t and b, skipping event")
+            continue
         else:                #t(Z/H)
+            print("True Decay: t(Z/H)")
             i = 1.5
             
-        for imode in range(0,2):  #fill the denoms into the correct ROW
+        for imode in [0.5,1.5]:  #fill the denoms into the correct ROW
             truth.Fill(imode,i)
-            
+
+        print(f"all Isolated_AK4 jets in event {ievent}: \n {t.Isolated_AK4}")
+
+        tDecay = False
         for ijet in range(nJets):
-            if t.Isolated_AK4[ijet] == 1 and t.gcJet_BTag[ijet] == 1:
-                bWTag.Fill(1.5,i)
-            else:
-                bWTag.Fill(0.5,i)
-            
-    bWTag.Print("all")
+            print(f"\t Jet {ijet}:")
+            if t.gcJet_BTagM[ijet] == 1:
+                print(f"\t \t t.gcJet_BTagM found, isoAK4 = {t.Isolated_AK4[ijet]}")
+                if t.Isolated_AK4[ijet] == 1:
+                    tDecay = True
+
+        if tDecay == True:
+            bWTag.Fill(1.5,i)
+        else:
+            bWTag.Fill(0.5,i)
+#    bWTag.Print("all")
     bWTag.Divide(bWTag, truth, 1, 1, "B")
     histFile = TFile.Open(f"{fname}_L.root", "recreate")
     bWTag.Write()
@@ -65,7 +73,7 @@ for k,f in enumerate(files):
     #histFile.ls()
     histFile.GetListOfKeys()
 
-    bWTag = histFile.Get("jet_bW_vs_(H/Z)t")
+    bWTag = histFile.Get("jet_bW_vs_(HorZ)t")
     if not bWTag:
         print(f"Error: bWTag was not found in {fname}!")
         continue
