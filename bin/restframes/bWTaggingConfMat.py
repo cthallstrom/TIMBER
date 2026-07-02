@@ -1,4 +1,3 @@
-
 import os, sys, math, re
 from ROOT import TFile, TTree, TH1D, TH2D, TCanvas, gStyle, gPad, TLatex
 
@@ -14,51 +13,44 @@ for k,file_str in enumerate(files):
     fname = f"pDM_confMat_1p{mass}"
 
     truth = TH2D("jet_truth",";tagger ID;true ID",2,0,2,2,0,2)
-    bWTag = TH2D("jet_bW_vs_(HorZ)t",f";bW or (H/Z)t;true ID",2,0,2,2,0,2)
+    bWTag = TH2D("jet_bW_vs_(HorZ)t",f";1.{mass}TeV bW or (H/Z)t;true ID",2,0,2,2,0,2)
 
     truth.Sumw2() #Sum weights squared -> account for uncertainties. in future we divide this
     bWTag.Sumw2()
 
-    BTagM = 0.1272
-    BTagL = 0.0246
+    #BTagM = 0.1272
+    #BTagL = 0.0246
 
     t = inFile.Get("Events_Nominal")
 
     for ievent in range(t.GetEntries()):
-        print("=======================")
         t.GetEntry(ievent)
         nJets = t.nFatJet
         i = 0
         if t.decayFinds[0] == 1: #bW
-            print("True decay: bW ")
             i = 0.5
         elif t.decayFinds[0] == 5 or t.decayFinds[0] == 6: #tZbW or bWtZ OR tHbW or bWtH
-            print("True decay is a mix of t and b, skipping event")
             continue
         else:                #t(Z/H)
-            print("True Decay: t(Z/H)")
             i = 1.5
             
         for imode in [0.5,1.5]:  #fill the denoms into the correct ROW
             truth.Fill(imode,i)
 
-        print(f"all Isolated_AK4 jets in event {ievent}: \n {t.Isolated_AK4}")
-
         tDecay = False
         for ijet in range(nJets):
-            print(f"\t Jet {ijet}:")
             if t.gcJet_BTagM[ijet] == 1:
-                print(f"\t \t t.gcJet_BTagM found, isoAK4 = {t.Isolated_AK4[ijet]}")
-                if t.Isolated_AK4[ijet] == 1:
+                if t.minMlb < 160 and t.minMlbDR < 1:
                     tDecay = True
 
         if tDecay == True:
             bWTag.Fill(1.5,i)
         else:
             bWTag.Fill(0.5,i)
-#    bWTag.Print("all")
+
+#    truth.Print("all")
     bWTag.Divide(bWTag, truth, 1, 1, "B")
-    histFile = TFile.Open(f"{fname}_L.root", "recreate")
+    histFile = TFile.Open(f"{fname}_M.root", "recreate")
     bWTag.Write()
     histFile.Close()
                     
@@ -69,15 +61,12 @@ for k,file_str in enumerate(files):
 for k,f in enumerate(files):
     mass = ((k + 1) * 2) + 1
     fname = f"pDM_confMat_1p{mass}"
-    histFile = TFile.Open(f"{fname}_L.root")
+    histFile = TFile.Open(f"{fname}_M.root")
 
     #histFile.ls()
     histFile.GetListOfKeys()
 
     bWTag = histFile.Get("jet_bW_vs_(HorZ)t")
-    if not bWTag:
-        print(f"Error: bWTag was not found in {fname}!")
-        continue
     
     canv1 = TCanvas("c1","c1",800,600)
 
