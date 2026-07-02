@@ -3,7 +3,7 @@ from ROOT import TFile, TTree, TH1D, TH2D, TCanvas, gStyle, gPad, TLatex
 
 readFile = True
 if readFile:
-    file_str = "root://cmseos.fnal.gov//store/user/lpchtop/TTBB_Jun2026_Run3//RDF_TprimeTprime_Par-M-1200_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
+    file_str = "RDF_TprimeTprime_Par-M-1600_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
     inFile = TFile.Open(file_str)
 
     pattern = r"RDF_([TB]).*?Par-M-(\d+)"
@@ -11,9 +11,9 @@ if readFile:
     name = f"{mass.group(1)}{mass.group(2)}GeV"
 
     truth = TH2D("jet_truth",";tagger ID;true ID",6,0,6,6,0,6)
-    PNWM = TH2D("jet_PNWMid",f";{name} L PNWM ID;true ID",6,0,6,6,0,6)
-    GPT = TH2D("jet_GPTid",f";{name} L GPT ID;true ID",6,0,6,6,0,6)
-    GPTWM = TH2D("jet_GPTWMid",f";{name} L GPTWM ID;true ID",6,0,6,6,0,6)
+    PNWM = TH2D("jet_PNWMid",f";{name} M noPtC PNWM ID;true ID",6,0,6,6,0,6)
+    GPT = TH2D("jet_GPTid",f";{name} M noPtC GPT ID;true ID",6,0,6,6,0,6)
+    GPTWM = TH2D("jet_GPTWMid",f";{name} wrong GPTWM ID;true ID",6,0,6,6,0,6)
 
     truth.Sumw2() #Sum weights squared -> account for uncertainties. in future we divide this
     PNWM.Sumw2()
@@ -52,10 +52,10 @@ if readFile:
             else:
                 subjetIdx1 = int(t.gcFatJet_subJetIdx1[ijet])
                 subjetIdx2 = int(t.gcFatJet_subJetIdx2[ijet])
-                if((subjetIdx1 >= 0 and t.mySubJet_btag[subjetIdx1] >= BTagL) or (subjetIdx2 >= 0 and t.mySubJet_btag[subjetIdx2] >= BTagL)):
-                    GPTWMid = 5
-                else:
-                    GPTWMid = 0
+                #if((subjetIdx1 >= 0 and t.mySubJet_btag[subjetIdx1] >= BTagL) or (subjetIdx2 >= 0 and t.mySubJet_btag[subjetIdx2] >= BTagL)):
+                    #GPTWMid = 5
+                # else:
+                GPTWMid = 0
 
             # Fill truth info into all x-axis values
             if t.gcFatJet_truth[ijet] == 0:   #deciding on the truth, we can just look at the truth from our truth vector
@@ -171,7 +171,7 @@ latex.DrawLatex(0.10, 0.92, "#bf{Private work} (CMS simulation)")
 latex.SetTextAlign(31)
 latex.DrawLatex(0.9, 0.92, "13.6 TeV")
 gPad.Update()
-canv1.SaveAs(f"/uscms_data/d3/cai/run3VLQ/TIMBER/cMatrices/{name}_L_PNWM.png")
+canv1.SaveAs(f"/uscms_data/d3/cai/run3VLQ/TIMBER/cMatrices/{name}_MnPt_PNWM.png")
 
 GPT.Draw("colz texte")
 latex = TLatex()
@@ -182,7 +182,7 @@ latex.DrawLatex(0.10, 0.92, "#bf{Private work} (CMS simulation)")
 latex.SetTextAlign(31)
 latex.DrawLatex(0.9, 0.92, "13.6 TeV")
 gPad.Update()
-canv1.SaveAs(f"/uscms_data/d3/cai/run3VLQ/TIMBER/cMatrices/{name}_L_GPT.png")
+canv1.SaveAs(f"/uscms_data/d3/cai/run3VLQ/TIMBER/cMatrices/{name}_MnPt_GPT.png")
 
 GPTWM.Draw("colz texte")
 latex = TLatex()
@@ -193,4 +193,4 @@ latex.DrawLatex(0.10, 0.92, "#bf{Private work} (CMS simulation)")
 latex.SetTextAlign(31)
 latex.DrawLatex(0.9, 0.92, "13.6 TeV")
 gPad.Update()
-canv1.SaveAs(f"/uscms_data/d3/cai/run3VLQ/TIMBER/cMatrices/{name}_L_abc_GPTWM.png")
+canv1.SaveAs(f"/uscms_data/d3/cai/run3VLQ/TIMBER/cMatrices/{name}_MnPt_abc_GPTWM.png")
