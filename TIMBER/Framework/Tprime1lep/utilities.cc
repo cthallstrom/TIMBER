@@ -140,7 +140,7 @@ ROOT::VecOps::RVec<float> standalone_Jet(ROOT::VecOps::RVec<float>& gcJet_eta, R
   ROOT::VecOps::RVec<float> lone_Jet (gcJet_eta.size());
   for(int i = 0; i < gcJet_eta.size(); i++) {
  int passes = 1;
- for (int k = 0; k < gcFatJet_eta.size(); k++) {
+ for (int k = 0; k < 3; k++) {
   if (DeltaR(gcJet_eta[i],gcFatJet_eta[k],gcJet_phi[i],gcFatJet_phi[k]) <0.8) {
    passes = 0;
   }
