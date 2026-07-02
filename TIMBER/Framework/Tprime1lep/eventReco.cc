@@ -95,7 +95,7 @@ ROOT::VecOps::RVec<float> tReco(int lepton_source, ROOT::VecOps::RVec<float>& je
 
 // need to figure out isNominal and how a lamda function works
 // Find btag value that we will be using and understand what needs to change here for that
-auto minMleppJet_calc(ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<float>& jet_eta,ROOT::VecOps::RVec<float>& jet_phi, ROOT::VecOps::RVec<float>& jet_mass, TLorentzVector lepton_lv, ROOT::VecOps::RVec<float>& Jet_btagDeepFlavB_GCJ)
+auto minMleppJet_calc(ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<float>& jet_eta,ROOT::VecOps::RVec<float>& jet_phi, ROOT::VecOps::RVec<float>& jet_mass, TLorentzVector lepton_lv, ROOT::VecOps::RVec<float>& Jet_btagDeepFlavB_GCJ, float BTagM)
 {
 	//std::cout << "Entered Mlj calculation" << std::endl;
 	float MinMlj_idx = -1; // This gets changed into int in .Define()
@@ -107,8 +107,8 @@ auto minMleppJet_calc(ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<floa
 	for(unsigned int ijet=0; ijet < jet_pt.size(); ijet++)
 	{
 		jet_lv.SetPtEtaPhiM(jet_pt.at(ijet),jet_eta.at(ijet),jet_phi.at(ijet),jet_mass.at(ijet));
-		if(Jet_btagDeepFlavB_GCJ[ijet] > 0.3033){theJetBTag_JetSubCalc_PtOrdered.at(ijet) = 1;} // BTagged or not
-		else if(Jet_btagDeepFlavB_GCJ[ijet] < 0.3033){theJetBTag_JetSubCalc_PtOrdered.at(ijet) = 0;}
+		if(Jet_btagDeepFlavB_GCJ[ijet] > BTagM){theJetBTag_JetSubCalc_PtOrdered.at(ijet) = 1;} // BTagged or not
+		else if(Jet_btagDeepFlavB_GCJ[ijet] < BTagM){theJetBTag_JetSubCalc_PtOrdered.at(ijet) = 0;}
 		
 		if((lepton_lv + jet_lv).M() < minMleppJet)
 		{
@@ -184,6 +184,14 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 	
 	bool validTDecay = false;
 	bool validBDecay = false;
+
+	// In order to match the truth decay mode finder, order starting from 1 is:
+	// For Tp: bWbW, tZtZ, tHtH, tZtH, tZbW, tHbW
+	// For Bp: tWtW, bZbZ, bHbH, bZbH, bZtW, bHtW
+	// invalid decays: TH, TZ, BW are 7,8,9
+	// 0 indicates an extra invalid decay
+	float tagTDecayMode = 0;
+	float tagBDecayMode = 0;
 	
 	RVec<float> hadronicTprimeJetIDs (2,0);
 	RVec<float> hadronicBprimeJetIDs (2,0);
@@ -214,9 +222,6 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 		int jet1_idx = decayJets[0].second;
 		int jet2_idx = decayJets[1].second;
 		int jet3_idx = decayJets[2].second;
-
-		std::cout << jet1_idx << ", " << jet2_idx << ", " << jet3_idx << ", " << std::endl;
-		std::cout << jet1_tag << ", " << jet2_tag << ", " << jet3_tag << ", " << std::endl;
 		
 		// Start forming 4 particle groups
 		TLorentzVector Tprime1_lv;
@@ -225,7 +230,6 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 		TLorentzVector Bprime2_lv;
 		if(isLeptonic_t)
 		{
-			std::cout << "Leptonic t" << endl;
             // Mass of (t_lv + jet_lv) - Mass of (sum of other two jets)
 		    float massDiff1=(t_lv+jets_lv.at(jet2_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet3_idx).first).M();
             float massDiff2=(t_lv+jets_lv.at(jet3_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet2_idx).first).M();
@@ -235,6 +239,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			if(decayJets.at(0).first==2 && decayJets.at(1).first==4 && decayJets.at(2).first==5)
 			{ // TT -> tH bW, BB -> tW bH
 				validTDecay = true;
+				tagTDecayMode = 6;
 				leptonicTprimeJetIDs = 2; // assign the H with the leptonic top
 				hadronicTprimeJetIDs = {4,5};      // assign the b & W as hadronic
                 // Create VLQ lv's by adding top higgs and W b
@@ -246,6 +251,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 				Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				
 				validBDecay = true;
+				tagBDecayMode = 6;
 				leptonicBprimeJetIDs = 4; // assign the W with leptonic top
 				hadronicBprimeJetIDs = {2,5};      // assign bH hadronic
 				Bprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first; // decayJets.second gives the jets_lv index to get 4-vec
@@ -257,6 +263,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==2 && decayJets.at(2).first==2)
 			{ // TTbar --> tH and tH
 				validTDecay = true;
+				tagTDecayMode = 3;
 				leptonicTprimeJetIDs = 2; // assign an H with leptonic top
 				hadronicTprimeJetIDs = {1,2};      // assign tH hadronic
 				// options (lepTop + H1) - (T0 + H2) OR (lepTop + H2) - (T0 + H1) checking smallest
@@ -278,6 +285,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==2 && decayJets.at(2).first==3)
 			{ // TTbar --> tH and tZ
 				validTDecay = true;
+				tagTDecayMode = 4;
 				// options (lepTop + H1) - (T0 + Z2) OR (lepTop + Z2) - (T0 + H1)
 				if(massDiff1 < massDiff2)
 				{ // (lepTop + H1) wins
@@ -301,6 +309,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==3 && decayJets.at(1).first==4 && decayJets.at(2).first==5)
 			{ // TT -> tZ bW, BB -> tW bZ
 				validTDecay = true;
+				tagTDecayMode = 5;
 				leptonicTprimeJetIDs = 3; // tZ
 				hadronicTprimeJetIDs = {4,5}; // bW
 				Tprime1_lv = t_lv+jets_lv.at(decayJets.at(0).second).first;
@@ -309,6 +318,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 				Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				
 				validBDecay = true;
+				tagBDecayMode = 5;
 				leptonicBprimeJetIDs = 4; // assign the W with the leptonic top
 				hadronicBprimeJetIDs = {3,5};      // assign the b & Z as hadronic
 				Bprime1_lv = t_lv+jets_lv.at(decayJets.at(1).second).first; // decayJets.second gives the jets_lv index to get 4-vec
@@ -319,6 +329,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==3 && decayJets.at(2).first==3)
 			{ // TTbar --> tZ tZ
 				validTDecay = true;
+				tagTDecayMode = 2;
 				leptonicTprimeJetIDs = 3; // tZ
 				hadronicTprimeJetIDs = {1,3}; // tZ
 				// options (lepTop + Z1) - (T0 + Z2) OR (lepTop + Z2) - (T0 + Z1)
@@ -340,6 +351,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==4 && decayJets.at(2).first==4)
 			{ // BB/XX -> tW tW, jets t W W
 				validBDecay = true;
+				tagBDecayMode = 1;
 				leptonicBprimeJetIDs = 4; // tW
 				hadronicBprimeJetIDs = {1,4}; // tW
 				// options (lepTop + W1) - (T0 + W2) OR (lepTop + W2) - (T0 + W1)
@@ -361,6 +373,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			
 			if(!validTDecay)
 			{ // Not a valid T decay combination
+				tagTDecayMode = 0;
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{  // lepTop + 0 is best
 					leptonicTprimeJetIDs = decayJets.at(0).first;
@@ -388,9 +401,13 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 					Tprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 					Tprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
+				if(hadronicTprimeJetIDs[0] == 1 && hadronicTprimeJetIDs[1] == 2) tagTDecayMode = 7;
+				if(hadronicTprimeJetIDs[0] == 1 && hadronicTprimeJetIDs[1] == 3) tagTDecayMode = 8;
+				if(hadronicTprimeJetIDs[0] == 4 && hadronicTprimeJetIDs[1] == 5) tagTDecayMode = 9;
 			}
 			if(!validBDecay)
 			{ // Not a valid B decay combination
+				tagBDecayMode = 0;
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{  // lepTop + 0 is best
 					leptonicBprimeJetIDs = decayJets.at(0).first;
@@ -418,11 +435,13 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 					Bprime1_deltaR = t_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 					Bprime2_deltaR = jets_lv.at(decayJets.at(1).second).first.DeltaR(jets_lv.at(decayJets.at(0).second).first);
 				}
+				if(hadronicBprimeJetIDs[0] == 2 && hadronicBprimeJetIDs[1] == 5) tagBDecayMode = 7;
+				if(hadronicBprimeJetIDs[0] == 3 && hadronicBprimeJetIDs[1] == 5) tagBDecayMode = 8;
+				if(hadronicBprimeJetIDs[0] == 1 && hadronicBprimeJetIDs[1] == 4) tagBDecayMode = 9;
 			}
 		}
 		else
-		{ // isLeptonic_W 
-			std::cout << "leptonic W" << std::endl;
+		{ // isLeptonic_W
 			
 		    float massDiff1=(W_lv+jets_lv.at(jet2_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet3_idx).first).M();
             float massDiff2=(W_lv+jets_lv.at(jet3_idx).first).M()-(jets_lv.at(jet1_idx).first+jets_lv.at(jet2_idx).first).M();
@@ -431,6 +450,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			if(decayJets.at(0).first==4 && decayJets.at(1).first==5 && decayJets.at(2).first==5)
 			{ // bW bW
 				validTDecay = true;
+				tagTDecayMode = 1;
 				leptonicTprimeJetIDs = 5; // bW
 				hadronicTprimeJetIDs = {4,5}; // bW
 				// options (lepW + b1) - (W0 + b2) OR (lepW + b2) - (W0 + b1)
@@ -452,6 +472,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==3 && decayJets.at(2).first==5)
 			{ // TT -> bW tZ, BB -> tW bZ
 				validTDecay = true;
+				tagTDecayMode = 5;
 				leptonicTprimeJetIDs = 5; // bW
 				hadronicTprimeJetIDs = {1,3}; // tZ
 				Tprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
@@ -460,6 +481,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 				Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(1).second).first);
 				
 				validBDecay = true;
+				tagBDecayMode = 5;
 				leptonicBprimeJetIDs = 4; // tW
 				hadronicBprimeJetIDs = {3,5}; // bZ
 				Bprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
@@ -470,6 +492,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==2 && decayJets.at(2).first==5)
 			{ // TT -> bW tH, BB -> tW bH
 				validTDecay = true;
+				tagTDecayMode = 6;
 				leptonicTprimeJetIDs = 5; // bW
 				hadronicTprimeJetIDs = {1,2}; // tH
 				Tprime1_lv = W_lv+jets_lv.at(decayJets.at(2).second).first;
@@ -478,6 +501,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 				Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(1).second).first);
 				
 				validBDecay = true;
+				tagBDecayMode = 6;
 				leptonicBprimeJetIDs = 4; // tW
 				hadronicBprimeJetIDs = {2,5}; // bH
 				Bprime1_lv = W_lv+jets_lv.at(decayJets.at(0).second).first;
@@ -488,6 +512,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			else if(decayJets.at(0).first==1 && decayJets.at(1).first==1 && decayJets.at(2).first==4)
 			{ // BB -> tW tW, jets t t W
 				validBDecay = true;
+				tagBDecayMode = 1;
 				leptonicBprimeJetIDs = 1; // tW
 				hadronicBprimeJetIDs = {1,4}; // tW
 				// options (lepW + t0) - (W2 + t1) OR (lepW + t1) - (W2 + t0)
@@ -508,6 +533,7 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			}
 			if(!validTDecay)
 			{ // not a valid grouping
+				tagTDecayMode = 0;
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{ // lepW + 0 wins
 					leptonicTprimeJetIDs = decayJets.at(0).first;
@@ -535,9 +561,13 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 					Tprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 					Tprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
+				if(hadronicTprimeJetIDs[0] == 1 && hadronicTprimeJetIDs[1] == 2) tagTDecayMode = 7;
+				if(hadronicTprimeJetIDs[0] == 1 && hadronicTprimeJetIDs[1] == 3) tagTDecayMode = 8;
+				if(hadronicTprimeJetIDs[0] == 4 && hadronicTprimeJetIDs[1] == 5) tagTDecayMode = 9;
 			}
 			if(!validBDecay)
 			{ // not a valid grouping
+				tagBDecayMode = 0;
 				if(massDiff3 < massDiff1 and massDiff3 < massDiff2)
 				{ // lepW + 0 wins
 					leptonicBprimeJetIDs = decayJets.at(0).first;
@@ -565,8 +595,12 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 					Bprime1_deltaR = W_lv.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 					Bprime2_deltaR = jets_lv.at(decayJets.at(0).second).first.DeltaR(jets_lv.at(decayJets.at(2).second).first);
 				}
+				if(hadronicBprimeJetIDs[0] == 2 && hadronicBprimeJetIDs[1] == 5) tagBDecayMode = 7;
+				if(hadronicBprimeJetIDs[0] == 3 && hadronicBprimeJetIDs[1] == 5) tagBDecayMode = 8;
+				if(hadronicBprimeJetIDs[0] == 1 && hadronicBprimeJetIDs[1] == 4) tagBDecayMode = 9;
 			}
 		}
+
 		if(Tprime1_lv.M() != -999)
 		{
 			Tprime1_Mass = Tprime1_lv.M();
@@ -590,13 +624,13 @@ RVec<float> TBprimeReco(TLorentzVector t_lv, TLorentzVector W_lv, int lepton_sou
 			Bprime2_Phi = Bprime2_lv.Phi();
 		}
 
-		if(validTDecay){
-			std::cout << "Top Masses: " << Tprime1_Mass << ", " << Tprime2_Mass << endl;
-		}
-		if(validBDecay){
-			std::cout << "Bottom Masses: " << Bprime1_Mass << ", " << Bprime2_Mass << endl;
-		}
+		// if(validTDecay){
+		// 	std::cout << "Top Masses: " << Tprime1_Mass << ", " << Tprime2_Mass << ", " << tagTDecayMode << endl;
+		// }
+		// if(validBDecay){
+		// 	std::cout << "Bottom Masses: " << Bprime1_Mass << ", " << Bprime2_Mass << ", " << tagBDecayMode << endl;
+		// }
 	}
-	RVec<float> TandBPrimeVec = {Tprime1_Mass,Tprime2_Mass,Tprime1_Pt,Tprime2_Pt,Tprime1_Eta,Tprime2_Eta,Tprime1_Phi,Tprime2_Phi,Tprime1_deltaR,Tprime2_deltaR,Bprime1_Mass,Bprime2_Mass,Bprime1_Pt,Bprime2_Pt,Bprime1_Eta,Bprime2_Eta,Bprime1_Phi,Bprime2_Phi,Bprime1_deltaR,Bprime2_deltaR,leptonicTprimeJetIDs,leptonicBprimeJetIDs,hadronicTprimeJetIDs[0],hadronicTprimeJetIDs[1],hadronicBprimeJetIDs[0],hadronicBprimeJetIDs[1]};
+	RVec<float> TandBPrimeVec = {tagTDecayMode, tagBDecayMode, Tprime1_Mass,Tprime2_Mass,Tprime1_Pt,Tprime2_Pt,Tprime1_Eta,Tprime2_Eta,Tprime1_Phi,Tprime2_Phi,Tprime1_deltaR,Tprime2_deltaR,Bprime1_Mass,Bprime2_Mass,Bprime1_Pt,Bprime2_Pt,Bprime1_Eta,Bprime2_Eta,Bprime1_Phi,Bprime2_Phi,Bprime1_deltaR,Bprime2_deltaR,leptonicTprimeJetIDs,leptonicBprimeJetIDs,hadronicTprimeJetIDs[0],hadronicTprimeJetIDs[1],hadronicBprimeJetIDs[0],hadronicBprimeJetIDs[1]};
 	return TandBPrimeVec;
 }

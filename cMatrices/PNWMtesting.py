@@ -90,23 +90,6 @@ if readFile:
 
             for imode in range(0,7):  #fill the denoms into the correct ROW
                 herPNWM.Fill(imode,i)
-
-            # # Fill truth info into all x-axis values
-            # if t.gcFatJet_truth[ijet] == 0:   #deciding on the truth, we can just look at the truth from our truth vector
-            #     i = 0.5      
-            # elif t.gcFatJet_truth[ijet] == 5:
-            #     i = 1.5
-            # elif t.gcFatJet_truth[ijet] == 24:
-            #     i = 2.5
-            # elif t.gcFatJet_truth[ijet] == 23:
-            #     i = 3.5
-            # elif t.gcFatJet_truth[ijet] == 25:
-            #     i = 4.5
-            # elif t.gcFatJet_truth[ijet] == 6:
-            #     i = 5.5
-
-            # for imode in range(0,7):  #fill the denoms into the correct ROW
-            #     truth.Fill(imode,i)
             
             if PNWMid == 0:
                 ourPNWM.Fill(0.5,i)
