@@ -10,7 +10,7 @@ RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_Rest
   TLorentzVector jet;
   for (; i < isoAK4.size(); i++) {
     //  stand alone         b-tagged
-    if (decayMode == 1 && jet_BTag[i] == 1) {
+    if (jet_BTag[i] == 1) {
       jet.SetPtEtaPhiM(jet_pt[i], jet_eta[i], jet_phi[i], jet_mass[i]);
       jets.push_back(jet);
     } 
@@ -18,7 +18,7 @@ RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_Rest
 
   //  std::cout << "-------------------------------------------" << std::endl;
   RVec<double> result;
-  if (jets.size() == 0) { // analyze bW tree
+  if (decayMode == 0) { // analyze bW tree
     result = W_rfc->return_W_doubles(thread_index, lepton_pt, lepton_eta, lepton_phi, lepton_mass, fatjet_pt, fatjet_eta, fatjet_phi, fatjet_mass, met_pt, met_phi);
     result.push_back(0.0); // 0 is for W tree
   } else { // analyze (H/Z)t tree
@@ -36,20 +36,44 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<float> fatjet_pt, RVec<floa
   TLorentzVector fj;
   TLorentzVector fj_2;
   int numOfLoops = 3;
+  double diff = 1000;
+  double diff_V = 1000;
+
+  // std::cout << "==================================" <<  std::endl;
+  // std::cout << "Jet_0 energy: " << J0_E <<  std::endl;
+  // std::cout << "VLQ_2 energy: " << VLQ2_E << std::endl;
   
-  for (int i; i < numOfLoops; i++) {
+  for (int i = 0; i < numOfLoops; i++) {
     fj.SetPtEtaPhiM(fatjet_pt[i],fatjet_eta[i],fatjet_phi[i],fatjet_mass[i]);
-    if (J0_E == fj.E()) { j0_idx = i; }
-    for (int k; k < numOfLoops; k++) {
+    double diff_E = abs(J0_E - fj.E());
+    //std::cout << "\t fj.E(): " << fj.E();
+    //std::cout << "\t \t Jet_0 - fj.E() =  " << diff_E << std::endl;
+    if(diff > diff_E) {
+      j0_idx = i;
+      diff = diff_E;
+      //std::cout << "Jet_0 assigned at index " << i << std::endl;
+    }
+
+    //if (diff < 0.00001) { j0_idx = i; }
+    for (int k = 0; k < numOfLoops; k++) {
       fj_2.SetPtEtaPhiM(fatjet_pt[k],fatjet_eta[k],fatjet_phi[k],fatjet_mass[k]);
-      if (VLQ2_E == fj.E() + fj_2.E()) {
+      double diff_V_E = abs(VLQ2_E - fj.E() - fj_2.E());
+      //std::cout << "\t fj.E() + fj_2.E(): "  << fj.E() + fj_2.E();
+      //std::cout << "\t \t VLQ2_E - (fj.E() + fj_2.E()) = " << diff_V_E << std::endl;
+      if(diff_V > diff_V_E) {
 	if (fj.M() > fj_2.M()) {
 	  vlq21_idx = i;
 	  vlq22_idx = k;
+	  //std::cout << "vlq21 and vlq22 assigned at index " << i << " and " << k << std::endl;
+	} else {
+	  vlq21_idx = k;
+	  vlq22_idx = i;
+	  //std::cout << "vlq21 and vlq22 assigned at index " << k << " and " << i << std::endl;
 	}
       }
     }
   }
+  
   RVec<int> matched_idx = {j0_idx, vlq21_idx, vlq22_idx};
   return matched_idx;
 }

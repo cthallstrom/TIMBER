@@ -573,7 +573,7 @@ def analyze(jesvar):
 
   rframeVars.Add("R_W_VLQ2_Mass", 'RJR_W_doubles[6]')
   rframeVars.Add("R_W_VLQ2_CosAngle", 'RJR_W_doubles[7]')
-  rframeVars.Add("R_W_VLQ2_DeltaPhiAngle", 'RJR_W_doubles[8]')
+  #rframeVars.Add("R_W_VLQ2_DeltaPhiAngle", 'RJR_W_doubles[8]')
 
   rframeVars.Add("R_W_W_Mass", 'RJR_W_doubles[8]')
   rframeVars.Add("R_W_W_CosAngle", 'RJR_W_doubles[9]')
@@ -581,15 +581,15 @@ def analyze(jesvar):
 
   rframeVars.Add("R_W_J0_Mass", 'RJR_W_doubles[11]')
   rframeVars.Add("R_W_J0_CosAngle", 'RJR_W_doubles[12]')
-  rframeVars.Add("R_W_J0_DeltaPhiAngle", 'RJR_W_doubles[14]')
+  #rframeVars.Add("R_W_J0_DeltaPhiAngle", 'RJR_W_doubles[14]')
   
-  rframeVars.Add("R_W_TTbar_DeltaPhiVisible","RJR_W_doubles[15]")
-  rframeVars.Add("R_W_TTbar_DeltaPhiDecayVisible","RJR_W_doubles[16]")
-  rframeVars.Add("R_W_TTbar_PhiBoostVisible","RJR_W_doubles[17]")
-  rframeVars.Add("R_W_TTbar_VisibleShape","RJR_W_doubles[18]")
+  rframeVars.Add("R_W_TTbar_DeltaPhiVisible","RJR_W_doubles[13]")
+  rframeVars.Add("R_W_TTbar_DeltaPhiDecayVisible","RJR_W_doubles[14]")
+  rframeVars.Add("R_W_TTbar_PhiBoostVisible","RJR_W_doubles[15]")
+  rframeVars.Add("R_W_TTbar_VisibleShape","RJR_W_doubles[16]")
 
-  rframeVars.Add("R_W_VLQ2_energy","RJR_W_doubles[19]")
-  rframeVars.Add("R_W_J0_energy","RJR_W_doubles[20]")
+  rframeVars.Add("R_W_VLQ2_energy","RJR_W_doubles[17]")
+  rframeVars.Add("R_W_J0_energy","RJR_W_doubles[18]")
   rframeVars.Add("R_W_matched_idx","matchJets(R_W_J0_energy, R_W_VLQ2_energy, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass)")
   rframeVars.Add("R_W_J0_idx","R_W_matched_idx[0]")
   rframeVars.Add("R_W_VLQ21_idx","R_W_matched_idx[1]")
@@ -599,7 +599,7 @@ def analyze(jesvar):
   #rframeVars.Add("R_VLQ2_FatJet1",)
   #rframeVars.Add("R_VLQ2_FatJet2",)
 
-  rframeVars.Add("R_W_treeMODE", 'RJR_W_doubles[21]')  
+  rframeVars.Add("R_W_treeMODE", 'RJR_W_doubles[19]')  
 
   #t decays below
   rframeVars.Add("t","int(1)")
@@ -615,7 +615,7 @@ def analyze(jesvar):
 
   rframeVars.Add("R_t_VLQ2_Mass", 'RJR_doubles[6]')
   rframeVars.Add("R_t_VLQ2_CosAngle", 'RJR_doubles[7]')
-  rframeVars.Add("R_t_VLQ2_DeltaPhiAngle", 'RJR_doubles[8]')
+  #rframeVars.Add("R_t_VLQ2_DeltaPhiAngle", 'RJR_doubles[8]')
 
   rframeVars.Add("R_t_W_Mass", 'RJR_doubles[8]')
   rframeVars.Add("R_t_W_CosAngle", 'RJR_doubles[9]')
@@ -623,22 +623,26 @@ def analyze(jesvar):
 
   rframeVars.Add("R_t_J0_Mass", 'RJR_doubles[11]')
   rframeVars.Add("R_t_J0_CosAngle", 'RJR_doubles[12]')
-  rframeVars.Add("R_t_J0_DeltaPhiAngle", 'RJR_doubles[14]')
+  #rframeVars.Add("R_t_J0_DeltaPhiAngle", 'RJR_doubles[14]')
   
-  rframeVars.Add("R_t_TTbar_DeltaPhiVisible","RJR_doubles[15]")
-  rframeVars.Add("R_t_TTbar_DeltaPhiDecayVisible","RJR_doubles[16]")
-  rframeVars.Add("R_t_TTbar_PhiBoostVisible","RJR_doubles[17]")
-  rframeVars.Add("R_t_TTbar_VisibleShape","RJR_doubles[18]")
+  rframeVars.Add("R_t_TTbar_DeltaPhiVisible","RJR_doubles[13]")
+  rframeVars.Add("R_t_TTbar_DeltaPhiDecayVisible","RJR_doubles[14]")
+  rframeVars.Add("R_t_TTbar_PhiBoostVisible","RJR_doubles[15]")
+  rframeVars.Add("R_t_TTbar_VisibleShape","RJR_doubles[16]")
 
-  rframeVars.Add("R_t_VLQ2_energy","RJR_doubles[19]")
-  rframeVars.Add("R_t_J0_energy","RJR_doubles[20]")
+  rframeVars.Add("R_t_VLQ2_energy","RJR_doubles[17]")
+  rframeVars.Add("R_t_J0_energy","RJR_doubles[18]")
   rframeVars.Add("matched_idx","matchJets(R_t_J0_energy, R_t_VLQ2_energy, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass)")
   rframeVars.Add("R_t_J0_idx","matched_idx[0]")
   rframeVars.Add("R_t_VLQ21_idx","matched_idx[1]")
   rframeVars.Add("R_t_VLQ22_idx","matched_idx[2]")
+
+  rframeVars.Add("R_t_t_Mass","RJR_doubles[19]")
+  rframeVars.Add("R_t_t_CosAngle","RJR_doubles[20]")
+  rframeVars.Add("R_t_t_DeltaPhiAngle","RJR_doubles[21]")
   
-  rframeVars.Add("R_t_treeMODE", 'RJR_doubles[21]')  
-  
+  rframeVars.Add("R_t_treeMODE", 'RJR_doubles[22]')  
+
   # # -------------------------------------
 
   nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, lVars, lCuts])
