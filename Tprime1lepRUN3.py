@@ -542,12 +542,12 @@ def analyze(jesvar):
   
   recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
   recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
-  recoVars.Add("minMlj", "minMleppJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv, SubJet_btagUParTAK4B, BTagM)") #Not sure abt the last arg
+  recoVars.Add("minMlbVec", "minMlb_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv)")
   recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
-  recoVars.Add("minMleppJet", "minMlj[0]")
-  recoVars.Add("minMlj_idx", "minMlj[1]")
-  recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
-  recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, minMlj_idx)")
+  recoVars.Add("minMlb", "minMlbVec[0]")
+  recoVars.Add("minMlb_idx", "minMlbVec[1]")
+  recoVars.Add("lepton_source", "minMlb > 150 ? 0 : 1")
+  recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMlb, minMlb_idx)")
   recoVars.Add("t_dRWb", "t_five[4]")
   recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
   recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
