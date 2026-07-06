@@ -127,6 +127,7 @@ CompileCpp('TIMBER/Framework/Tprime1lep/manualreco.cc')
 CompileCpp('TIMBER/Framework/Tprime1lep/StandardTT_fatjet_matching.cc')
 CompileCpp('TIMBER/Framework/Tprime1lep/StandardTTBB_decayModeFinder.cc')
 CompileCpp('TIMBER/Framework/Tprime1lep/eventReco.cc')
+CompileCpp('TIMBER/Framework/Tprime1lep/truthComparing.cc')
 ROOT.gInterpreter.ProcessLine('#include "TString.h"')
 
 # Enable using 4 threads
@@ -504,7 +505,10 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_GPTWM_Z", "reorder(FatJet_globalParT3_withMassZvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   
   if isMC:
-    tagVars.Add("gcFatJet_truth", "fatjet_matching(region, nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, gcFatJet_hadronFlavour)")
+    tagVars.Add("gcFatJet_truth", "fatjet_matching(region, nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, gcFatJet_hadronFlavour, SubJet_hadronFlavour)")
+    tagVars.Add("comp_primes", "get_lastcopy_tprimes(GenPart_pdgId, GenPart_statusFlags, GenPart_pt)")
+    tagVars.Add("comp_daughters", "get_tprime_daughters(comp_primes, GenPart_pdgId, GenPart_genPartIdxMother)")
+    tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
   
   tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, gcFatJet_truth, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
   tagVars.Add("gcFatJet_PNWMtags", "gcFatJet_tags[0]")
@@ -537,21 +541,18 @@ def analyze(jesvar):
   recoVars = VarGroup("recoVars")
   
   recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
-  # recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
-  # recoVars.Add("minMlj", "minMleppJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv, SubJet_btagUParTAK4B)") #Not sure abt the last arg
-  # recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
-  # recoVars.Add("minMleppJet", "minMlj[0]")
-  # recoVars.Add("minMlj_idx", "minMlj[1]")
-  # recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
-  # recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, minMlj_idx)")
-  # recoVars.Add("t_dRWb", "t_five[4]")
-  # recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
-  # recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
-
-  recoVars.Add("minMlbVec", "minMlb_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv)")
-  recoVars.Add("minMlb", "minMlbVec[0]")
-  recoVars.Add("minMlb_idx", "minMlbVec[1]")
-  recoVars.Add("minMlbDR", "minMlbVec[2]")
+  recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
+  recoVars.Add("minMlj", "minMleppJet_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv, SubJet_btagUParTAK4B, BTagM)") #Not sure abt the last arg
+  recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
+  recoVars.Add("minMleppJet", "minMlj[0]")
+  recoVars.Add("minMlj_idx", "minMlj[1]")
+  recoVars.Add("lepton_source", "minMleppJet > 150 ? 0 : 1")
+  recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMleppJet, minMlj_idx)")
+  recoVars.Add("t_dRWb", "t_five[4]")
+  recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
+  recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
+  recoVars.Add("tagTdecays", "int(TBp[0])")
+  recoVars.Add("tagBdecays", "int(TBp[1])")
 
   # # ------------------ Results ------------------
   ##### MAYBE NOT WORKING!!!!! #####
