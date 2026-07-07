@@ -190,33 +190,33 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
 
     RVec<double> observables;
 
-    observables.push_back(TTbar->GetMass());
-    observables.push_back(TTbar->GetCosDecayAngle());
-    observables.push_back(TTbar->GetDeltaPhiDecayAngle());
+    observables.push_back(TTbar->GetMass());//................. 0
+    observables.push_back(TTbar->GetCosDecayAngle());//........ 1
+    observables.push_back(TTbar->GetDeltaPhiDecayAngle());//... 2
     
-    observables.push_back(T->GetMass());
-    observables.push_back(T->GetCosDecayAngle());
-    observables.push_back(T->GetDeltaPhiDecayAngle());
+    observables.push_back(T->GetMass());//..................... 3
+    observables.push_back(T->GetCosDecayAngle());//............ 4
+    observables.push_back(T->GetDeltaPhiDecayAngle());//....... 5
     
-    observables.push_back(Tbar->GetMass());
-    observables.push_back(Tbar->GetCosDecayAngle());
+    observables.push_back(Tbar->GetMass());//.................. 6
+    observables.push_back(Tbar->GetCosDecayAngle());//......... 7
     
-    observables.push_back(W->GetMass());
-    observables.push_back(W->GetCosDecayAngle());
-    observables.push_back(W->GetDeltaPhiDecayAngle());
+    observables.push_back(W->GetMass());//..................... 8
+    observables.push_back(W->GetCosDecayAngle());//............ 9
+    observables.push_back(W->GetDeltaPhiDecayAngle());//....... 10
     
-    observables.push_back(b->GetMass());
-    observables.push_back(b->GetCosDecayAngle());
+    observables.push_back(b->GetMass());//..................... 11
+    observables.push_back(b->GetCosDecayAngle());//............ 12
 
-    observables.push_back(TTbar->GetDeltaPhiVisible());
-    observables.push_back(TTbar->GetDeltaPhiDecayVisible());
-    observables.push_back(TTbar->GetDeltaPhiBoostVisible());
-    observables.push_back(TTbar->GetVisibleShape());
+    observables.push_back(TTbar->GetDeltaPhiVisible());//...... 13
+    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//. 14
+    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//. 15
+    observables.push_back(TTbar->GetVisibleShape());//......... 16
 
     // Vectors isn't working as a separate function, because they don't operate one after the other on the same event!
     // Returning what I think we need to identify the 3 jets compared to our list.
-    observables.push_back(Tbar->GetFourVector().E());
-    observables.push_back(b->GetFourVector().E());
+    observables.push_back(Tbar->GetFourVector().E());//........ 17
+    observables.push_back(b->GetFourVector().E());//........... 18
 
     after_analysis();
 

@@ -444,6 +444,12 @@ def analyze(jesvar):
     jetVars.Add("gcJet_BTag", "reorder(Jet_btagUParTAK4B[goodcleanJets == true],gcJet_ptargsort)")
   jetVars.Add("gcJet_BTagM", "gcJet_BTag > BTagM") 
   jetVars.Add("NJets_BTagM", "Sum(gcJet_BTagM)")
+  jetVars.Add("gcBJet_pt","gcJet_pt[gcJet_BTagM == 1]")
+  jetVars.Add("gcBJet_eta","gcJet_eta[gcJet_BTagM == 1]")
+  jetVars.Add("gcBJet_phi","gcJet_phi[gcJet_BTagM == 1]")
+  jetVars.Add("gcBJet_mass","gcJet_mass[gcJet_BTagM == 1]")
+
+  jetVars.Add("gcBJet_P4","fVectorConstructor(gcBJet_pt,gcBJet_eta,gcBJet_phi,gcBJet_mass)")
   jetVars.Add("gcJet_P4", "fVectorConstructor(gcJet_pt,gcJet_eta,gcJet_phi,gcJet_mass)")
 
   jetVars.Add("gcFatJet_pt_unsort", "FatJet_pt[goodcleanFatJets == true]")
@@ -562,7 +568,7 @@ def analyze(jesvar):
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
   rframeVars.Add("W","int(0)")
-  rframeVars.Add('RJR_W_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, gcJet_BTagM, Isolated_AK4,W)')
+  rframeVars.Add('RJR_W_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_BTagM, Isolated_AK4,W)')
 
   rframeVars.Add("R_W_TTbar_Mass", 'RJR_W_doubles[0]')
   rframeVars.Add("R_W_TTbar_CosAngle", 'RJR_W_doubles[1]')
@@ -604,7 +610,7 @@ def analyze(jesvar):
 
   #t decays below
   rframeVars.Add("t","int(1)")
-  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, gcJet_BTagM, Isolated_AK4, t)')
+  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4,  gcJet_BTagM, Isolated_AK4, t)')
 
   rframeVars.Add("R_t_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_t_TTbar_CosAngle", 'RJR_doubles[1]')
