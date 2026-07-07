@@ -195,9 +195,9 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(J0->GetCosDecayAngle());//............ 12
 
     observables.push_back(TTbar->GetDeltaPhiVisible()); //...... 13
-    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//..... 14
-    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//....... 15
-    observables.push_back(TTbar->GetVisibleShape());//........... 16
+    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//.. 14
+    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//.. 15
+    observables.push_back(TTbar->GetVisibleShape());//.......... 16
     
     // Vectors isn't working as a separate function, because they don't operate one after the other on the same event!
     // Returning what I think we need to identify the 3 jets compared to our list.
@@ -209,7 +209,7 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 21
     
     after_analysis();
-    
+
     return observables;
 };
 

@@ -2,17 +2,15 @@
 // These two functions help to differentiate between the bW and (H/Z)t trees
 #include <iostream>
 
-RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_RestFrames_Container_t * t_rfc, int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<float> jet_pt, RVec<float> jet_eta, RVec<float> jet_phi, RVec<float> jet_mass, RVec<float> jet_BTag, RVec<float> isoAK4, char decayMode) {
+RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_RestFrames_Container_t * t_rfc, int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> bjets, RVec<float> jet_BTag, RVec<float> isoAK4, char decayMode) {
   RVec<TLorentzVector> jets;
   int i = 0; 
 
   // Make an RVec of valid jets for the possible b.
-  TLorentzVector jet;
   for (; i < isoAK4.size(); i++) {
     //  stand alone         b-tagged
     if (jet_BTag[i] == 1) {
-      jet.SetPtEtaPhiM(jet_pt[i], jet_eta[i], jet_phi[i], jet_mass[i]);
-      jets.push_back(jet);
+      jets.push_back(bjets[i]);
     } 
   }   
 
@@ -45,30 +43,26 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<float> fatjet_pt, RVec<floa
   
   for (int i = 0; i < numOfLoops; i++) {
     fj.SetPtEtaPhiM(fatjet_pt[i],fatjet_eta[i],fatjet_phi[i],fatjet_mass[i]);
-    double diff_E = abs(J0_E - fj.E());
-    //std::cout << "\t fj.E(): " << fj.E();
-    //std::cout << "\t \t Jet_0 - fj.E() =  " << diff_E << std::endl;
-    if(diff > diff_E) {
+    if(J0_E == fj.E()) {
       j0_idx = i;
-      diff = diff_E;
-      //std::cout << "Jet_0 assigned at index " << i << std::endl;
+      // std::cout << "\t fj.E(): " << fj.E();
+      // std::cout << "Jet_0 assigned at index " << i << std::endl;
     }
 
     //if (diff < 0.00001) { j0_idx = i; }
     for (int k = 0; k < numOfLoops; k++) {
       fj_2.SetPtEtaPhiM(fatjet_pt[k],fatjet_eta[k],fatjet_phi[k],fatjet_mass[k]);
-      double diff_V_E = abs(VLQ2_E - fj.E() - fj_2.E());
-      //std::cout << "\t fj.E() + fj_2.E(): "  << fj.E() + fj_2.E();
-      //std::cout << "\t \t VLQ2_E - (fj.E() + fj_2.E()) = " << diff_V_E << std::endl;
-      if(diff_V > diff_V_E) {
+      double V_E = abs(VLQ2_E - fj.E() - fj_2.E());
+      if(VLQ2_E == V_E) {
+	std::cout << "\t \t fj.E() + fj_2.E(): "  << fj.E() + fj_2.E();
 	if (fj.M() > fj_2.M()) {
 	  vlq21_idx = i;
 	  vlq22_idx = k;
-	  //std::cout << "vlq21 and vlq22 assigned at index " << i << " and " << k << std::endl;
+	  std::cout << "\t vlq21 and vlq22 assigned at index " << i << " and " << k << std::endl;
 	} else {
 	  vlq21_idx = k;
 	  vlq22_idx = i;
-	  //std::cout << "vlq21 and vlq22 assigned at index " << k << " and " << i << std::endl;
+	  std::cout << "\t vlq21 and vlq22 assigned at index " << k << " and " << i << std::endl;
 	}
       }
     }
