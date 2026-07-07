@@ -52,7 +52,7 @@ private:
   
 public:
   Tprime_RestFrames_Handler_t();
-  RVec<double> calculate_t_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3, RVec<TLorentzVector> &AK4s);
+  RVec<double> calculate_t_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3, RVec<TLorentzVector> &AK4s, TLorentzVector &minMlb_lv);
 };
 
 Tprime_RestFrames_Handler_t::Tprime_RestFrames_Handler_t() {
@@ -100,9 +100,9 @@ void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
     JETS->SetNElementsForFrame(*Tbar, 2);
     
     // Combinatoric Group for SM top quark reconstruction
-    SMTOP.reset(new CombinatoricGroup("SMTOP", "Standard Model top Jigsaw"));
-    SMTOP->AddFrame(*b);
-    SMTOP->SetNElementsForFrame(*b, 1);
+    // SMTOP.reset(new CombinatoricGroup("SMTOP", "Standard Model top Jigsaw"));
+    // SMTOP->AddFrame(*b);
+    // SMTOP->SetNElementsForFrame(*b, 1);
 
     // Invisible Group for Neutrino
     INV.reset(new InvisibleGroup("INV", "MET Jigsaws"));
@@ -145,31 +145,32 @@ void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
     MinDiffJets->AddCombFrame(*Tbar, 1);
     
     // JET group 2 for SM t quark
-    jigsaw_name = "Minimize Chi^2";
-    MinChi2.reset(new MinMassChi2CombJigsaw("MinChi2", jigsaw_name, 1, 1)); // may need to change second number to 2
-    SMTOP->AddJigsaw(*MinChi2);
-    MinChi2->AddObjectFrame(*l, 0);
-    MinChi2->AddObjectFrame(*b, 0);
-    MinChi2->AddCombFrame(*b, 0);
-    MinChi2->SetMass(171.77, 0);
-    MinChi2->SetSigma(0.38, 0);
+    // jigsaw_name = "Minimize Chi^2";
+    // MinChi2.reset(new MinMassChi2CombJigsaw("MinChi2", jigsaw_name, 1, 1)); // may need to change second number to 2
+    // SMTOP->AddJigsaw(*MinChi2);
+    // MinChi2->AddObjectFrames(*l+*b+*nu, 0);
+    // //MinChi2->AddObjectFrame(*b, 0);
+    // MinChi2->AddCombFrame(*b, 0);
+    // MinChi2->SetMass(171.77, 0);
+    // MinChi2->SetSigma(0.38, 0);
 };
 
-RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3, RVec<TLorentzVector> &AK4s) {
+RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3, RVec<TLorentzVector> &AK4s,TLorentzVector &minMlb_lv) {
     before_analysis();
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
-
+    LAB->AddFrameParticle(*b, minMlb_lv);
+    
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
     
-    for (int i = 0; i < AK4s.size(); i++) {
-      JETS_ID.push_back(SMTOP->AddLabFrameFourVector(AK4s[i]));
-    } // if this loop is skipped that means there were no T -> t -> b W
+    // for (int i = 0; i < AK4s.size(); i++) {
+    //   JETS_ID.push_back(SMTOP->AddLabFrameFourVector(AK4s[i]));
+    // } // if this loop is skipped that means there were no T -> t -> b W
 
     LAB->AnalyzeEvent(); // analyze the event
 
@@ -207,6 +208,9 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(t->GetMass()); // .................... 19
     observables.push_back(t->GetCosDecayAngle()); //............ 20
     observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 21
+
+    observables.push_back(nu->GetInvisibleFourVector().E()); //.................. 22
+    observables.push_back(nu->GetInvisibleFourVector().Pz());//............ 23
     
     after_analysis();
 
@@ -232,7 +236,7 @@ RestFramesHandler * Tprime_RestFrames_Container_t::create_handler() {
 }
 
 // return_doubles() returns all the masses, cos angles, and deltaPhi angles of the frames in the tree
-RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets) {
+RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv) {
 
     // This pointer should explicitly not be deleted!
     Tprime_RestFrames_Handler_t *rfht = static_cast<Tprime_RestFrames_Handler_t *>(get_handler(thread_index));
@@ -255,7 +259,7 @@ RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, f
     double MET_py  = met_pt*std::sin(met_phi);
     met3  = TVector3(MET_px, MET_py, 0.0);
    
-    RVec<double> observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets); //jet_4);
+    RVec<double> observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
 
     return observables;
 }
