@@ -209,11 +209,6 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 21
     
     after_analysis();
-
-    std::cout << "========== Now Printing Types ================" << std::endl;
-    for (int i = 0; i < observables.size(); i++) {
-      std::cout << "\t index " << i << " is " << typeid(observables[i]).name() << std::endl;
-    }
     
     return observables;
 };

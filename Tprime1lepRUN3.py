@@ -537,7 +537,6 @@ def analyze(jesvar):
   
   
   # ------------------ W and t reconstruction -----------------
-  # ------------------ DOES NOT WORK RN -----------------
   recoVars = VarGroup("recoVars")
   
   recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
@@ -546,7 +545,8 @@ def analyze(jesvar):
   recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
   recoVars.Add("minMlb", "minMlbVec[0]")
   recoVars.Add("minMlb_idx", "minMlbVec[1]")
-  recoVars.Add("lepton_source", "minMlb > 150 ? 0 : 1")
+  recoVars.Add("minMlb_dR", "minMlbVec[2]")
+  recoVars.Add("lepton_source", "minMlb > 160 && minMlb_dR < 1 ? 0 : 1")
   recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMlb, minMlb_idx)")
   recoVars.Add("t_dRWb", "t_five[4]")
   recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
