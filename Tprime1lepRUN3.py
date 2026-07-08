@@ -552,6 +552,7 @@ def analyze(jesvar):
   recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
   recoVars.Add("minMlb", "minMlbVec[0]")
   recoVars.Add("minMlb_idx", "minMlbVec[1]")
+  recoVars.Add("minMlb_lv","TLorentzVector bjet; bjet.SetPtEtaPhiM(gcJet_pt[minMlb_idx], gcJet_eta[minMlb_idx], gcJet_phi[minMlb_idx], gcJet_mass[minMlb_idx]); return bjet;")
   recoVars.Add("minMlb_dR", "minMlbVec[2]")
   recoVars.Add("lepton_source", "minMlb > 160 && minMlb_dR > 1 ? 0 : 1")
   recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMlb, minMlb_idx)")
@@ -568,8 +569,8 @@ def analyze(jesvar):
 
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
-  rframeVars.Add("W","int(0)")
-  rframeVars.Add('RJR_W_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_BTagM, Isolated_AK4,W)')
+  rframeVars.Add("W","return 0;")
+  rframeVars.Add('RJR_W_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], W)')
 
   rframeVars.Add("R_W_TTbar_Mass", 'RJR_W_doubles[0]')
   rframeVars.Add("R_W_TTbar_CosAngle", 'RJR_W_doubles[1]')
@@ -598,11 +599,13 @@ def analyze(jesvar):
 
   rframeVars.Add("R_W_VLQ2_energy","RJR_W_doubles[17]")
   rframeVars.Add("R_W_J0_energy","RJR_W_doubles[18]")
-  rframeVars.Add("R_W_matched_idx","matchJets(R_W_J0_energy, R_W_VLQ2_energy, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass)")
-  rframeVars.Add("R_W_J0_idx","R_W_matched_idx[0]")
-  rframeVars.Add("R_W_VLQ21_idx","R_W_matched_idx[1]")
-  rframeVars.Add("R_W_VLQ22_idx","R_W_matched_idx[2]")
-  
+
+  #Commented out for speed!!
+  # rframeVars.Add("R_W_matched_idx","matchJets(R_W_J0_energy, R_W_VLQ2_energy, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass)")
+  # rframeVars.Add("R_W_J0_idx","R_W_matched_idx[0]")
+  # rframeVars.Add("R_W_VLQ21_idx","R_W_matched_idx[1]")
+  # rframeVars.Add("R_W_VLQ22_idx","R_W_matched_idx[2]")
+
   #rframeVars.Add("R_VLQ1_FatJet1",)
   #rframeVars.Add("R_VLQ2_FatJet1",)
   #rframeVars.Add("R_VLQ2_FatJet2",)
@@ -610,8 +613,9 @@ def analyze(jesvar):
   rframeVars.Add("R_W_treeMODE", 'RJR_W_doubles[19]')  
 
   #t decays below
-  rframeVars.Add("t","int(1)")
-  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4,  gcJet_BTagM, Isolated_AK4, t)')
+  rframeVars.Add("t","return 1;")
+  #rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, t)')
+  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], t)')
 
   rframeVars.Add("R_t_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_t_TTbar_CosAngle", 'RJR_doubles[1]')
@@ -640,16 +644,24 @@ def analyze(jesvar):
 
   rframeVars.Add("R_t_VLQ2_energy","RJR_doubles[17]")
   rframeVars.Add("R_t_J0_energy","RJR_doubles[18]")
-  rframeVars.Add("matched_idx","matchJets(R_t_J0_energy, R_t_VLQ2_energy, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass)")
-  rframeVars.Add("R_t_J0_idx","matched_idx[0]")
-  rframeVars.Add("R_t_VLQ21_idx","matched_idx[1]")
-  rframeVars.Add("R_t_VLQ22_idx","matched_idx[2]")
+
+  # Commented out for speed!
+  # rframeVars.Add("matched_idx","matchJets(R_t_J0_energy, R_t_VLQ2_energy, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass)")
+  # rframeVars.Add("R_t_J0_idx","matched_idx[0]")
+  # rframeVars.Add("R_t_VLQ21_idx","matched_idx[1]")
+  # rframeVars.Add("R_t_VLQ22_idx","matched_idx[2]")
 
   rframeVars.Add("R_t_t_Mass","RJR_doubles[19]")
   rframeVars.Add("R_t_t_CosAngle","RJR_doubles[20]")
   rframeVars.Add("R_t_t_DeltaPhiAngle","RJR_doubles[21]")
+
+  rframeVars.Add("R_t_nu_Energy","RJR_doubles[22]")
+  rframeVars.Add("R_t_nu_Pz","RJR_doubles[23]")
+
+  rframeVars.Add("R_t_bJet_Mass","RJR_doubles[24]")
+  rframeVars.Add("R_t_minMlb_Mass","RJR_doubles[25]")
   
-  rframeVars.Add("R_t_treeMODE", 'RJR_doubles[22]')  
+  rframeVars.Add("R_t_treeMODE", 'RJR_doubles[26]')  
 
   # # -------------------------------------
 
