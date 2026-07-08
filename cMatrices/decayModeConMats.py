@@ -48,25 +48,25 @@ if readFile:
                     
             # Fill reconstructed info into only the right x-axis value
             # taggedTjet = 1, taggedWjet = 2, untaggedTlep = 3, untaggedWlep = 4
-            if PNWMid == 1:
+            if PNWMid == 1: #bWbW
                 PNWM.Fill(0.5,i)
-            elif PNWMid == 2:
+            elif PNWMid == 2: #tHtH
                 PNWM.Fill(1.5,i)
-            elif PNWMid == 3:
+            elif PNWMid == 3: #tZtZ
                 PNWM.Fill(2.5,i)
-            elif PNWMid == 4:
+            elif PNWMid == 4: #tZtH
                 PNWM.Fill(3.5,i)
-            elif PNWMid == 5:
+            elif PNWMid == 5: #tZbW
                 PNWM.Fill(4.5,i)
-            elif PNWMid == 6:
+            elif PNWMid == 6: #tHbW
                 PNWM.Fill(5.5,i)
-            elif PNWMid == 7:
+            elif PNWMid == 7: #tH
                 PNWM.Fill(6.5,i)
-            elif PNWMid == 8:
+            elif PNWMid == 8: #tZ
                 PNWM.Fill(7.5,i)
-            elif PNWMid == 9:
+            elif PNWMid == 9: #bW
                 PNWM.Fill(8.5,i)
-            elif PNWMid == 0:
+            elif PNWMid == 0: #none
                 PNWM.Fill(9.5,i)
 
             
