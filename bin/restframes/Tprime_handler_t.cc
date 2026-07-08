@@ -160,7 +160,7 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
-    LAB->AddFrameParticle(*b, minMlb_lv);
+    b->SetLabFrameFourVector(minMlb_lv);
     
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
@@ -209,8 +209,11 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(t->GetCosDecayAngle()); //............ 20
     observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 21
 
-    observables.push_back(nu->GetInvisibleFourVector().E()); //.................. 22
-    observables.push_back(nu->GetInvisibleFourVector().Pz());//............ 23
+    observables.push_back(nu->GetInvisibleFourVector().E()); //. 22
+    observables.push_back(nu->GetInvisibleFourVector().Pz());//. 23
+
+    observables.push_back(b->GetMass());//...................... 24
+    observables.push_back(minMlb_lv.M());//..................... 25
     
     after_analysis();
 
@@ -223,7 +226,7 @@ class Tprime_RestFrames_Container_t : public RestFramesContainer {
         Tprime_RestFrames_Container_t(int num_threads);
         RestFramesHandler *create_handler() override;
 
-        RVec<double> return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets);
+        RVec<double> return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv);
 	
 };
 

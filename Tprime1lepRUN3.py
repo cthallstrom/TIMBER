@@ -568,8 +568,8 @@ def analyze(jesvar):
 
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
-  rframeVars.Add("W","int(0)")
-  rframeVars.Add('RJR_W_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4,W)')
+  rframeVars.Add("W","return 0;")
+  rframeVars.Add('RJR_W_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], W)')
 
   rframeVars.Add("R_W_TTbar_Mass", 'RJR_W_doubles[0]')
   rframeVars.Add("R_W_TTbar_CosAngle", 'RJR_W_doubles[1]')
@@ -612,9 +612,9 @@ def analyze(jesvar):
   rframeVars.Add("R_W_treeMODE", 'RJR_W_doubles[19]')  
 
   #t decays below
-  rframeVars.Add("t","int(1)")
+  rframeVars.Add("t","return 1;")
   #rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, t)')
-  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, t, minMlb_lv)')
+  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], t)')
 
   rframeVars.Add("R_t_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_t_TTbar_CosAngle", 'RJR_doubles[1]')
@@ -656,8 +656,11 @@ def analyze(jesvar):
 
   rframeVars.Add("R_t_nu_Energy","RJR_doubles[22]")
   rframeVars.Add("R_t_nu_Pz","RJR_doubles[23]")
+
+  rframeVars.Add("R_t_bJet_Mass","RJR_doubles[24]")
+  rframeVars.Add("R_t_minMlb_Mass","RJR_doubles[25]")
   
-  rframeVars.Add("R_t_treeMODE", 'RJR_doubles[24]')  
+  rframeVars.Add("R_t_treeMODE", 'RJR_doubles[26]')  
 
   # # -------------------------------------
 
