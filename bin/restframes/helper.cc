@@ -36,33 +36,23 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<float> fatjet_pt, RVec<floa
   int numOfLoops = 3;
   double diff = 1000;
   double diff_V = 1000;
-
-  // std::cout << "==================================" <<  std::endl;
-  // std::cout << "Jet_0 energy: " << J0_E <<  std::endl;
-  // std::cout << "VLQ_2 energy: " << VLQ2_E << std::endl;
-  
+ 
   for (int i = 0; i < numOfLoops; i++) {
     fj.SetPtEtaPhiM(fatjet_pt[i],fatjet_eta[i],fatjet_phi[i],fatjet_mass[i]);
     if(J0_E == fj.E()) {
       j0_idx = i;
-      // std::cout << "\t fj.E(): " << fj.E();
-      // std::cout << "Jet_0 assigned at index " << i << std::endl;
     }
 
-    //if (diff < 0.00001) { j0_idx = i; }
     for (int k = 0; k < numOfLoops; k++) {
       fj_2.SetPtEtaPhiM(fatjet_pt[k],fatjet_eta[k],fatjet_phi[k],fatjet_mass[k]);
       double V_E = abs(VLQ2_E - fj.E() - fj_2.E());
       if(VLQ2_E == V_E) {
-	std::cout << "\t \t fj.E() + fj_2.E(): "  << fj.E() + fj_2.E();
 	if (fj.M() > fj_2.M()) {
 	  vlq21_idx = i;
 	  vlq22_idx = k;
-	  std::cout << "\t vlq21 and vlq22 assigned at index " << i << " and " << k << std::endl;
 	} else {
 	  vlq21_idx = k;
 	  vlq22_idx = i;
-	  std::cout << "\t vlq21 and vlq22 assigned at index " << k << " and " << i << std::endl;
 	}
       }
     }
@@ -71,3 +61,49 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<float> fatjet_pt, RVec<floa
   RVec<int> matched_idx = {j0_idx, vlq21_idx, vlq22_idx};
   return matched_idx;
 }
+
+
+int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+  // PNWM_id key:                      |       PNWM_tags key
+  //  0 -> QCD         1 -> bWbW       |        0 -> QCD     23 -> Z   
+  //  2 -> tZtZ        3 -> tHtH       |        5 -> b       24 -> W
+  //  4 -> tZtH        5 -> tZbW       |        6 -> t       25 -> H
+  //  6 -> tHbW        7 -> tH         |
+  //  8 -> tZ          9 -> bW         |
+
+  int PNWM_ID = 0;
+  
+  if (lepton_source == 0 && PNWMtags.at(J0_idx) == 5) { //bW ??  
+    if (PNWMtags.at(VLQ21_idx) == 0 || PNWMtags.at(VLQ22_idx) == 0) PNWM_ID = 9; //medium purity, bW
+    
+    else if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //bW t?
+      if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 6; //bW tH
+      if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 5; //bW tZ
+    }
+    else if ((PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) && PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 1; //bW bW
+  }
+
+  else if (lepton_source == 1) { //t? ??
+    if (PNWMtags.at(J0_idx) == 23) { //tZ ??
+      if (PNWMtags.at(VLQ21_idx) == 0 || PNWMtags.at(VLQ22_idx) == 0) PNWM_ID = 8; //medium purity, tZ
+    
+      else if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tZ t?
+	if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 4; //tZ tH
+	if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 2; //tZ tZ
+      }
+      else if ((PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) && PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 5; //tZ bW
+    }
+    else if (PNWMtags.at(J0_idx) == 25) { //tH ??
+      if (PNWMtags.at(VLQ21_idx) == 0 || PNWMtags.at(VLQ22_idx) == 0) PNWM_ID = 7; //medium purity, tH
+    
+      else if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tH t?
+	if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 4; //tH tZ
+	if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 3; //tH tH
+      }
+    }
+  }
+  else {
+    std::cout << "encountered an event that didnt have a leptonic particle??" << std::endl;
+}
+
+  	
