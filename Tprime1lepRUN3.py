@@ -494,6 +494,7 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_PNWM_QCD", "reorder(FatJet_particleNetWithMass_QCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_PNWM_regressedMass", "reorder((FatJet_mass * FatJet_particleNet_massCorr)[goodcleanFatJets == true], gcFatJet_ptargsort)")
 
+# Unused GPT and GPTWM vars
   tagVars.Add("gcFatJet_GPTWM_T", "reorder(FatJet_globalParT3_withMassTopvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_GPTWM_W", "reorder(FatJet_globalParT3_withMassWvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_GPTWM_Z", "reorder(FatJet_globalParT3_withMassZvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
@@ -552,7 +553,7 @@ def analyze(jesvar):
   recoVars.Add("minMlb", "minMlbVec[0]")
   recoVars.Add("minMlb_idx", "minMlbVec[1]")
   recoVars.Add("minMlb_dR", "minMlbVec[2]")
-  recoVars.Add("lepton_source", "minMlb > 160 && minMlb_dR < 1 ? 0 : 1")
+  recoVars.Add("lepton_source", "minMlb > 160 && minMlb_dR > 1 ? 0 : 1")
   recoVars.Add("t_five", "tReco(lepton_source, gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, W_lv, minMlb, minMlb_idx)")
   recoVars.Add("t_dRWb", "t_five[4]")
   recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
