@@ -218,6 +218,16 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
     observables.push_back(Tbar->GetFourVector().E());//........ 17
     observables.push_back(b->GetFourVector().E());//........... 18
 
+    observables.push_back(-1); // dummy -1 for t mass ......... 19
+    observables.push_back(-1); // dummy -1 for t mass ......... 20
+    observables.push_back(-1); // dummy -1 for t mass ......... 21
+
+    observables.push_back(nu->GetInvisibleFourVector().E());//. 22
+    observables.push_back(nu->GetInvisibleFourVector().Pz());// 23
+
+    observables.push_back(b->GetMass());//..................... 24
+    observables.push_back(minMlb_lv.M());//.................... 25
+
     after_analysis();
 
     return observables;
