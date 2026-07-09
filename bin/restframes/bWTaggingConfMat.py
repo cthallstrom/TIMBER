@@ -4,12 +4,12 @@ from ROOT import TFile, TTree, TH1D, TH2D, TCanvas, gStyle, gPad, TLatex
 
 dir_str = "/uscms/home/hlarson/nobackup/run3VLQ/TIMBER/"
 #sample_files = ["RDF_TprimeTprime_Par-M-1300_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root","RDF_TprimeTprime_Par-M-1700_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root","RDF_TprimeTprime_Par-M-1900_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"]
-sample_files = ["RDF_TprimeTprime_Par-M-1300_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"]
+sample_files = ["RDF_TpTp_1600_first8.root"]
 files = [dir_str + x for x in sample_files]
 
 for k,file_str in enumerate(files):
     inFile = TFile.Open(file_str)
-    mass = ((k + 1) * 2) + 1
+    mass = 6
     fname = f"pDM_confMat_1p{mass}"
 
     truth = TH2D("jet_truth",";tagger ID;true ID",2,0,2,2,0,2)
@@ -40,7 +40,7 @@ for k,file_str in enumerate(files):
         tDecay = False
         for ijet in range(nJets):
             if t.gcJet_BTagM[ijet] == 1:
-                if t.minMlb < 160 and t.minMlbDR < 1:
+                if t.minMlb < 160 and t.minMlb_dR < 1:
                     tDecay = True
 
         if tDecay == True:
@@ -48,7 +48,8 @@ for k,file_str in enumerate(files):
         else:
             bWTag.Fill(0.5,i)
 
-#    truth.Print("all")
+    truth.Print("all")
+    bWTag.Print("all")
     bWTag.Divide(bWTag, truth, 1, 1, "B")
     histFile = TFile.Open(f"{fname}_M.root", "recreate")
     bWTag.Write()
@@ -59,7 +60,7 @@ for k,file_str in enumerate(files):
     
 ## Read histograms from file
 for k,f in enumerate(files):
-    mass = ((k + 1) * 2) + 1
+    mass = 6
     fname = f"pDM_confMat_1p{mass}"
     histFile = TFile.Open(f"{fname}_M.root")
 
