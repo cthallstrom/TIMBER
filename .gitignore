@@ -21,3 +21,4 @@ TIMBER/data/Pileup/old/
 *.pdf
 decayPlotter.py
 *NanoList.txt
+*RJR*.txt
