@@ -1,4 +1,4 @@
-import ROOT
+import ROOT, sys
 
 def reco_split_truth(file_path, tree_name, branch_a, branch_b):
     # Enable multi-threading for faster processing of large HEP datasets
@@ -10,10 +10,20 @@ def reco_split_truth(file_path, tree_name, branch_a, branch_b):
     # 1. Load the Tree into an RDataFrame
     df = ROOT.RDataFrame(tree_name, file_path)
     
+    if "idx" in branch_a:
+        clean_a = "tmp_" + branch_a.replace("[", "_").replace("]", "_")
+        clean_b = "tmp_" + branch_b.replace("[", "_").replace("]", "_")
+        df = df.Define(clean_a, branch_a)
+
+        hist_a = df.Filter("decayFinds[0] == 1").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), clean_a)
+        hist_b = df.Filter("decayFinds[0] == 2 || decayFinds[0] == 3 || decayFinds[0] == 4").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), clean_b)
+    
     # 3. Book Histograms automatically optimized for the data ranges
     # (Min/Max operations can be used, but ROOT determines a clean bin range automatically here)
-    hist_a = df.Filter("decayFinds[0] == 1").Histo1D((f"lepW_{branch_a}", f"reco_{branch_a};{branch_a};Events", 100, 0, 0), branch_a)
-    hist_b = df.Filter("decayFinds[0]==2 || decayFinds[0]==3 || decayFinds[0]==4").Histo1D((f"lepT_{branch_b}", f"{branch_a};Value;Events", 100, 0, 0), branch_b)
+    else:
+        hist_a = df.Filter("decayFinds[0] == 1").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), branch_a)
+        hist_b = df.Filter("decayFinds[0] == 2 || decayFinds[0] == 3 || decayFinds[0] == 4").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), branch_b)
+    
     
     # 4. Draw and Style the comparison using a TCanvas
     canvas = ROOT.TCanvas("canvas", "W vs. T comparison", 800, 600)
@@ -55,11 +65,21 @@ def Wtruth_split_reco(file_path, tree_name, branch_a, branch_b):
     
     # 1. Load the Tree into an RDataFrame
     df = ROOT.RDataFrame(tree_name, file_path)
+
+    if "idx" in branch_a:
+        clean_a = "tmp_" + branch_a.replace("[", "_").replace("]", "_")
+        clean_b = "tmp_" + branch_b.replace("[", "_").replace("]", "_")
+        df = df.Define(clean_a, branch_a)
+        df = df.Define(clean_b, branch_b)
+
+        hist_a = df.Filter("decayFinds[0] == 1").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), clean_a)
+        hist_b = df.Filter("decayFinds[0] == 1").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), clean_b)
     
     # 3. Book Histograms automatically optimized for the data ranges
     # (Min/Max operations can be used, but ROOT determines a clean bin range automatically here)
-    hist_a = df.Filter("lepton_source == 0").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), branch_a)
-    hist_b = df.Filter("lepton_source == 0").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), branch_b)
+    else:
+        hist_a = df.Filter("decayFinds[0] == 1").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), branch_a)
+        hist_b = df.Filter("decayFinds[0] == 1").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), branch_b)
     
     # 4. Draw and Style the comparison using a TCanvas
     canvas = ROOT.TCanvas("canvas", "W vs. T comparison", 800, 600)
@@ -102,11 +122,21 @@ def Ttruth_split_reco(file_path, tree_name, branch_a, branch_b):
     # 1. Load the Tree into an RDataFrame
     df = ROOT.RDataFrame(tree_name, file_path)
     
+    if "idx" in branch_a:
+        clean_a = "tmp_" + branch_a.replace("[", "_").replace("]", "_")
+        clean_b = "tmp_" + branch_b.replace("[", "_").replace("]", "_")
+        df = df.Define(clean_a, branch_a)
+        df = df.Define(clean_b, branch_b)
+
+        hist_a = df.Filter("decayFinds[0] == 2 || decayFinds[0] == 3 || decayFinds[0] == 4").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), clean_a)
+        hist_b = df.Filter("decayFinds[0] == 2 || decayFinds[0] == 3 || decayFinds[0] == 4").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), clean_b)
+    
     # 3. Book Histograms automatically optimized for the data ranges
     # (Min/Max operations can be used, but ROOT determines a clean bin range automatically here)
-    hist_a = df.Filter("lepton_source == 1").Histo1D((f"lepW_{branch_a}", f"isT_{branch_a};{branch_a};Events", 100, 0, 0), branch_a)
-    hist_b = df.Filter("lepton_source == 1").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), branch_b)
-    
+    else:
+        hist_a = df.Filter("decayFinds[0] == 2 || decayFinds[0] == 3 || decayFinds[0] == 4").Histo1D((f"lepW_{branch_a}", f"isW_{branch_a};{branch_a};Events", 100, 0, 0), branch_a)
+        hist_b = df.Filter("decayFinds[0] == 2 || decayFinds[0] == 3 || decayFinds[0] == 4").Histo1D((f"lepT_{branch_b}", f"{branch_b};Value;Events", 100, 0, 0), branch_b)
+
     # 4. Draw and Style the comparison using a TCanvas
     canvas = ROOT.TCanvas("canvas", "W vs. T comparison", 800, 600)
     ROOT.gStyle.SetOptStat(0) # Hide standard stat box for overlay clarity
@@ -130,8 +160,8 @@ def Ttruth_split_reco(file_path, tree_name, branch_a, branch_b):
     
     # Add a Legend
     legend = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
-    legend.AddEntry(hist_a.GetPtr(), f"lepW", "l")
-    legend.AddEntry(hist_b.GetPtr(), f"lepT", "l")
+    legend.AddEntry(hist_a.GetPtr(), f"recoW", "l")
+    legend.AddEntry(hist_b.GetPtr(), f"recoT", "l")
     legend.Draw()
     
     # Save the plot comparison as an image
@@ -143,7 +173,7 @@ def Ttruth_split_reco(file_path, tree_name, branch_a, branch_b):
 # 1: plots reconstructed as W and T, splitting by isW and isT
 # 2: plots isW, splitting by reco W and reco T
 # 3: plots isT, splitting by reco W and reco T
-mode = 1
+mode = int(sys.argv[1])
 
 if mode == 1:
     file = open("RJR_branches.txt", 'r')

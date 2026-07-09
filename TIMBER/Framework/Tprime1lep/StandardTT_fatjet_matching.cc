@@ -375,45 +375,43 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
       }else{PNWMtag.push_back(0);}
     }
 
-    std::vector<float> GPTscores = {gcFatJet_GPT_T[i], gcFatJet_GPT_W[i], gcFatJet_GPT_ZH[i], gcFatJet_GPT_QCD[i]};
-    max_addr = std::max_element(GPTscores.begin(), GPTscores.end());
-    max_index = std::distance(GPTscores.begin(), max_addr);
+    // std::vector<float> GPTscores = {gcFatJet_GPT_T[i], gcFatJet_GPT_W[i], gcFatJet_GPT_ZH[i], gcFatJet_GPT_QCD[i]};
+    // max_addr = std::max_element(GPTscores.begin(), GPTscores.end());
+    // max_index = std::distance(GPTscores.begin(), max_addr);
 
-    if(max_index == 0) GPTtag.push_back(6);
-    if(max_index == 1) GPTtag.push_back(24);
-    if(max_index == 2){
-      if(gcFatJet_GPT_regressedMass[i] < 105) GPTtag.push_back(23);
-      if(gcFatJet_GPT_regressedMass[i] > 105) GPTtag.push_back(25);
-    }
-    if(max_index == 3){
-      int subjetIdx1 = gcFatJet_subJetIdx1[i];
-      int subjetIdx2 = gcFatJet_subJetIdx2[i];
-      if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed)) 
-      {
-        GPTtag.push_back(5);
-      }else{GPTtag.push_back(0);}
-    }
-    //Still need to add abc
-    std::vector<float> GPTWMscores = {gcFatJet_GPTWM_ToQCD[i], gcFatJet_GPTWM_WoQCD[i], gcFatJet_GPTWM_ZoQCD[i]};
-    max_addr = std::max_element(GPTWMscores.begin(), GPTWMscores.end());
-    max_index = std::distance(GPTWMscores.begin(), max_addr);
+    // if(max_index == 0) GPTtag.push_back(6);
+    // if(max_index == 1) GPTtag.push_back(24);
+    // if(max_index == 2){
+    //   if(gcFatJet_GPT_regressedMass[i] < 105) GPTtag.push_back(23);
+    //   if(gcFatJet_GPT_regressedMass[i] > 105) GPTtag.push_back(25);
+    // }
+    // if(max_index == 3){
+    //   int subjetIdx1 = gcFatJet_subJetIdx1[i];
+    //   int subjetIdx2 = gcFatJet_subJetIdx2[i];
+    //   if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed)) 
+    //   {
+    //     GPTtag.push_back(5);
+    //   }else{GPTtag.push_back(0);}
+    // }
+    // //Still need to add abc
+    // std::vector<float> GPTWMscores = {gcFatJet_GPTWM_ToQCD[i], gcFatJet_GPTWM_WoQCD[i], gcFatJet_GPTWM_ZoQCD[i]};
+    // max_addr = std::max_element(GPTWMscores.begin(), GPTWMscores.end());
+    // max_index = std::distance(GPTWMscores.begin(), max_addr);
 
-    if(max_index == 0 && GPTWMscores[0] > 1) GPTWMtag.push_back(6);
-    if(max_index == 1 && GPTWMscores[1] > 1) GPTWMtag.push_back(24);
-    if(max_index == 2 && GPTWMscores[2] > 1){
-      if(gcFatJet_GPT_regressedMass[i] < 105) GPTWMtag.push_back(23);
-      if(gcFatJet_GPT_regressedMass[i] > 105) GPTWMtag.push_back(25);
-    }
-    else{
-      int subjetIdx1 = gcFatJet_subJetIdx1[i];
-      int subjetIdx2 = gcFatJet_subJetIdx2[i];
-      if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed)) 
-      {
-        GPTWMtag.push_back(5);
-      }else{GPTWMtag.push_back(0);}
-    }
-    //std::cout << "PNWM, GPT, Truth = " << PNWMtag[i] << ", " << GPTtag[i] << ", " << gcFatJet_truth[i] << std::endl;
-
+    // if(max_index == 0 && GPTWMscores[0] > 1) GPTWMtag.push_back(6);
+    // if(max_index == 1 && GPTWMscores[1] > 1) GPTWMtag.push_back(24);
+    // if(max_index == 2 && GPTWMscores[2] > 1){
+    //   if(gcFatJet_GPT_regressedMass[i] < 105) GPTWMtag.push_back(23);
+    //   if(gcFatJet_GPT_regressedMass[i] > 105) GPTWMtag.push_back(25);
+    // }
+    // else{
+    //   int subjetIdx1 = gcFatJet_subJetIdx1[i];
+    //   int subjetIdx2 = gcFatJet_subJetIdx2[i];
+    //   if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed)) 
+    //   {
+    //     GPTWMtag.push_back(5);
+    //   }else{GPTWMtag.push_back(0);}
+    // }
   }
   RVec<RVec<int>> taggerResults = {PNWMtag, GPTtag, GPTWMtag};
   return taggerResults;
