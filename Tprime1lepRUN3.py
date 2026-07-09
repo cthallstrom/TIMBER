@@ -672,6 +672,7 @@ def analyze(jesvar):
      if col.startswith("MET") or col.startswith("RawPuppiMET"): continue
      if col.startswith("RJR_"): continue
      if col.startswith("gcFatJet_tags"): continue
+     if col.startswith("Wnu"): continue
 
      if col == "Isolated_AK4":
        columns.append(col)
