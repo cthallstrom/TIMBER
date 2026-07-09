@@ -523,7 +523,9 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
   
   if isSig:
-    tagVars.Add("decayFinds", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
@@ -547,7 +549,10 @@ def analyze(jesvar):
   recoVars = VarGroup("recoVars")
   
   recoVars.Add("lepton_lv", "TLorentzVector v; v.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass); return v;")
-  recoVars.Add("W_lv", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
+  recoVars.Add("Wnu_lvs", "WReco(corrMET_pt, corrMET_phi, lepton_lv)")
+  recoVars.Add("W_lv", "Wnu_lvs[0]")
+  recoVars.Add("Nu_lv", "Wnu_lvs[1]")
+  recoVars.Add("Nu_pz", "Nu_lv.Pz()")
   recoVars.Add("minMlbVec", "minMlb_calc(gcJet_pt, gcJet_eta, gcJet_phi, gcJet_mass, lepton_lv)")
   recoVars.Add("dRWl", "W_lv.DeltaR(lepton_lv)")
   recoVars.Add("minMlb", "minMlbVec[0]")

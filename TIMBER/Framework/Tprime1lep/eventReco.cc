@@ -2,13 +2,13 @@
 using namespace std;
 using namespace ROOT::VecOps;
 
-TLorentzVector WReco(float corrMET_pt, float corrMET_phi, TLorentzVector lepton_lv) {
+auto WReco(float corrMET_pt, float corrMET_phi, TLorentzVector lepton_lv) {
 
     const double MW = 80.4;
 	double METpx = corrMET_pt * cos(corrMET_phi);
 	double METpy = corrMET_pt * sin(corrMET_phi);
 	double METpt = corrMET_pt;
-	TLorentzVector W_lv_1, W_lv_2, W_lv, Nulv_1, Nulv_2;
+	TLorentzVector W_lv_1, W_lv_2, W_lv, Nulv_1, Nulv_2, Nulv;
 	double nuPz_1;
 	double nuPz_2;
 
@@ -45,9 +45,18 @@ TLorentzVector WReco(float corrMET_pt, float corrMET_phi, TLorentzVector lepton_
     W_lv_1 = Nulv_1 + lepton_lv;
 	W_lv_2 = Nulv_2 + lepton_lv;
 	
-	if(fabs(W_lv_1.M() - MW) < fabs(W_lv_2.M() - MW)) {W_lv = W_lv_1;}
-	else {W_lv = W_lv_2;}
-	return W_lv;
+	if(fabs(W_lv_1.M() - MW) < fabs(W_lv_2.M() - MW)) {
+		W_lv = W_lv_1;
+		Nulv = Nulv_1;
+	}
+	else {
+		W_lv = W_lv_2;
+		Nulv = Nulv_2;
+	}
+	RVec<TLorentzVector> Wnu;
+	Wnu.push_back(W_lv);
+	Wnu.push_back(Nulv);
+	return Wnu;
 }
 
 ROOT::VecOps::RVec<float> tReco(int lepton_source, ROOT::VecOps::RVec<float>& jet_pt, ROOT::VecOps::RVec<float>& jet_eta, ROOT::VecOps::RVec<float>& jet_phi, ROOT::VecOps::RVec<float>& jet_mass, TLorentzVector W_lv, float minMleppJet, int MinMlj_idx){
