@@ -25,17 +25,19 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<float> fatjet_pt, RVec<floa
   int numOfLoops = 3;
   double diff = 1000;
   double diff_V = 1000;
- 
+  
   for (int i = 0; i < numOfLoops; i++) {
     fj.SetPtEtaPhiM(fatjet_pt[i],fatjet_eta[i],fatjet_phi[i],fatjet_mass[i]);
-    if(J0_E == fj.E()) {
+
+    
+    if(J0_E - fj.E() < 1e5) {
       j0_idx = i;
     }
 
     for (int k = 0; k < numOfLoops; k++) {
       fj_2.SetPtEtaPhiM(fatjet_pt[k],fatjet_eta[k],fatjet_phi[k],fatjet_mass[k]);
       double V_E = abs(VLQ2_E - fj.E() - fj_2.E());
-      if(VLQ2_E == V_E) {
+      if(V_E < 1e5) {
 	if (fj.M() > fj_2.M()) {
 	  vlq21_idx = i;
 	  vlq22_idx = k;
@@ -53,6 +55,21 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<float> fatjet_pt, RVec<floa
 
 
 int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+  std::cout << "inside of R_decayTypes" << std::endl;
+  std::cout << "Variables:" << std::endl;
+  std::cout << "lepton source = " << lepton_source << std::endl;
+  std::cout << "J0_idx = " << J0_idx << std::endl;
+  std::cout << "VLQ21_idx = " << VLQ21_idx << std::endl;
+  std::cout << "VLQ22_idx = " << VLQ22_idx << std::endl;
+  std::cout << "PNWMtags[J0_idx] = " << PNWMtags[J0_idx] << std::endl;
+  std::cout << "PNWMtags[VLQ21_idx] = " << PNWMtags[VLQ21_idx] << std::endl;
+  std::cout << "PNWMtags[VLQ22_idx] = " << PNWMtags[VLQ22_idx] << std::endl;
+
+  if (J0_idx == -1 || VLQ21_idx == -1 || VLQ22_idx == -1) {
+    std::cout << "one or more of the indexs is -1, returning 0" << std::endl;
+    return 0;
+  }
+  
   // PNWM_id key:                      |       PNWM_tags key
   //  0 -> QCD         1 -> bWbW       |        0 -> QCD     23 -> Z   
   //  2 -> tZtZ        3 -> tHtH       |        5 -> b       24 -> W
@@ -97,6 +114,8 @@ int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RV
   }
   else {
     std::cout << "encountered an event that didnt have a leptonic particle??" << std::endl;
+  }
+  std::cout << "end of R_decayTypes" << std::endl;
+  return PNWM_ID;
 }
-
   	
