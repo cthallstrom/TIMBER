@@ -1,3 +1,4 @@
+
 #include "include/RestFramesHandler.hh"
 
 #include "TLorentzVector.h"
@@ -160,7 +161,7 @@ void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
     
     // MinMJets.reset(new MinMassesCombJigsaw("MinCombJets", jigsaw_name));
     // JETS->AddJigsaw(*MinMJets);
-    // MinMJets->AddFrames(*l+*b,0);
+    // MinMJets->AddFrames(*l+*b+*nu,0);
     // MinMJets->AddFrame(*Tbar,1);
 
     // MinMassDiffCombJigsaw
@@ -182,9 +183,9 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
 
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
+    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
 
     LAB->AnalyzeEvent(); // analyze the event
 

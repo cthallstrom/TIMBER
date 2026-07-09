@@ -33,7 +33,7 @@ private:
   // Groups
   std::unique_ptr<CombinatoricGroup> JETS;
   
-  std::unique_ptr<CombinatoricGroup> SMTOP;
+  // std::unique_ptr<CombinatoricGroup> SMTOP;
   
   std::unique_ptr<InvisibleGroup> INV;
   
@@ -134,6 +134,14 @@ void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
     MinContraMt->AddVisibleFrame(*Tbar, 1);
     MinContraMt->AddInvisibleFrame(*nu, 0);
 
+    // MinMassesCombJigsaw, combinatoric jigsaws for everything else...
+    // jigsaw_name = "Minimize M(b #it{l} ) , M(Tbar)"; //M(J0 J1 )
+    
+    // MinMJets.reset(new MinMassesCombJigsaw("MinCombJets", jigsaw_name));
+    // JETS->AddJigsaw(*MinMJets);
+    // MinMJets->AddFrames(*t+*J0,0);
+    // MinMJets->AddFrame(*Tbar,1);
+    
     // MinMassDiffCombJigsaw
     jigsaw_name = "min ( M_{T}- M_{Tbar} )^{2}";
   
@@ -164,9 +172,9 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
+    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     
     // for (int i = 0; i < AK4s.size(); i++) {
     //   JETS_ID.push_back(SMTOP->AddLabFrameFourVector(AK4s[i]));
