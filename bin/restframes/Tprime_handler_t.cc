@@ -214,6 +214,8 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
 
     observables.push_back(b->GetMass());//...................... 24
     observables.push_back(minMlb_lv.M());//..................... 25
+
+    std::cout << "all observables pushed back!" << std::endl;
     
     after_analysis();
 
