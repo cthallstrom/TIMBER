@@ -1,3 +1,4 @@
+
 #include "include/RestFramesHandler.hh"
 
 #include "TLorentzVector.h"
@@ -160,7 +161,7 @@ void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
     
     // MinMJets.reset(new MinMassesCombJigsaw("MinCombJets", jigsaw_name));
     // JETS->AddJigsaw(*MinMJets);
-    // MinMJets->AddFrames(*l+*b,0);
+    // MinMJets->AddFrames(*l+*b+*nu,0);
     // MinMJets->AddFrame(*Tbar,1);
 
     // MinMassDiffCombJigsaw
@@ -182,9 +183,9 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
 
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
+    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
 
     LAB->AnalyzeEvent(); // analyze the event
 
@@ -217,6 +218,16 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
     // Returning what I think we need to identify the 3 jets compared to our list.
     observables.push_back(Tbar->GetFourVector().E());//........ 17
     observables.push_back(b->GetFourVector().E());//........... 18
+
+    observables.push_back(-1); // dummy -1 for t mass ......... 19
+    observables.push_back(-1); // dummy -1 for t mass ......... 20
+    observables.push_back(-1); // dummy -1 for t mass ......... 21
+
+    observables.push_back(nu->GetInvisibleFourVector().E());//. 22
+    observables.push_back(nu->GetInvisibleFourVector().Pz());// 23
+
+    observables.push_back(b->GetMass());//..................... 24
+    observables.push_back(-1);// dummy for minMlb mass ........ 25
 
     after_analysis();
 
