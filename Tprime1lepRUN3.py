@@ -214,11 +214,12 @@ def analyze(jesvar):
 
   jmeyrstr = {'2022':yrstr['2022'],'2022EE':yrstr['2022EE'],'2023':yrstr['2023'],'2023BPix':yrstr['2023BPix'],'2024':yrstr['2024'],'2025':yrstr['2024']} # yes, really use 24 for 25
   jecyr = {'2022':"Summer22_22Sep2023",'2022EE':"Summer22EE_22Sep2023",'2023':"Summer23Prompt23",'2023BPix':"Summer23BPixPrompt23",'2024':"Summer24Prompt24", '2025':"Summer24Prompt24"}
-  jeryr = {'2022':"Summer22_22Sep2023_JRV2",'2022EE':"Summer22EE_22Sep2023_JRV2",'2023':"Summer23Prompt23_RunCv1234_JRV2",'2023BPix':"Summer23BPixPrompt23_RunD_JRV2",'2024':"Summer24Prompt24_JRV1",'2025':"Summer24Prompt25_JRV1"}
+  jeryr = {'2022':"Summer22_22Sep2023_JRV2",'2022EE':"Summer22EE_22Sep2023_JRV2",'2023':"Summer23Prompt23_RunCv1234_JRV2",'2023BPix':"Summer23BPixPrompt23_RunD_JRV2",'2024':"Summer24Prompt24_JRV1",'2025':"Summer24Prompt24_JRV1"}
   jetvetoname = {'2022':"Summer22_23Sep2023_RunCD_V1",'2022EE':"Summer22EE_23Sep2023_RunEFG_V1",'2023':"Summer23Prompt23_RunC_V1",'2023BPix':"Summer23BPixPrompt23_RunD_V1",'2024':"Summer24Prompt24_RunBCDEFGHI_V1",'2025':"Summer24Prompt24_RunBCDEFGHI_V1"}      
   if not isMC: #is DATA
     jmeyrstr['2025'] = 'Run3-25Prompt-Winter25-NanoAODv15'
     jecyr['2025'] = "Winter25Prompt25"
+    jeryr['2025'] = "Summer24Prompt25_JRV1"
     jetvetoname['2025'] = "Winter25Prompt25_RunCDEFG_V1" 
 
   jecver = {'2022':"V4",'2022EE':"V4",'2023':"V4",'2023BPix':"V4",'2024':"V3",'2025':"V3"}   
@@ -231,9 +232,10 @@ def analyze(jesvar):
   btagname = {'2022':"particleNet_comb",'2022EE':"particleNet_comb",'2023':"deepJet_comb",'2023BPix':"deepJet_comb",'2024':"UParTAK4_comb",'2025':"UParTAK4_comb"}
   lightwps = {'2022':"particleNet_light", '2022EE':"particleNet_light",'2023':"particleNet_light",'2023BPix':"particleNet_light",'2024':"UParTAK4_light",'2025':"UParTAK4_light"}
 
-  btageffsdict = pnet_loose # this is wrong, but not for long
   if year == '2024' or year == '2025':
     btageffsdict = upart_med
+  else:
+    btageffsdict = pnet_loose # this is wrong, but not for long
   
   year_hack='2023'
   ROOT.gInterpreter.Declare("""
@@ -301,6 +303,14 @@ def analyze(jesvar):
     auto ak8corr = ak8corrset->compound().at(jecyr+"_"+jecver+"_DATA_L1L2L3Res_AK8PFPuppi");
     """)
   else:
+    print(f"{jecyr[year]}_{jecver[year]}_MC_L1L2L3Res_AK4PFPuppi")
+    print(f"{jecyr[year]}_{jecver[year]}_MC_L1FastJet_AK4PFPuppi")          
+    print(f"{jecyr[year]}_{jecver[year]}_MC_Total_AK4PFPuppi")        
+    print(f"{jeryr[year]}_MC_PtResolution_AK4PFPuppi")                
+    print(f"{jeryr[year]}_MC_ScaleFactor_AK4PFPuppi")                      
+    print(f"{jecyr[year]}_{jecver[year]}_MC_L1L2L3Res_AK8PFPuppi")     
+    print(f"{jecyr[year]}_{jecver[year]}_MC_Total_AK8PFPuppi")             
+
     ROOT.gInterpreter.Declare("""
     string jeryr = \""""+jeryr[year]+"""\";
     auto ak4corrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/"+jmeyrstr+"/"+jmetag+"/jet_jerc.json.gz"); 
@@ -403,7 +413,7 @@ def analyze(jesvar):
     jVars.Add("cleanFatJets", "cleanJetsMC(debug,year,jesvar,ak4corr,ak4corrL1,ak4corrUnc,ak4ptres,ak4jer,ak8corr,ak8corrUnc,FatJet_P4,FatJet_rawFactor,FatJet_rawFactor,FatJet_area,FatJet_area,FatJet_jetId,GenJetAK8_P4,FatJet_genJetAK8Idx,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)")
 
   else:
-    jVars.Add("cleanedJets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_jetId,Jet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # muon and EM factors unused in this call, args 16-17 are dummies
+    jVars.Add("cleanedJets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # muon and EM factors unused in this call, args 16-17 are dummies
     jVars.Add("cleanMets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_jetId,Jet_P4,Muon_P4,Muon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,RawPuppiMET_pt,RawPuppiMET_phi)") # lepton args unused in this call, args 16-17 are dummies
     jVars.Add("cleanFatJets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,FatJet_P4,FatJet_rawFactor,FatJet_rawFactor,FatJet_area,FatJet_area,FatJet_jetId,FatJet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # args 12, 14, 16, 17 are dummies
   
@@ -536,8 +546,8 @@ def analyze(jesvar):
   
   if isSig:
     tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
+    #tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    #tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
     # tagVars.Add("newDecayModes", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
@@ -637,8 +647,12 @@ def analyze(jesvar):
   rframeVars.Add("R_decays", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
   
   # # -------------------------------------
-
-  nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, RandVars, Random, lVars, lCuts])
+  
+  if isMC:
+    nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, RandVars, Random, lVars, lCuts])
+  else:
+    nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, lVars, lCuts])
+  
   # # We want the BW decays that go to l + nu
   # ## These will be meaningless for non-signal, but shouldn't crash...
   # #a.Define("decayMODE", "decayModeSelection(region, nGenPart,GenPart_pdgId,GenPart_mass,GenPart_pt,GenPart_phi,GenPart_eta,GenPart_genPartIdxMother,GenPart_status)")	
