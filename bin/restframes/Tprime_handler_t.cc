@@ -223,8 +223,6 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(b->GetMass());//...................... 24
     observables.push_back(minMlb_lv.M());//..................... 25
 
-    std::cout << "all observables pushed back!" << std::endl;
-    
     after_analysis();
 
     return observables;
@@ -251,30 +249,40 @@ RestFramesHandler * Tprime_RestFrames_Container_t::create_handler() {
 // return_doubles() returns all the masses, cos angles, and deltaPhi angles of the frames in the tree
 RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv) {
 
-    // This pointer should explicitly not be deleted!
-    Tprime_RestFrames_Handler_t *rfht = static_cast<Tprime_RestFrames_Handler_t *>(get_handler(thread_index));
-
-    TLorentzVector fatjet_1;
-    TLorentzVector fatjet_2;
-    TLorentzVector fatjet_3;
-
-    TLorentzVector lepton;
-
-    TVector3 met3;
+  // This pointer should explicitly not be deleted!
+  Tprime_RestFrames_Handler_t *rfht = static_cast<Tprime_RestFrames_Handler_t *>(get_handler(thread_index));
+  
+  TLorentzVector fatjet_1;
+  TLorentzVector fatjet_2;
+  TLorentzVector fatjet_3;
+  
+  TLorentzVector lepton;
+  
+  TVector3 met3;
+  
+  lepton.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass);
+  
+  double MET_px  = met_pt*std::cos(met_phi);
+  double MET_py  = met_pt*std::sin(met_phi);
+  met3  = TVector3(MET_px, MET_py, 0.0);
+  
+  RVec<double> observables;
+  double minDiffVLQ = 9999;
+  
+  for (int i = 0; i < 3; i++) {
+    fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
+    fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
+    fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
     
-    lepton.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass);
-
-    fatjet_1.SetPtEtaPhiM(fatjet_pt[0], fatjet_eta[0], fatjet_phi[0], fatjet_mass[0]);
-    fatjet_2.SetPtEtaPhiM(fatjet_pt[1], fatjet_eta[1], fatjet_phi[1], fatjet_mass[1]);
-    fatjet_3.SetPtEtaPhiM(fatjet_pt[2], fatjet_eta[2], fatjet_phi[2], fatjet_mass[2]);
-
-    double MET_px  = met_pt*std::cos(met_phi);
-    double MET_py  = met_pt*std::sin(met_phi);
-    met3  = TVector3(MET_px, MET_py, 0.0);
-   
-    RVec<double> observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
-
-    return observables;
+    RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
+    double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
+    if (diffVLQ < minDiffVLQ) {
+      observables = temp_observables;
+      minDiffVLQ = diffVLQ;
+    }
+  }
+  
+  return observables;
 }
 
 

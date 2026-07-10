@@ -1,6 +1,4 @@
-
 #include "include/RestFramesHandler.hh"
-
 #include "TLorentzVector.h"
 #include "TVector3.h"
 #include "include/RestFrames.hh"
@@ -267,15 +265,23 @@ RVec<double> Tprime_RestFrames_Container_W::return_W_doubles(int thread_index, f
   TVector3 met3;
   
   lepton.SetPtEtaPhiM(lepton_pt, lepton_eta, lepton_phi, lepton_mass);
-  
-  fatjet_1.SetPtEtaPhiM(fatjet_pt[0], fatjet_eta[0], fatjet_phi[0], fatjet_mass[0]);
-  fatjet_2.SetPtEtaPhiM(fatjet_pt[1], fatjet_eta[1], fatjet_phi[1], fatjet_mass[1]);
-  fatjet_3.SetPtEtaPhiM(fatjet_pt[2], fatjet_eta[2], fatjet_phi[2], fatjet_mass[2]);
-  
+    
   double MET_px  = met_pt*std::cos(met_phi);
   double MET_py  = met_pt*std::sin(met_phi);
   met3  = TVector3(MET_px, MET_py, 0.0);
-  RVec<double> observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3); 
+
+  RVec<double> observables;
+  double minDiffVLQ = 9999;
+  
+  for (int i = 0; i < 3; i++) {
+    fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
+    fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
+    fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
+    
+    RVec<double> temp_observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3); //jet_4);
+    double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
+    if (diffVLQ < minDiffVLQ) observables = temp_observables;
+  }
   
   return observables;
 }
