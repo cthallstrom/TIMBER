@@ -206,7 +206,7 @@ def analyze(jesvar):
 
   BTagM = {'2022':0.245,'2022EE':0.2605,'2023':0.1917,'2023BPix':0.1919, '2024':0.1272, '2025':0.1272} #PNet for 22-23BPix, UParT for 2024-2025 should seperate in the future
   yrstr = {'2022':"Run3-22CDSep23-Summer22-NanoAODv12",'2022EE':"Run3-22EFGSep23-Summer22EE-NanoAODv12",'2023':"Run3-23CSep23-Summer23-NanoAODv12",'2023BPix':"Run3-23DSep23-Summer23BPix-NanoAODv12",'2024':"Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15",'2025':"Run3-25Prompt-Summer24-NanoAODv15"}
-  jmetags = {'2022':'2026-06-05','2022EE':'2026-06-05','2023':'2026-06-05','2023BPix':'2026-06-05','2024':'2026-06-05', '2025':'2026-06-05'} 
+  jmetags = {'2022':'2026-06-05','2022EE':'2026-06-05','2023':'2026-06-05','2023BPix':'2026-06-05','2024':'2026-06-05','2025':'2026-06-05'} 
   btvtags = {'2022':'2025-08-20','2022EE':'2025-08-20','2023':'2025-08-20','2023BPix':'2025-08-20','2024':'2026-03-10','2025':'2026-05-27'}
   egmtags = {'2022':'2025-12-15','2022EE':'2025-12-15','2023':'2025-12-15','2023BPix':'2025-12-15','2024':'2025-12-15','2025':'2026-05-06'}
   muotags = {'2022':'2026-04-28','2022EE':'2026-04-28','2023':'2026-04-28','2023BPix':'2026-04-28','2024':'2026-04-28','2025':'2026-04-28'}
@@ -298,7 +298,6 @@ def analyze(jesvar):
     auto ak8corr = ak8corrset->compound().at(jecyr+"_"+jecver+"_DATA_L1L2L3Res_AK8PFPuppi");
     """)
   else:
-    print(jeryr[year]+"_JRV1_MC_PtResolution_AK4PFPuppi")
     ROOT.gInterpreter.Declare("""
     string jeryr = \""""+jeryr[year]+"""\";
     auto ak4corrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/"+jmeyrstr+"/"+jmetag+"/jet_jerc.json.gz"); 
@@ -392,9 +391,9 @@ def analyze(jesvar):
     jVars.Add("cleanFatJets", "cleanJetsMC(debug,year,jesvar,ak4corr,ak4corrL1,ak4corrUnc,ak4ptres,ak4jer,ak8corr,ak8corrUnc,FatJet_P4,FatJet_rawFactor,FatJet_rawFactor,FatJet_area,FatJet_area,FatJet_jetId,GenJetAK8_P4,FatJet_genJetAK8Idx,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)")
 
   else:
-    jVars.Add("cleanedJets", "cleanJetsData(debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_jetId,Jet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # muon and EM factors unused in this call, args 16-17 are dummies
-    jVars.Add("cleanMets", "cleanJetsData(debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_jetId,Jet_P4,Muon_P4,Muon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,RawPuppiMET_pt,RawPuppiMET_phi)") # lepton args unused in this call, args 16-17 are dummies
-    jVars.Add("cleanFatJets", "cleanJetsData(debug,year,ak4corr,ak4corrL1,ak8corr,FatJet_P4,FatJet_rawFactor,FatJet_rawFactor,FatJet_area,FatJet_area,FatJet_jetId,FatJet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # args 12, 14, 16, 17 are dummies
+    jVars.Add("cleanedJets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_jetId,Jet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # muon and EM factors unused in this call, args 16-17 are dummies
+    jVars.Add("cleanMets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,Jet_P4,Jet_rawFactor,Jet_muonSubtrFactor,Jet_area,Jet_EmEF,Jet_jetId,Jet_P4,Muon_P4,Muon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,RawPuppiMET_pt,RawPuppiMET_phi)") # lepton args unused in this call, args 16-17 are dummies
+    jVars.Add("cleanFatJets", "cleanJetsData(run,debug,year,ak4corr,ak4corrL1,ak8corr,FatJet_P4,FatJet_rawFactor,FatJet_rawFactor,FatJet_area,FatJet_area,FatJet_jetId,FatJet_P4,SMuon_P4,SMuon_jetIdx,SElectron_P4,SElectron_jetIdx,Rho_fixedGridRhoFastjetAll,DummyZero,DummyZero)") # args 12, 14, 16, 17 are dummies
   
   jVars.Add("cleanJet_pt", "cleanedJets[0]")
   jVars.Add("cleanJet_eta", "cleanedJets[1]")
@@ -517,10 +516,11 @@ def analyze(jesvar):
     tagVars.Add("comp_daughters", "get_tprime_daughters(comp_primes, GenPart_pdgId, GenPart_genPartIdxMother)")
     tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
   
-  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, gcFatJet_truth, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
+  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
   tagVars.Add("gcFatJet_PNWMtags", "gcFatJet_tags[0]")
   tagVars.Add("gcFatJet_GPTtags", "gcFatJet_tags[1]")
   tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
+
   
   if isSig:
     tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
@@ -703,10 +703,8 @@ def analyze(jesvar):
   a.Close()
 
 if not isMC:
-  print("file is not MC")
   analyze("Nominal")
 else:
-  print("file is MC")
   analyze("Nominal")
   #TODO fix why this not work?  shifts = ["Nominal","JECup","JECdn","JERup","JERdn"]
   #for shift in shifts:

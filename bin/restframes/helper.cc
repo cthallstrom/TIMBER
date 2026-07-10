@@ -126,7 +126,7 @@ int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RV
     }
   }
   else {
-    std::cout << "encountered an event that didnt have a leptonic particle??" << std::endl;
+    // std::cout << "encountered an event that didnt have a leptonic particle??" << std::endl;
   }
   // std::cout << "end of R_decayTypes" << std::endl;
   return PNWM_ID;

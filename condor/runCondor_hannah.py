@@ -10,8 +10,8 @@ exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read()) # this is a python2
 start_time = time.time()
 
 # --- Sample Dictionary ---
-sample_dic = samples_mc_test
-#sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
+#sample_dic = samples_mc_test
+sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
 
 # --- Size of Condor Job ---
 filesPerJob = 999
@@ -26,10 +26,10 @@ if len(sys.argv) >= 4:
     prefix = sys.argv[3] # 'singleTb'
     textlist = prefix + "NanoList.txt"
     
-relbase = '/uscms/home/cai/nobackup/run3VLQ/'
+relbase = '/uscms/home/hlarson/nobackup/run3VLQ/'
 outDir='/store/user/lpchtop/TTBB_Jun2026_Run3/'
-condorDir='/uscms/home/cai/nobackup/run3VLQ/condor_Jun2026_Run3/' # recommend this be outside git area!
-tarfile = '/uscms/home/cai/nobackup/rdfjobs.tar' 
+condorDir='/uscms/home/hlarson/nobackup/run3VLQ/condor_Jun2026_Run3/' # recommend this be outside git area!
+tarfile = '/uscms/home/hlarson/nobackup/rdfjobs.tar' 
 
 runDir=os.getcwd()
 cTime=datetime.datetime.now()
