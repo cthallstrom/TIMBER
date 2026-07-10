@@ -2,7 +2,7 @@ from TIMBER.Analyzer import *
 from TIMBER.Tools.Common import *
 
 import ROOT
-from ROOT import TFile
+from ROOT import TFile, TRandom3
 import sys, os
 import gc
 from rates import to_cpp_vec2d, pnet_loose, upart_med
@@ -229,7 +229,7 @@ def analyze(jesvar):
   METyr = {'2022':"2022",'2022EE':"2022EE",'2023':"2023",'2023BPix':"2023BPix",'2024':"2024",'2025':"2025"}                            
   METsimpleyr = {'2022':"2022",'2022EE':"2022",'2023':"2023",'2023BPix':"2023",'2024':"2024",'2025':"2025"} 
   btagname = {'2022':"particleNet_comb",'2022EE':"particleNet_comb",'2023':"deepJet_comb",'2023BPix':"deepJet_comb",'2024':"UParTAK4_comb",'2025':"UParTAK4_comb"}
-  lightwps = {'2022':"particleNet_light", '2022EE':"particleNet_light",'2023':"particleNet_light",'2023BPix':"particleNet_light",'2024':"UParTAK4_light"} #Needs 2025
+  lightwps = {'2022':"particleNet_light", '2022EE':"particleNet_light",'2023':"particleNet_light",'2023BPix':"particleNet_light",'2024':"UParTAK4_light",'2025':"UParTAK4_light"}
 
   btageffsdict = pnet_loose # this is wrong, but not for long
   if year == '2024' or year == '2025':
@@ -268,7 +268,10 @@ def analyze(jesvar):
   auto electroncorrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/EGM/"+yrstr+"/"+egmtag+"/electron.json.gz");
   auto muoncorrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/MUO/"+yrstr+"/"+muotag+"/muon_Z.json.gz");
   auto jetvetocorrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/"+jmeyrstr+"/"+jmetag+"/jetvetomaps.json.gz");
-  auto jetidcorrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/"+jmeyrstr+"/"+jmetag+"/jetid.json.gz");
+  auto path = (jmeyrstr == "Run3-25Prompt-Winter25-NanoAODv15") 
+            ? "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/Run3-24CDEReprocessingFGHIPrompt-Summer24-NanoAODv15/2026-06-05/jetid.json.gz"
+            : "/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/" + jmeyrstr + "/" + jmetag + "/jetid.json.gz";
+  auto jetidcorrset = correction::CorrectionSet::from_file(path);
 
   auto pileupcorr = pileupcorrset->at(puname);
   auto jetidAK4Tcorr = jetidcorrset->at("AK4PUPPI_Tight");
@@ -328,6 +331,15 @@ def analyze(jesvar):
   else:
     gjsonVars.Add("PileupWeights", "pufunc(pileupcorr, Pileup_nTrueInt)")
     
+  #---------------------- Random MC splitting ----------------------
+  if isMC:
+    RandVars = VarGroup('Random number gen')
+    RandVars.Add("seed","int(Jet_phi[0]*100000)")
+    RandVars.Add("uniform","TRandom3 rand(seed); return rand.Uniform(0.0,290.0)")
+    RandVars.Add('randyear','uniform < 7.99 ? string("2022") : (uniform < 34.67 ? string("2022EE") : (uniform < 52.63 ? string("2023") : (uniform < 62.31 ? string("2023BPix") : (uniform < 172.13 ? string("2024") : string("2025")))))')
+    Random = CutGroup('Dataset splitting')
+    Random.Add("Random split","randyear == year")
+
   # ------------------ LEPTON Definitions ------------------
   lVars = VarGroup('LeptonVars')
   
@@ -626,7 +638,7 @@ def analyze(jesvar):
   
   # # -------------------------------------
 
-  nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, lVars, lCuts])
+  nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, RandVars, Random, lVars, lCuts])
   # # We want the BW decays that go to l + nu
   # ## These will be meaningless for non-signal, but shouldn't crash...
   # #a.Define("decayMODE", "decayModeSelection(region, nGenPart,GenPart_pdgId,GenPart_mass,GenPart_pt,GenPart_phi,GenPart_eta,GenPart_genPartIdxMother,GenPart_status)")	

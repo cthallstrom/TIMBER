@@ -127,9 +127,11 @@ def analyze(jesvar):
   promptNPLabel.Add("elPrompt", 'Electron_genPartFlav == 1 || Electron_genPartFlav == 22 || Electron_genPartFlav == 15')
   promptNPLabel.Add("muPrompt", 'Muon_genPartFlav == 1 || Muon_genPartFlav == 15')
   promptNPLabel.Add("tauPrompt", 'Tau_genPartFlav == 5')
+  # 5 = from a b quark, 4 = from a c quark, 3 = from a light quark "or unknown", 0 = "unmatched"
+  # Useful to make histograms of fake rate using only 4s & 5s, and then only 0s & 3s, as well as all together.
   promptNPLabel.Add("elFake", 'Electron_genPartFlav == 3 || Electron_genPartFlav == 4 || Electron_genPartFlav == 5 || Electron_genPartFlav == 0')
   promptNPLabel.Add("muFake", 'Muon_genPartFlav == 3 || Muon_genPartFlav == 4 || Muon_genPartFlav == 0 || Muon_genPartFlav == 5')
-  promptNPLabel.Add("tauFake", 'Tau_genPartFlav == 0')
+  promptNPLabel.Add("tauFake", 'Tau_genPartFlav == 0') # not the same info here
 
   histItems = VarGroup("histItems")
   histItems.Add("elDen", "elLoose && elPrompt")
