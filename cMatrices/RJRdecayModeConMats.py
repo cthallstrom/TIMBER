@@ -29,17 +29,17 @@ if readFile:
 
             
             # Fill truth info into all x-axis values
-            if t.decayFinds[ijet] == 1:   #deciding on the truth, we can just look at the truth from our truth vector
+            if t.decayModes[ijet] == 1:   #deciding on the truth, we can just look at the truth from our truth vector
                 i = 0.5      
-            elif t.decayFinds[ijet] == 2:
+            elif t.decayModes[ijet] == 2:
                 i = 1.5
-            elif t.decayFinds[ijet] == 3:
+            elif t.decayModes[ijet] == 3:
                 i = 2.5
-            elif t.decayFinds[ijet] == 4:
+            elif t.decayModes[ijet] == 4:
                 i = 3.5
-            elif t.decayFinds[ijet] == 5:
+            elif t.decayModes[ijet] == 5:
                 i = 4.5
-            elif t.decayFinds[ijet] == 6:
+            elif t.decayModes[ijet] == 6:
                 i = 5.5
 
             for imode in range(0,10):  #fill the denoms into the correct ROW
