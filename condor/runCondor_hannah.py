@@ -3,14 +3,14 @@
 # The second argument is True or False depending on whether you want to submit a condor job with the sample specified in the thrid argument
 # The third argument is the prefix of the sample you want to use when you submit a condor job
 
-import os,sys,shutil,datetime,time, subprocess
+import os,sys,shutil,datetime,time,subprocess
 from samples import *
 
 exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read()) # this is a python2 command, so ignore the error and run with python2
 start_time = time.time()
 
 # --- Sample Dictionary ---
-sample_dic = samples_mc_test
+sample_dic = samples_mc_standard
 #sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
 
 # --- Size of Condor Job ---
@@ -124,6 +124,11 @@ if runanalyzer:
         
         os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir+'/')
         os.system('mkdir -p '+condorDir+'/'+prefix)
+
+        if sample_dic == samples_mc_standard:
+            os.system('mkdir -p '+condorDir+'/2025_SIG_'+prefix)
+        else:
+            os.system('mkdir -p '+condorDir+'/'+prefix)
         
         # Redefining fileName so it is accessed from the directory above for analyzer_RDF.h
         fileName = "condor/"+textlist
@@ -158,9 +163,34 @@ Queue 1"""%dict)
             os.chdir('%s'%(runDir))
             print ( str(count) + " jobs submitted!!!")
             count += 1
-        
-        #Formatting line 101
-                
+
+            if sample_dic == samples_mc_standard:    
+                jdfName=condorDir+'2025_SIG_'+prefix+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
+                print ("jdfname: ",jdfName)
+                jdf=open(jdfName,'w')
+                jdf.write(
+                """use_x509userproxy = true
+universe = vanilla
+Executable = %(RUNDIR)s/condorTTBB.sh
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = %(TARBALL)s
+Output = 2025%(PREFIX)s_%(TESTNUM1)s.out
+Error = 2025%(PREFIX)s_%(TESTNUM1)s.err
+Log = 2025%(PREFIX)s_%(TESTNUM1)s.log
+Notification = Never
+Arguments = %(FILENAME)s %(OUTPUTDIR)s %(TESTNUM1)s %(TESTNUM2)s 2025 
+
+Queue 1"""%dict)
+                jdf.close()
+                os.chdir('%s/'%(condorDir+'2025_SIG_'+prefix))
+                os.system('condor_submit %(PREFIX)s_%(TESTNUM1)s.job'%dict)
+                os.system('sleep 0.5')                                
+                os.chdir('%s'%(runDir))
+                print ( str(count) + " jobs submitted!!!")
+                count += 1
+
+                            
     #for k,v in sample_dic.items():
     #    os.system('mv ' + prefix + ' Output/')
 
