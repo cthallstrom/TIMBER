@@ -6,8 +6,9 @@ inFile = TFile.Open(file_str)
 
 t = inFile.Get("Events_Nominal")
 
+final_mass = np.zeros((t.GetEntries(), 10), dtype = float)
 final_pt = np.zeros((t.GetEntries(), 10), dtype = float)
-final_pt = np.zeros((t.GetEntries(), 10), dtype = float)
+final_eta = np.zeros((t.GetEntries(), 10), dtype = float)
 
 for event in range(t.GetEntries()):
     t.GetEntry(event)
@@ -18,6 +19,8 @@ for event in range(t.GetEntries()):
     padded_sin_phi = np.full(10, 0)
     padded_cos_phi = np.full(10, 0)
     padded_btag = np.full(10, 0)
+    padded_leptag = np.full(10,0)
+
 
     mass = t.gcFatJet_mass
     pt = t.gcFatJet_pt

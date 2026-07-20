@@ -468,8 +468,8 @@ def analyze(jesvar):
   jetVars.Add("gcJet_pt","reorder(gcJet_pt_unsort,gcJet_ptargsort)")
   jetVars.Add("gcJet_eta", "reorder(cleanJet_eta[goodcleanJets == true],gcJet_ptargsort)")
   jetVars.Add("gcJet_phi", "reorder(cleanJet_phi[goodcleanJets == true],gcJet_ptargsort)")
-  # jetVars.Add("gcJet_sin_phi", "std::sin(gcJet_phi)")
-  # jetVars.Add("gcJet_cos_phi", "std::cos(gcJet_phi)")
+  jetVars.Add("gcJet_sin_phi", "sin(gcJet_phi)")
+  jetVars.Add("gcJet_cos_phi", "cos(gcJet_phi)")
   jetVars.Add("gcJet_mass", "reorder(cleanJet_mass[goodcleanJets == true],gcJet_ptargsort)")
   jetVars.Add("gcJet_vetomap", "jetvetofunc(jetvetocorr, gcJet_eta, gcJet_phi)")
   if year != '2024' and year != '2025':
@@ -566,9 +566,9 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_nB","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 0) count++;} return count;")
 
   if isSig:
-    #tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
+    # tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    # tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    # tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
     tagVars.Add("newDecayModes", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
