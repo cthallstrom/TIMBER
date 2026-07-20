@@ -35,6 +35,31 @@ TpTp_M2000_2024 = sample("TpTp_M2000_2024", 1.0, "2024", "TpTp_M2000_2024NanoLis
 TpTp_M2100_2024 = sample("TpTp_M2100_2024", 1.0, "2024", "TpTp_M2100_2024NanoList.txt", "/TprimeTprime_Par-M-2100_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
 TpTp_M2200_2024 = sample("TpTp_M2200_2024", 1.0, "2024", "TpTp_M2200_2024NanoList.txt", "/TprimeTprime_Par-M-2200_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
 
+#####INCORRECT 2025 SIGNAL BELOW -> ACTUALLY 2024 SIG BEIGN USED FOR 2025
+BpBp_M1200_2025 = sample("BpBp_M1200_2024", 1.0, "2025", "BpBp_M1200_2024NanoList.txt", "/BprimeBprime_Par-M-1200_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M1400_2025 = sample("BpBp_M1400_2024", 1.0, "2025", "BpBp_M1400_2024NanoList.txt", "/BprimeBprime_Par-M-1400_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M1500_2025 = sample("BpBp_M1500_2024", 1.0, "2025", "BpBp_M1500_2024NanoList.txt", "/BprimeBprime_Par-M-1500_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M1600_2025 = sample("BpBp_M1600_2024", 1.0, "2025", "BpBp_M1600_2024NanoList.txt", "/BprimeBprime_Par-M-1600_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M1700_2025 = sample("BpBp_M1700_2024", 1.0, "2025", "BpBp_M1700_2024NanoList.txt", "/BprimeBprime_Par-M-1700_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M1800_2025 = sample("BpBp_M1800_2024", 1.0, "2025", "BpBp_M1800_2024NanoList.txt", "/BprimeBprime_Par-M-1800_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M1900_2025 = sample("BpBp_M1900_2024", 1.0, "2025", "BpBp_M1900_2024NanoList.txt", "/BprimeBprime_Par-M-1900_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M2000_2025 = sample("BpBp_M2000_2024", 1.0, "2025", "BpBp_M2000_2024NanoList.txt", "/BprimeBprime_Par-M-2000_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M2100_2025 = sample("BpBp_M2100_2024", 1.0, "2025", "BpBp_M2100_2024NanoList.txt", "/BprimeBprime_Par-M-2100_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+BpBp_M2200_2025 = sample("BpBp_M2200_2024", 1.0, "2025", "BpBp_M2200_2024NanoList.txt", "/BprimeBprime_Par-M-2200_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1200_2025 = sample("TpTp_M1200_2024", 1.0, "2025", "TpTp_M1200_2024NanoList.txt", "/TprimeTprime_Par-M-1200_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1300_2025 = sample("TpTp_M1300_2024", 1.0, "2025", "TpTp_M1300_2024NanoList.txt", "/TprimeTprime_Par-M-1300_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1400_2025 = sample("TpTp_M1400_2024", 1.0, "2025", "TpTp_M1400_2024NanoList.txt", "/TprimeTprime_Par-M-1400_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1600_2025 = sample("TpTp_M1600_2024", 1.0, "2025", "TpTp_M1600_2024NanoList.txt", "/TprimeTprime_Par-M-1600_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1700_2025 = sample("TpTp_M1700_2024", 1.0, "2025", "TpTp_M1700_2024NanoList.txt", "/TprimeTprime_Par-M-1700_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1800_2025 = sample("TpTp_M1800_2024", 1.0, "2025", "TpTp_M1800_2024NanoList.txt", "/TprimeTprime_Par-M-1800_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M1900_2025 = sample("TpTp_M1900_2024", 1.0, "2025", "TpTp_M1900_2024NanoList.txt", "/TprimeTprime_Par-M-1900_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M2000_2025 = sample("TpTp_M2000_2024", 1.0, "2025", "TpTp_M2000_2024NanoList.txt", "/TprimeTprime_Par-M-2000_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M2100_2025 = sample("TpTp_M2100_2024", 1.0, "2025", "TpTp_M2100_2024NanoList.txt", "/TprimeTprime_Par-M-2100_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+TpTp_M2200_2025 = sample("TpTp_M2200_2024", 1.0, "2025", "TpTp_M2200_2024NanoList.txt", "/TprimeTprime_Par-M-2200_TuneCP5_13p6TeV_amcatnlo-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
+
+######## END OF INCORRECT 2025 SAMPLES
+
+
 Bprime_M1000_2022 = sample("Bprime_M1000_2022", 1.0, "2022", "Bprime_M1000_2022NanoList.txt", "/BprimeBprimeto2B4Tau_MB-1000_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer22NanoAODv12-130X_mcRun3_2022_realistic_v5-v2/NANOAODSIM")
 Bprime_M1000_2022EE = sample("Bprime_M1000_2022EE", 1.0, "2022EE", "Bprime_M1000_2022EENanoList.txt", "/BprimeBprimeto2B4Tau_MB-1000_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer22EENanoAODv12-130X_mcRun3_2022_realistic_postEE_v6-v2/NANOAODSIM")
 Bprime_M1000_2023 = sample("Bprime_M1000_2023", 1.0, "2023", "Bprime_M1000_2023NanoList.txt", "/BprimeBprimeto2B4Tau_MB-1000_MXi-2000_TuneCP5_13p6TeV-madgraph-pythia8/Run3Summer23NanoAODv12-130X_mcRun3_2023_realistic_v15-v2/NANOAODSIM")
@@ -1087,124 +1112,189 @@ samples_mc = {
 }
 
 samples_mc_standard = {
-    "BpBp_M1200_2024": BpBp_M1200_2024 ,
-    "BpBp_M1400_2024": BpBp_M1400_2024 ,
-    "BpBp_M1500_2024": BpBp_M1500_2024 ,
-    "BpBp_M1600_2024": BpBp_M1600_2024 ,
-    "BpBp_M1700_2024": BpBp_M1700_2024 ,
-    "BpBp_M1800_2024": BpBp_M1800_2024 ,
-    "BpBp_M1900_2024": BpBp_M1900_2024 ,
-    "BpBp_M2000_2024": BpBp_M2000_2024 ,
-    "BpBp_M2100_2024": BpBp_M2100_2024 ,
-    "BpBp_M2200_2024": BpBp_M2200_2024 ,
-    "TpTp_M1200_2024": TpTp_M1200_2024 ,
-    "TpTp_M1300_2024": TpTp_M1300_2024 ,
-    "TpTp_M1400_2024": TpTp_M1400_2024 ,
-    "TpTp_M1600_2024": TpTp_M1600_2024 ,
-    "TpTp_M1700_2024": TpTp_M1700_2024 ,
-    "TpTp_M1800_2024": TpTp_M1800_2024 ,
-    "TpTp_M1900_2024": TpTp_M1900_2024 ,
-    "TpTp_M2000_2024": TpTp_M2000_2024 ,
-    "TpTp_M2100_2024": TpTp_M2100_2024 ,
-    "TpTp_M2200_2024": TpTp_M2200_2024 ,
+    # "BpBp_M1200_2024": BpBp_M1200_2024 ,
+    # "BpBp_M1400_2024": BpBp_M1400_2024 ,
+    # "BpBp_M1500_2024": BpBp_M1500_2024 ,
+    # "BpBp_M1600_2024": BpBp_M1600_2024 ,
+    # "BpBp_M1700_2024": BpBp_M1700_2024 ,
+    # "BpBp_M1800_2024": BpBp_M1800_2024 ,
+    # "BpBp_M1900_2024": BpBp_M1900_2024 ,
+    # "BpBp_M2000_2024": BpBp_M2000_2024 ,
+    # "BpBp_M2100_2024": BpBp_M2100_2024 ,
+    # "BpBp_M2200_2024": BpBp_M2200_2024 ,
+    # "TpTp_M1200_2024": TpTp_M1200_2024 ,
+    # "TpTp_M1300_2024": TpTp_M1300_2024 ,
+    # "TpTp_M1400_2024": TpTp_M1400_2024 ,
+    # "TpTp_M1600_2024": TpTp_M1600_2024 ,
+    # "TpTp_M1700_2024": TpTp_M1700_2024 ,
+    # "TpTp_M1800_2024": TpTp_M1800_2024 ,
+    # "TpTp_M1900_2024": TpTp_M1900_2024 ,
+    # "TpTp_M2000_2024": TpTp_M2000_2024 ,
+    # "TpTp_M2100_2024": TpTp_M2100_2024 ,
+    # "TpTp_M2200_2024": TpTp_M2200_2024 ,
 
     #tt+X
-    "TTHnonB2022"      : TTHnonB2022, 
-    "TTHnonB2022EE"    : TTHnonB2022EE,
-    "TTHnonB2023"      : TTHnonB2023,
-    "TTHnonB2023BPix"  : TTHnonB2023BPix,
-    "TTWl2022"         : TTWl2022,
-    "TTWl2022EE"       : TTWl2022EE,
-    "TTWl2023"         : TTWl2023,
-    "TTWl2023BPix"     : TTWl2023BPix,
-    "TTZM42022"        : TTZM42022,
-    "TTZM42022EE"      : TTZM42022EE,
-    "TTZM42023"        : TTZM42023,
-    "TTZM42023BPix"    : TTZM42023BPix,
-    "TTZM502022"       : TTZM502022,
-    "TTZM502022EE"     : TTZM502022EE,
-    "TTZM502023"       : TTZM502023,
-    "TTZM502023BPix"   : TTZM502023BPix,
-    "TTZM502022ext"    : TTZM502022ext,
-    "TTZM502022EEext"  : TTZM502022EEext,
-    "TTZM502023ext"    : TTZM502023ext,
-    "TTZM502023BPixext": TTZM502023BPixext,
-
+    "TTHnonB2024" : TTHnonB2024,
+    "TTWl2024" : TTWl2024,
+    "TTZM42024" : TTZM42024,
+    "TTZM502024" : TTZM502024, 
+    "TTZM502024" : TTZM502024,
+    
     #tz + qb
-    "TZQB2022"      : TZQB2022,
-    "TZQB2022EE"    : TZQB2022EE,
-    "TZQB2023"      : TZQB2023,
-    "TZQB2023BPix"  : TZQB2023BPix,
-    "TZQB2024"      : TZQB2024 
-}           
+    "TZQB2024" : TZQB2024,
 
-samples_pfmc = {
-    "TTToSemiLeptonic2022":     TTToSemiLeptonic2022,
-    "TTToSemiLeptonic2022ext":  TTToSemiLeptonic2022ext,
-    "TTToSemiLeptonic2022EE":   TTToSemiLeptonic2022EE,
-    "TTToSemiLeptonic2022EEext":TTToSemiLeptonic2022EEext,
-    "TTToSemiLeptonic2023":     TTToSemiLeptonic2023,
-    "TTToSemiLeptonic2023BPix": TTToSemiLeptonic2023BPix,
-    "DYPT402022":     DYPT402022,
-    "DYPT402022EE":   DYPT402022EE,
-    "DYPT402023":     DYPT402023,
-    "DYPT402023BPix": DYPT402023BPix,
-    "DYPT1002022":    DYPT1002022,
-    "DYPT1002022EE":  DYPT1002022EE,
-    "DYPT1002023":    DYPT1002023,
-    "DYPT1002023BPix":DYPT1002023BPix,
-    "DYPT2002022":    DYPT2002022,
-    "DYPT2002022EE":  DYPT2002022EE,
-    "DYPT2002023":    DYPT2002023,
-    "DYPT2002023BPix":DYPT2002023BPix,
-    "DYPT4002022":    DYPT4002022,
-    "DYPT4002022EE":  DYPT4002022EE,
-    "DYPT4002023":    DYPT4002023,
-    "DYPT4002023BPix":DYPT4002023BPix,
-    "DYPT6002022":    DYPT6002022,
-    "DYPT6002022EE":  DYPT6002022EE,
-    "DYPT6002023":    DYPT6002023,
-    "DYPT6002023BPix":DYPT6002023BPix,
-    # Add 2024 MC in here for the same samples
-}    
+    # top quark
+    "TT2L2024":TT2L2024,
+    "TT0L2024":TT0L2024,
+    "TT1L2024":TT1L2024,
+                     
+    # single top    
+    "STtWm2L2024"    :STtWm2L2024  ,
+    "STtWm0L2024"    :STtWm0L2024  ,
+    "STtWm1L2024"    :STtWm1L2024  ,
+    "STtbWp2L2024"   :STtbWp2L2024 ,
+    "STtbWp0L2024"   :STtbWp0L2024 ,
+    "STtbWp1L2024"   :STtbWp1L2024 ,
+    "STtTch0L2024"   :STtTch0L2024 ,
+    "STtTch1L2024"   :STtTch1L2024 ,
+    "STtbTch0L2024"  :STtbTch0L2024,
+    "STtbTch1L2024"  :STtbTch1L2024,
+    "STtSch0L2024"   :STtSch0L2024 ,
+    "STtSch1L2024"   :STtSch1L2024 ,
+    "STtbSch0L2024"  :STtbSch0L2024,
+    "STtbSch1L2024"  :STtbSch1L2024,
+                                   
+    # W boson                      
+    "WHT400M02024"   :WHT400M02024 ,
+    "WHT800M02024"   :WHT800M02024 ,
+    "WHT1500M02024"  :WHT1500M02024,
+    "WHT2500M02024"  :WHT2500M02024,
+                     
+    "WHT400M1202024" :WHT400M1202024  ,
+    "WHT800M1202024" :WHT800M1202024  ,
+    "WHT1500M1202024":WHT1500M1202024 ,
+    "WHT2500M1202024":WHT2500M1202024 ,
+                                      
+    # Z boson                         
+    "DYHT400M42024"  : DYHT400M42024  ,
+    "DYHT800M42024"  : DYHT800M42024  ,
+    "DYHT1500M42024" : DYHT1500M42024 ,
+    "DYHT2500M42024" : DYHT2500M42024 ,
+    "DYHT400M502024" : DYHT400M502024 ,
+    "DYHT800M502024" : DYHT800M502024 ,
+    "DYHT1500M502024": DYHT1500M502024,
+    "DYHT2500M502024": DYHT2500M502024,
+    "DYHT400M1202024": DYHT400M1202024,
+    "DYHT800M1202024": DYHT800M1202024,
+    "DYHT1500M1202024":DYHT1500M1202024,
+    "DYHT2500M1202024":DYHT2500M1202024,
+                                      
+    "DYeeM102024"  :DYeeM102024  ,
+    "DYeeM502024"  :DYeeM502024  ,
+    "DYmmM102024"  :DYmmM102024  ,
+    "DYmmM502024"  :DYmmM502024  ,
+    "DYttM102024"  :DYttM102024  ,
+    "DYttM502024"  :DYttM502024  ,
+                                 
+    # QCD                        
+    "QCDePT802024" :QCDePT802024 ,
+    "QCDmPT802024" :QCDmPT802024 ,
+    "QCDePT1202024":QCDePT1202024,
+    "QCDmPT1202024":QCDmPT1202024,
+    "QCDePT1702024":QCDePT1702024,
+    "QCDmPT1702024":QCDmPT1702024,
+    "QCDePT3002024":QCDePT3002024,
+    "QCDmPT3002024":QCDmPT3002024,
+    "QCDePT4702024":QCDePT4702024,
+    "QCDmPT4702024":QCDmPT4702024,
+    "QCDePT6002024":QCDePT6002024,
+    "QCDmPT6002024":QCDmPT6002024,
+    "QCDePT8002024":QCDePT8002024,
+    "QCDmPT8002024":QCDmPT8002024,
+    "QCDPT10002024":QCDPT10002024,
+    "QCDPT15002024":QCDPT15002024,
+    "QCDPT20002024":QCDPT20002024,
+    "QCDPT25002024":QCDPT25002024,
+    "QCDPT30002024":QCDPT30002024,
 
-samples_pfdata = {
-    "SingleElecRun2022C":      SingleElecRun2022C,
-    "SingleElecRun2022D":      SingleElecRun2022D,
-    "SingleElecRun2022EEE":    SingleElecRun2022EEE,
-    "SingleElecRun2022EEF":    SingleElecRun2022EEF,
-    "SingleElecRun2022EEG":    SingleElecRun2022EEG,
-    "SingleElecRun2023C01":    SingleElecRun2023C01,
-    "SingleElecRun2023C02":    SingleElecRun2023C02,
-    "SingleElecRun2023C03":    SingleElecRun2023C03,
-    "SingleElecRun2023C04":    SingleElecRun2023C04,
-    "SingleElecRun2023C11":    SingleElecRun2023C11,
-    "SingleElecRun2023C12":    SingleElecRun2023C12,
-    "SingleElecRun2023C13":    SingleElecRun2023C13,
-    "SingleElecRun2023C14":    SingleElecRun2023C14,
-    "SingleElecRun2023BPixD01":SingleElecRun2023BPixD01,
-    "SingleElecRun2023BPixD02":SingleElecRun2023BPixD02,
-    "SingleElecRun2023BPixD11":SingleElecRun2023BPixD11,
-    "SingleElecRun2023BPixD12":SingleElecRun2023BPixD12,
-    "SingleMuonRun2022C":      SingleMuonRun2022C,
-    "SingleMuonRun2022D":      SingleMuonRun2022D,
-    "SingleMuonRun2022EEE":    SingleMuonRun2022EEE,
-    "SingleMuonRun2022EEF":    SingleMuonRun2022EEF,
-    "SingleMuonRun2022EEG":    SingleMuonRun2022EEG,
-    "SingleMuonRun2023C01":    SingleMuonRun2023C01,
-    "SingleMuonRun2023C02":    SingleMuonRun2023C02,
-    "SingleMuonRun2023C03":    SingleMuonRun2023C03,
-    "SingleMuonRun2023C04":    SingleMuonRun2023C04,
-    "SingleMuonRun2023C11":    SingleMuonRun2023C11,
-    "SingleMuonRun2023C12":    SingleMuonRun2023C12,
-    "SingleMuonRun2023C13":    SingleMuonRun2023C13,
-    "SingleMuonRun2023C14":    SingleMuonRun2023C14,
-    "SingleMuonRun2023BPixD01":SingleMuonRun2023BPixD01,
-    "SingleMuonRun2023BPixD02":SingleMuonRun2023BPixD02,
-    "SingleMuonRun2023BPixD11":SingleMuonRun2023BPixD11,
-    "SingleMuonRun2023BPixD12":SingleMuonRun2023BPixD12,
-    # Add 2024 and 2025 data in here
+    # Diboson and ttHbb
+    "WW1L2024"     :WW1L2024     ,
+    "WW2L2024"     :WW2L2024     ,
+    "WZ1L2Q2024"   :WZ1L2Q2024   ,
+    "WZ1L3Nu2024"  :WZ1L3Nu2024  ,
+    "WZ2L2024"     :WZ2L2024     ,
+    "ZZ2L2Q2024"   :ZZ2L2Q2024   ,
+    "ZZ2L2Nu2024"  :ZZ2L2Nu2024  ,
+    "TTH2B2024"    :TTH2B2024    ,
 }
+
+# samples_pfmc = {
+#     "TTToSemiLeptonic2022":     TTToSemiLeptonic2022,
+#     "TTToSemiLeptonic2022ext":  TTToSemiLeptonic2022ext,
+#     "TTToSemiLeptonic2022EE":   TTToSemiLeptonic2022EE,
+#     "TTToSemiLeptonic2022EEext":TTToSemiLeptonic2022EEext,
+#     "TTToSemiLeptonic2023":     TTToSemiLeptonic2023,
+#     "TTToSemiLeptonic2023BPix": TTToSemiLeptonic2023BPix,
+#     "DYPT402022":     DYPT402022,
+#     "DYPT402022EE":   DYPT402022EE,
+#     "DYPT402023":     DYPT402023,
+#     "DYPT402023BPix": DYPT402023BPix,
+#     "DYPT1002022":    DYPT1002022,
+#     "DYPT1002022EE":  DYPT1002022EE,
+#     "DYPT1002023":    DYPT1002023,
+#     "DYPT1002023BPix":DYPT1002023BPix,
+#     "DYPT2002022":    DYPT2002022,
+#     "DYPT2002022EE":  DYPT2002022EE,
+#     "DYPT2002023":    DYPT2002023,
+#     "DYPT2002023BPix":DYPT2002023BPix,
+#     "DYPT4002022":    DYPT4002022,
+#     "DYPT4002022EE":  DYPT4002022EE,
+#     "DYPT4002023":    DYPT4002023,
+#     "DYPT4002023BPix":DYPT4002023BPix,
+#     "DYPT6002022":    DYPT6002022,
+#     "DYPT6002022EE":  DYPT6002022EE,
+#     "DYPT6002023":    DYPT6002023,
+#     "DYPT6002023BPix":DYPT6002023BPix,
+#     # Add 2024 MC in here for the same samples
+# }    
+
+# samples_pfdata = {
+#     "SingleElecRun2022C":      SingleElecRun2022C,
+#     "SingleElecRun2022D":      SingleElecRun2022D,
+#     "SingleElecRun2022EEE":    SingleElecRun2022EEE,
+#     "SingleElecRun2022EEF":    SingleElecRun2022EEF,
+#     "SingleElecRun2022EEG":    SingleElecRun2022EEG,
+#     "SingleElecRun2023C01":    SingleElecRun2023C01,
+#     "SingleElecRun2023C02":    SingleElecRun2023C02,
+#     "SingleElecRun2023C03":    SingleElecRun2023C03,
+#     "SingleElecRun2023C04":    SingleElecRun2023C04,
+#     "SingleElecRun2023C11":    SingleElecRun2023C11,
+#     "SingleElecRun2023C12":    SingleElecRun2023C12,
+#     "SingleElecRun2023C13":    SingleElecRun2023C13,
+#     "SingleElecRun2023C14":    SingleElecRun2023C14,
+#     "SingleElecRun2023BPixD01":SingleElecRun2023BPixD01,
+#     "SingleElecRun2023BPixD02":SingleElecRun2023BPixD02,
+#     "SingleElecRun2023BPixD11":SingleElecRun2023BPixD11,
+#     "SingleElecRun2023BPixD12":SingleElecRun2023BPixD12,
+#     "SingleMuonRun2022C":      SingleMuonRun2022C,
+#     "SingleMuonRun2022D":      SingleMuonRun2022D,
+#     "SingleMuonRun2022EEE":    SingleMuonRun2022EEE,
+#     "SingleMuonRun2022EEF":    SingleMuonRun2022EEF,
+#     "SingleMuonRun2022EEG":    SingleMuonRun2022EEG,
+#     "SingleMuonRun2023C01":    SingleMuonRun2023C01,
+#     "SingleMuonRun2023C02":    SingleMuonRun2023C02,
+#     "SingleMuonRun2023C03":    SingleMuonRun2023C03,
+#     "SingleMuonRun2023C04":    SingleMuonRun2023C04,
+#     "SingleMuonRun2023C11":    SingleMuonRun2023C11,
+#     "SingleMuonRun2023C12":    SingleMuonRun2023C12,
+#     "SingleMuonRun2023C13":    SingleMuonRun2023C13,
+#     "SingleMuonRun2023C14":    SingleMuonRun2023C14,
+#     "SingleMuonRun2023BPixD01":SingleMuonRun2023BPixD01,
+#     "SingleMuonRun2023BPixD02":SingleMuonRun2023BPixD02,
+#     "SingleMuonRun2023BPixD11":SingleMuonRun2023BPixD11,
+#     "SingleMuonRun2023BPixD12":SingleMuonRun2023BPixD12,
+#     # Add 2024 and 2025 data in here
+# }
 
 samples_mc_test = {
     "BpBp_M1200_2024": BpBp_M1200_2024 ,
@@ -1229,3 +1319,8 @@ samples_mc_test = {
     "TpTp_M2100_2024": TpTp_M2100_2024 ,
     "TpTp_M2200_2024": TpTp_M2200_2024 ,
 }
+
+samples_mc_standard_22_23 = {
+    
+
+    }

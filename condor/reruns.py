@@ -8,8 +8,8 @@ if len(sys.argv) > 2:
 
 deletefakes = False
 killdisconnect = False
-splitjobs = False
-nsplit = -1
+splitjobs = True
+nsplit = 2 #-1
 
 def findfiles(path, filtre):
     for root, dirs, files in os.walk(path):

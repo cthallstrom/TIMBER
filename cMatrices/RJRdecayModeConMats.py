@@ -4,7 +4,8 @@ from ROOT import TFile, TTree, TH1D, TH2D, TCanvas, gStyle, gPad, TLatex
 readFile = True
 if readFile:
     
-    file_str = "/uscms/home/hlarson/nobackup/run3VLQ/TIMBER/RDF_TprimeTprime_Par-M-1600_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
+    file_str = "/uscms/home/hlarson/nobackup/run3VLQ/TIMBER/RDF_TprimeTprime_Par-M-1700_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
+    samp_type = "TT"
     inFile = TFile.Open(file_str)
 
     pattern = r"RDF_([TB]).*?Par-M-(\d+)"
@@ -29,23 +30,24 @@ if readFile:
 
             
             # Fill truth info into all x-axis values
-            if t.decayFinds[ijet] == 1:   #deciding on the truth, we can just look at the truth from our truth vector
+            if t.newDecayModes[ijet] == 1:   #deciding on the truth, we can just look at the truth from our truth vector
                 i = 0.5      
-            elif t.decayFinds[ijet] == 2:
+            elif t.newDecayModes[ijet] == 2:
                 i = 1.5
-            elif t.decayFinds[ijet] == 3:
+            elif t.newDecayModes[ijet] == 3:
                 i = 2.5
-            elif t.decayFinds[ijet] == 4:
+            elif t.newDecayModes[ijet] == 4:
                 i = 3.5
-            elif t.decayFinds[ijet] == 5:
+            elif t.newDecayModes[ijet] == 5:
                 i = 4.5
-            elif t.decayFinds[ijet] == 6:
+            elif t.newDecayModes[ijet] == 6:
                 i = 5.5
 
             for imode in range(0,10):  #fill the denoms into the correct ROW
                 truth.Fill(imode,i)
-            
-            PNWMid = t.R_decays
+
+            if samp_type == "TT": PNWMid = t.R_decays_TT
+            else: PNWMid = t.R_decays_BB
         
             # Fill reconstructed info into only the right x-axis value
             # taggedTjet = 1, taggedWjet = 2, untaggedTlep = 3, untaggedWlep = 4

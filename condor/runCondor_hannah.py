@@ -3,15 +3,16 @@
 # The second argument is True or False depending on whether you want to submit a condor job with the sample specified in the thrid argument
 # The third argument is the prefix of the sample you want to use when you submit a condor job
 
-import os,sys,shutil,datetime,time, subprocess
+import os,sys,shutil,datetime,time,subprocess
 from samples import *
 
 exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read()) # this is a python2 command, so ignore the error and run with python2
 start_time = time.time()
 
 # --- Sample Dictionary ---
-#sample_dic = samples_mc_test
-sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
+sample_dic = samples_mc_standard
+#sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
+run2025 = True
 
 # --- Size of Condor Job ---
 filesPerJob = 999
@@ -124,6 +125,11 @@ if runanalyzer:
         
         os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir+'/')
         os.system('mkdir -p '+condorDir+'/'+prefix)
+
+        if run2025:
+            os.system('mkdir -p '+condorDir+'/'+prefix.replace("2024","2025"))
+        else:
+            os.system('mkdir -p '+condorDir+'/'+prefix)
         
         # Redefining fileName so it is accessed from the directory above for analyzer_RDF.h
         fileName = "condor/"+textlist
@@ -134,6 +140,8 @@ if runanalyzer:
             print("Num test: " + str(oldNum) + " -> " + str(newNum))
             
             dict={'RUNDIR':runDir, 'CONDORDIR':condorDir+'/'+prefix, 'CMSSWBASE':relbase, 'OUTPUTDIR':outDir, 'TARBALL':tarfile, 'TESTNUM1':oldNum, 'TESTNUM2':newNum-1, 'PREFIX':prefix, 'FILENAME':fileName, 'YEAR':year}
+            if run2025:
+                dict['PREFIX'] = prefix.replace("2024","2025")
             jdfName=condorDir+prefix+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
             print ("jdfname: ",jdfName)
             jdf=open(jdfName,'w')
@@ -158,9 +166,35 @@ Queue 1"""%dict)
             os.chdir('%s'%(runDir))
             print ( str(count) + " jobs submitted!!!")
             count += 1
-        
-        #Formatting line 101
-                
+
+            if run2025:
+                #PREFIX = PREFIX.replace("2024","2025")
+                jdfName=condorDir+prefix.replace("2024"."2025")+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
+                print ("jdfname: ",jdfName)
+                jdf=open(jdfName,'w')
+                jdf.write(
+                """use_x509userproxy = true
+universe = vanilla
+Executable = %(RUNDIR)s/condorTTBB.sh
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
+Transfer_Input_Files = %(TARBALL)s
+Output = %(PREFIX)s_%(TESTNUM1)s.out
+Error = %(PREFIX)s_%(TESTNUM1)s.err
+Log = %(PREFIX)s_%(TESTNUM1)s.log
+Notification = Never
+Arguments = %(FILENAME)s %(OUTPUTDIR)s %(TESTNUM1)s %(TESTNUM2)s 2025 
+
+Queue 1"""%dict)
+                jdf.close()
+                os.chdir('%s/'%(condorDir+prefix.replace()))"2024","2025")))
+                os.system('condor_submit %(PREFIX)s_%(TESTNUM1)s.job'%dict)
+                os.system('sleep 0.5')                                
+                os.chdir('%s'%(runDir))
+                print ( str(count) + " jobs submitted!!!")
+                count += 1
+
+                            
     #for k,v in sample_dic.items():
     #    os.system('mv ' + prefix + ' Output/')
 
