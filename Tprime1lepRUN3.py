@@ -53,6 +53,7 @@ print(f"Sample Name: {sampleName}")
 
 # Parse the incoming file names to assign labels  
 isSig = ("prime" in sampleName)
+isTpTp = ("Tprime" in sampleName)
 isMadgraphBkg = (("QCD" in sampleName) or ("madgraphMLM" in sampleName))
 isTOP = (("Mtt" in sampleName) or ("ST" in sampleName) or ("ttZ" in sampleName) or ("ttW" in sampleName) or ("ttH" in sampleName) or ("TTTo" in sampleName))
 isTT = (("TT_Tune" in sampleName) or ("Mtt" in sampleName) or ("TTTo" in sampleName))
@@ -392,6 +393,8 @@ def analyze(jesvar):
   lVars.Add("lepton_pt","assignleps[0]")
   lVars.Add("lepton_eta","assignleps[1]") 
   lVars.Add("lepton_phi","assignleps[2]")
+  # lVars.Add("lepton_sin_phi", "std::sin(lepton_phi)")
+  # lVars.Add("lepton_cos_phi", "std::cos(lepton_phi)")
   lVars.Add("lepton_mass","assignleps[3]")
   lVars.Add("lepton_miniIso","assignleps[4]")
   lVars.Add("lepton_ID","isMu ? 13 : 11")
@@ -465,6 +468,8 @@ def analyze(jesvar):
   jetVars.Add("gcJet_pt","reorder(gcJet_pt_unsort,gcJet_ptargsort)")
   jetVars.Add("gcJet_eta", "reorder(cleanJet_eta[goodcleanJets == true],gcJet_ptargsort)")
   jetVars.Add("gcJet_phi", "reorder(cleanJet_phi[goodcleanJets == true],gcJet_ptargsort)")
+  # jetVars.Add("gcJet_sin_phi", "std::sin(gcJet_phi)")
+  # jetVars.Add("gcJet_cos_phi", "std::cos(gcJet_phi)")
   jetVars.Add("gcJet_mass", "reorder(cleanJet_mass[goodcleanJets == true],gcJet_ptargsort)")
   jetVars.Add("gcJet_vetomap", "jetvetofunc(jetvetocorr, gcJet_eta, gcJet_phi)")
   if year != '2024' and year != '2025':
@@ -486,6 +491,8 @@ def analyze(jesvar):
   jetVars.Add("gcFatJet_pt","reorder(gcFatJet_pt_unsort,gcFatJet_ptargsort)")  
   jetVars.Add("gcFatJet_eta", "reorder(FatJet_eta[goodcleanFatJets == true],gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_phi", "reorder(FatJet_phi[goodcleanFatJets == true],gcFatJet_ptargsort)")
+  # jetVars.Add("gcFatJet_sin_phi", "std::sin(gcFatJet_phi)")
+  # jetVars.Add("gcFatJet_cos_phi", "std::cos(gcFatJet_phi)")
   jetVars.Add("gcFatJet_mass", "reorder(FatJet_mass[goodcleanFatJets == true],gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_sdmass", "reorder(FatJet_msoftdrop[goodcleanFatJets == true],gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_subJetIdx1", "reorder(FatJet_subJetIdx1[goodcleanFatJets == true], gcFatJet_ptargsort)")
@@ -604,6 +611,15 @@ def analyze(jesvar):
   recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
   recoVars.Add("tagTdecays", "int(TBp[0])")
   recoVars.Add("tagBdecays", "int(TBp[1])")
+
+  if isTpTp:
+    recoVars.Add("J0_idx", "TBp[28]")
+    recoVars.Add("VLQ21_idx", "TBp[29]")
+    recoVars.Add("VLQ22_idx", "TBp[30]")
+  else:
+    recoVars.Add("J0_idx", "TBp[31]")
+    recoVars.Add("VLQ21_idx", "TBp[32]")
+    recoVars.Add("VLQ22_idx", "TBp[33]")
 
   # # ------------------ Results ------------------  
   rframeVars = VarGroup('restFrameVars')
