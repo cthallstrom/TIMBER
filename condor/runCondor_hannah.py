@@ -12,6 +12,7 @@ start_time = time.time()
 # --- Sample Dictionary ---
 sample_dic = samples_mc_standard
 #sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
+run2025 = True
 
 # --- Size of Condor Job ---
 filesPerJob = 999
@@ -125,8 +126,8 @@ if runanalyzer:
         os.system('eos root://cmseos.fnal.gov/ mkdir -p '+outDir+'/')
         os.system('mkdir -p '+condorDir+'/'+prefix)
 
-        if sample_dic == samples_mc_standard:
-            os.system('mkdir -p '+condorDir+'/2025_SIG_'+prefix)
+        if run2025:
+            os.system('mkdir -p '+condorDir+'/'+prefix.replace("2024","2025"))
         else:
             os.system('mkdir -p '+condorDir+'/'+prefix)
         
@@ -139,6 +140,8 @@ if runanalyzer:
             print("Num test: " + str(oldNum) + " -> " + str(newNum))
             
             dict={'RUNDIR':runDir, 'CONDORDIR':condorDir+'/'+prefix, 'CMSSWBASE':relbase, 'OUTPUTDIR':outDir, 'TARBALL':tarfile, 'TESTNUM1':oldNum, 'TESTNUM2':newNum-1, 'PREFIX':prefix, 'FILENAME':fileName, 'YEAR':year}
+            if run2025:
+                dict['PREFIX'] = prefix.replace("2024","2025")
             jdfName=condorDir+prefix+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
             print ("jdfname: ",jdfName)
             jdf=open(jdfName,'w')
@@ -164,8 +167,9 @@ Queue 1"""%dict)
             print ( str(count) + " jobs submitted!!!")
             count += 1
 
-            if sample_dic == samples_mc_standard:    
-                jdfName=condorDir+'2025_SIG_'+prefix+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
+            if run2025:
+                #PREFIX = PREFIX.replace("2024","2025")
+                jdfName=condorDir+prefix.replace("2024"."2025")+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
                 print ("jdfname: ",jdfName)
                 jdf=open(jdfName,'w')
                 jdf.write(
@@ -175,15 +179,15 @@ Executable = %(RUNDIR)s/condorTTBB.sh
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT
 Transfer_Input_Files = %(TARBALL)s
-Output = 2025%(PREFIX)s_%(TESTNUM1)s.out
-Error = 2025%(PREFIX)s_%(TESTNUM1)s.err
-Log = 2025%(PREFIX)s_%(TESTNUM1)s.log
+Output = %(PREFIX)s_%(TESTNUM1)s.out
+Error = %(PREFIX)s_%(TESTNUM1)s.err
+Log = %(PREFIX)s_%(TESTNUM1)s.log
 Notification = Never
 Arguments = %(FILENAME)s %(OUTPUTDIR)s %(TESTNUM1)s %(TESTNUM2)s 2025 
 
 Queue 1"""%dict)
                 jdf.close()
-                os.chdir('%s/'%(condorDir+'2025_SIG_'+prefix))
+                os.chdir('%s/'%(condorDir+prefix.replace()))"2024","2025")))
                 os.system('condor_submit %(PREFIX)s_%(TESTNUM1)s.job'%dict)
                 os.system('sleep 0.5')                                
                 os.chdir('%s'%(runDir))
