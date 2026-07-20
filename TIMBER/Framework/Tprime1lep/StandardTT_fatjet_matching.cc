@@ -352,15 +352,17 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
 {
   //std::cout << "Entering jet_tagging" << std::endl;
   RVec<int> PNWMtag;
-  RVec<int> GPTtag;
-  RVec<int> GPTWMtag;
+  RVec<int> PNWMscore;
+  //RVec<int> GPTtag;
+  //RVec<int> GPTWMtag;
   
   for(int i = 0; i < gcFatJet_PNWM_T.size(); i++)
   {
     std::vector<float> PNWMscores = {gcFatJet_PNWM_T[i], gcFatJet_PNWM_W[i], gcFatJet_PNWM_Z[i], gcFatJet_PNWM_H[i], gcFatJet_PNWM_QCD[i]};
     auto max_addr = std::max_element(PNWMscores.begin(), PNWMscores.end());
     int max_index = std::distance(PNWMscores.begin(), max_addr);
-
+    PNWMscore.push_back(PNWMscores[max_index][i]);
+    
     if(max_index == 0) PNWMtag.push_back(6);
     if(max_index == 1) PNWMtag.push_back(24);
     if(max_index == 2) PNWMtag.push_back(23);
@@ -374,7 +376,9 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
         PNWMtag.push_back(5);
       }else{PNWMtag.push_back(0);}
     }
+    
   }
-  RVec<RVec<int>> taggerResults = {PNWMtag, GPTtag, GPTWMtag};
+  //RVec<RVec<int>> taggerResults = {PNWMtag, GPTtag, GPTWMtag};
+  RVec<RVec<int>> taggerResults = {PNWMtag, PNWMscore};
   return taggerResults;
 }
