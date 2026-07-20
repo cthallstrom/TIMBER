@@ -548,8 +548,9 @@ def analyze(jesvar):
   
   tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
   tagVars.Add("gcFatJet_PNWMtags", "gcFatJet_tags[0]")
-  tagVars.Add("gcFatJet_GPTtags", "gcFatJet_tags[1]")
-  tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
+  tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
+  #tagVars.Add("gcFatJet_GPTtags", "gcFatJet_tags[1]")
+  #tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
 
   tagVars.Add("gcFatJet_nT","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 6) count++;} return count;")
   tagVars.Add("gcFatJet_nW","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 24) count++;} return count;")
@@ -609,7 +610,7 @@ def analyze(jesvar):
 
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
-  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source)')
+  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source, TBp[], TBp[], TBp[])')
 
   rframeVars.Add("R_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_TTbar_CosAngle", 'RJR_doubles[1]')

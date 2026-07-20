@@ -92,11 +92,11 @@ void Tprime_RestFrames_Handler_t::define_tree() {
 void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
     // Combinatoric Group for jets
     JETS.reset(new CombinatoricGroup("JETS", "Jet Jigsaws"));
-    JETS->AddFrame(*J0);
+    // JETS->AddFrame(*J0);
     JETS->AddFrame(*Tbar);
 
     // jet frames must have at least one element
-    JETS->SetNElementsForFrame(*J0, 1);
+    // JETS->SetNElementsForFrame(*J0, 1);
     JETS->SetNElementsForFrame(*Tbar, 2);
     
     // Combinatoric Group for SM top quark reconstruction
@@ -169,10 +169,11 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
     b->SetLabFrameFourVector(minMlb_lv);
+    J0->SetLabFrameFourVector(jet1);
     
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
+    //JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     
@@ -259,7 +260,7 @@ RestFramesHandler * Tprime_RestFrames_Container_t::create_handler() {
 }
 
 // return_doubles() returns all the masses, cos angles, and deltaPhi angles of the frames in the tree
-RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv) {
+RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv, int J0_idx, int VLQ1_idx, int VLQ2_idx) {
 
   // This pointer should explicitly not be deleted!
   Tprime_RestFrames_Handler_t *rfht = static_cast<Tprime_RestFrames_Handler_t *>(get_handler(thread_index));
@@ -281,19 +282,24 @@ RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, f
   RVec<double> observables;
   double minDiffVLQ = 9999;
   
-  for (int i = 0; i < 3; i++) {
-    fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
-    fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
-    fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
+  // for (int i = 0; i < 3; i++) {
+  //   fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
+  //   fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
+  //   fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
     
-    RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
-    double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
-    if (diffVLQ < minDiffVLQ) {
-      observables = temp_observables;
-      minDiffVLQ = diffVLQ;
-    }
-  }
+  //   RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
+  //   double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
+  //   if (diffVLQ < minDiffVLQ) {
+  //     observables = temp_observables;
+  //     minDiffVLQ = diffVLQ;
+  //   }
+  // }
+
+  fatjet_1.SetPtEtaPhiM(fatjet_pt[J0_idx],fatjet_eta[J0_idx],fatjet_phi[J0_idx],fatjet_mass[J0_idx]);
+  fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
+  fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
   
+  RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv);
   return observables;
 }
 

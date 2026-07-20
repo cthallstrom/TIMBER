@@ -85,13 +85,13 @@ void Tprime_RestFrames_Handler_W::define_tree() {
 void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
     // Combinatoric Group for jets
     JETS.reset(new CombinatoricGroup("JETS", "Jet Jigsaws"));
-    JETS->AddFrame(*b);
+    //JETS->AddFrame(*b);
     JETS->AddFrame(*Tbar);
     //JETS->AddFrame(*J1);
     //JETS->AddFrame(*J0);
 
     // jet frames must have at least one element
-    JETS->SetNElementsForFrame(*b, 1);
+    // JETS->SetNElementsForFrame(*b, 1);
     JETS->SetNElementsForFrame(*Tbar, 2);
     //JETS->SetNElementsForFrame(*J1, 1);
     //JETS->SetNElementsForFrame(*J0, 1);
@@ -178,10 +178,11 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
-
+    b->SetLabFrameFourVector(jet1)
+    
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
+    //JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
 
@@ -285,15 +286,22 @@ RVec<double> Tprime_RestFrames_Container_W::return_W_doubles(int thread_index, f
   RVec<double> observables;
   double minDiffVLQ = 9999;
   
-  for (int i = 0; i < 3; i++) {
-    fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
-    fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
-    fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
+  // for (int i = 0; i < 3; i++) {
+  //   fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
+  //   fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
+  //   fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
     
-    RVec<double> temp_observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3); //jet_4);
-    double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
-    if (diffVLQ < minDiffVLQ) observables = temp_observables;
-  }
+  //   RVec<double> temp_observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3); //jet_4);
+  //   double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
+  //   if (diffVLQ < minDiffVLQ) observables = temp_observables;
+  // }
+
+  fatjet_1.SetPtEtaPhiM(fatjet_pt[J0_idx],fatjet_eta[J0_idx],fatjet_phi[J0_idx],fatjet_mass[J0_idx]);
+  fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
+  fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
+  
+  RVec<double> temp_observables = rfhw->calculate_w_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3);
+
   
   return observables;
 }
