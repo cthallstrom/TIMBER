@@ -1,6 +1,7 @@
 auto newDecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPart_pdgId, ROOT::VecOps::RVec<float>& GenPart_mass, ROOT::VecOps::RVec<float>& GenPart_pt, ROOT::VecOps::RVec<float>& GenPart_phi, ROOT::VecOps::RVec<float>& GenPart_eta, ROOT::VecOps::RVec<short>& GenPart_genPartIdxMother, ROOT::VecOps::RVec<int>& GenPart_status, ROOT::VecOps::RVec<short> GenPart_statusFlags)
 {
-	RVec<int> decayMode;
+	RVec<int> TdecayMode;
+	RVec<int> BdecayMode;
 	RVec<int> primes;
 	RVec<int> Ws;
 	RVec<int> ts;
@@ -68,28 +69,29 @@ auto newDecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 			else if (pdgid == 5) nb++;
 		}
 	}
-	int mode = 0;
+	int Tmode = 0;
 
 	// Assign TTbar decay mode
 	if(abs(GenPart_pdgId[primes[0]]) == 6000006 && abs(GenPart_pdgId[primes[1]]) == 6000006){
-		if(nb == 2 && nW == 2) mode = 1;
-		else if(nt == 2 && nZ == 2) mode = 2;
-		else if(nt == 2 && nH == 2) mode = 3;
-		else if(nt == 2 && nH == 1 && nZ == 1) mode = 4;
-		else if(nt == 1 && nZ == 1 && nb == 1 && nW == 1) mode = 5;
-		else if(nt == 1 && nH == 1 && nb == 1 && nW == 1) mode = 6;
-		else mode = -1;
+		if(nb == 2 && nW == 2) Tmode = 1;
+		else if(nt == 2 && nZ == 2) Tmode = 2;
+		else if(nt == 2 && nH == 2) Tmode = 3;
+		else if(nt == 2 && nH == 1 && nZ == 1) Tmode = 4;
+		else if(nt == 1 && nZ == 1 && nb == 1 && nW == 1) Tmode = 5;
+		else if(nt == 1 && nH == 1 && nb == 1 && nW == 1) Tmode = 6;
+		else Tmode = -1;
 	}
 
+	int Bmode = 0;
 	// Assign BBbar decay mode
 	if(abs(GenPart_pdgId[primes[0]]) == 6000007 && abs(GenPart_pdgId[primes[1]]) == 6000007){
-		if(nt == 2 && nW == 2) mode = 7;
-		else if(nb == 2 && nZ == 2) mode = 8;
-		else if(nb == 2 && nH == 2) mode = 9;
-		else if(nb == 2 && nH == 1 && nZ == 1) mode = 10;
-		else if(nb == 1 && nZ == 1 && nt == 1 && nW == 1) mode = 11;
-		else if(nb == 1 && nH == 1 && nt == 1 && nW == 1) mode = 12;
-		else mode = -1;
+		if(nt == 2 && nW == 2) Bmode = 1;
+		else if(nb == 2 && nZ == 2) Bmode = 2;
+		else if(nb == 2 && nH == 2) Bmode = 3;
+		else if(nb == 2 && nH == 1 && nZ == 1) Bmode = 4;
+		else if(nb == 1 && nZ == 1 && nt == 1 && nW == 1) Bmode = 5;
+		else if(nb == 1 && nH == 1 && nt == 1 && nW == 1) Bmode = 6;
+		else Bmode = -1;
 	}
 
 	// Figure out how many leptons we have
@@ -106,7 +108,8 @@ auto newDecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 				if (child == 24) { // it's a W
 				prev = index;
 				} else if (11 <= child && child <= 16) { // it's a lepton!
-					mode += 100;
+					Tmode += 100;
+					Bmode += 100;
 					break;
 				} else { break; } // non-leptonic decay
 			}
@@ -126,16 +129,22 @@ auto newDecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 				} else if (child == 24) { // it's a W
 				prev = index;
 				} else if (11 <= child && child <= 16) { // it's a lepton!
-					mode += 1000;
+					Tmode += 1000;
+					Bmode += 1000;
 					break;
 				} else { break; } // non-leptonic decay
 			}
 		}
 	}
 
-	decayMode.push_back(mode);
+	TdecayMode.push_back(Tmode);
+	BdecayMode.push_back(Bmode);
 
-	return decayMode;
+	RVec<RVec<int>> decayModes;
+	decayModes.push_back(TdecayMode);
+	decayModes.push_back(BdecayMode);
+
+	return decayModes;
 }
 
 int nicolasDecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPart_pdgId, ROOT::VecOps::RVec<float>& GenPart_mass, ROOT::VecOps::RVec<float>& GenPart_pt, ROOT::VecOps::RVec<float>& GenPart_phi, ROOT::VecOps::RVec<float>& GenPart_eta, ROOT::VecOps::RVec<short>& GenPart_genPartIdxMother, ROOT::VecOps::RVec<int>& GenPart_status)
