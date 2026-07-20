@@ -247,7 +247,7 @@ class Tprime_RestFrames_Container_t : public RestFramesContainer {
         Tprime_RestFrames_Container_t(int num_threads);
         RestFramesHandler *create_handler() override;
 
-        RVec<double> return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv);
+        RVec<double> return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv, int J0_idx, int VLQ1_idx, int VLQ2_idx);
 	
 };
 
@@ -282,24 +282,24 @@ RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, f
   RVec<double> observables;
   double minDiffVLQ = 9999;
   
-  // for (int i = 0; i < 3; i++) {
-  //   fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
-  //   fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
-  //   fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
+  for (int i = 0; i < 3; i++) {
+    fatjet_1.SetPtEtaPhiM(fatjet_pt[(i+0)%3], fatjet_eta[(i+0)%3], fatjet_phi[(i+0)%3], fatjet_mass[(i+0)%3]);
+    fatjet_2.SetPtEtaPhiM(fatjet_pt[(i+1)%3], fatjet_eta[(i+1)%3], fatjet_phi[(i+1)%3], fatjet_mass[(i+1)%3]);
+    fatjet_3.SetPtEtaPhiM(fatjet_pt[(i+2)%3], fatjet_eta[(i+2)%3], fatjet_phi[(i+2)%3], fatjet_mass[(i+2)%3]);
     
-  //   RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
-  //   double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
-  //   if (diffVLQ < minDiffVLQ) {
-  //     observables = temp_observables;
-  //     minDiffVLQ = diffVLQ;
-  //   }
-  // }
+    RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv); //jet_4);
+    double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
+    if (diffVLQ < minDiffVLQ) {
+      observables = temp_observables;
+      minDiffVLQ = diffVLQ;
+    }
+  }
 
-  fatjet_1.SetPtEtaPhiM(fatjet_pt[J0_idx],fatjet_eta[J0_idx],fatjet_phi[J0_idx],fatjet_mass[J0_idx]);
-  fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
-  fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
+  // fatjet_1.SetPtEtaPhiM(fatjet_pt[J0_idx],fatjet_eta[J0_idx],fatjet_phi[J0_idx],fatjet_mass[J0_idx]);
+  // fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
+  // fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
   
-  RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv);
+  // RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv);
   return observables;
 }
 

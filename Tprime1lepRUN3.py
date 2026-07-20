@@ -626,7 +626,7 @@ def analyze(jesvar):
 
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
-  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source, TBp[], TBp[], TBp[])')
+  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source, J0_idx, VLQ21_idx, VLQ22_idx)')
 
   rframeVars.Add("R_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_TTbar_CosAngle", 'RJR_doubles[1]')

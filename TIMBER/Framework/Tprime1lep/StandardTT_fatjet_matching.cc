@@ -361,7 +361,7 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
     std::vector<float> PNWMscores = {gcFatJet_PNWM_T[i], gcFatJet_PNWM_W[i], gcFatJet_PNWM_Z[i], gcFatJet_PNWM_H[i], gcFatJet_PNWM_QCD[i]};
     auto max_addr = std::max_element(PNWMscores.begin(), PNWMscores.end());
     int max_index = std::distance(PNWMscores.begin(), max_addr);
-    PNWMscore.push_back(PNWMscores[max_index][i]);
+    PNWMscore.push_back(PNWMscores[max_index]);
     
     if(max_index == 0) PNWMtag.push_back(6);
     if(max_index == 1) PNWMtag.push_back(24);
