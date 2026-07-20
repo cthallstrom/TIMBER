@@ -192,36 +192,48 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(T->GetMass()); // .................... 3
     observables.push_back(T->GetCosDecayAngle()); //............ 4
     observables.push_back(T->GetDeltaPhiDecayAngle());//........ 5
+    observables.push_back(T->GetFourVector().Pt()); //.......... 6
+    observables.push_back(T->GetFourVector().Eta()); //......... 7
+    observables.push_back(T->GetFourVector().Phi()); //......... 8
     
-    observables.push_back(Tbar->GetMass()); //.................. 6
-    observables.push_back(Tbar->GetCosDecayAngle()); //......... 7
+    observables.push_back(Tbar->GetMass()); //.................. 9
+    observables.push_back(Tbar->GetCosDecayAngle()); //......... 10
+    observables.push_back(Tbar->GetFourVector().Pt()); //....... 11
+    observables.push_back(Tbar->GetFourVector().Eta()); //...... 12
+    observables.push_back(Tbar->GetFourVector().Phi()); //...... 13
     
-    observables.push_back(W->GetMass()); //..................... 8
-    observables.push_back(W->GetCosDecayAngle()); //............ 9
-    observables.push_back(W->GetDeltaPhiDecayAngle());//........ 10
+    observables.push_back(W->GetMass()); //..................... 14
+    observables.push_back(W->GetCosDecayAngle()); //............ 15
+    observables.push_back(W->GetDeltaPhiDecayAngle());//........ 16
+    observables.push_back(W->GetFourVector().Pt()); //.......... 17
+    observables.push_back(W->GetFourVector().Eta()); //......... 18
+    observables.push_back(W->GetFourVector().Phi()); //......... 19
     
-    observables.push_back(J0->GetMass()); //.................... 11
-    observables.push_back(J0->GetCosDecayAngle());//............ 12
+    observables.push_back(J0->GetMass()); //.................... 20
+    observables.push_back(J0->GetCosDecayAngle());//............ 21
 
-    observables.push_back(TTbar->GetDeltaPhiVisible()); //...... 13
-    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//.. 14
-    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//.. 15
-    observables.push_back(TTbar->GetVisibleShape());//.......... 16
+    observables.push_back(TTbar->GetDeltaPhiVisible()); //...... 22
+    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//.. 23
+    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//.. 24
+    observables.push_back(TTbar->GetVisibleShape());//.......... 25
     
     // Vectors isn't working as a separate function, because they don't operate one after the other on the same event!
     // Returning what I think we need to identify the 3 jets compared to our list.
-    observables.push_back(Tbar->GetFourVector().E()); // ....... 17
-    observables.push_back(J0->GetFourVector().E()); // ......... 18
+    observables.push_back(Tbar->GetFourVector().E()); // ....... 26
+    observables.push_back(J0->GetFourVector().E()); // ......... 27
 
-    observables.push_back(t->GetMass()); // .................... 19
-    observables.push_back(t->GetCosDecayAngle()); //............ 20
-    observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 21
+    observables.push_back(t->GetMass()); // .................... 28
+    observables.push_back(t->GetCosDecayAngle()); //............ 29
+    observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 30
+    observables.push_back(t->GetFourVector().Pt()); //.......... 31
+    observables.push_back(t->GetFourVector().Eta()); //......... 32
+    observables.push_back(t->GetFourVector().Phi()); //......... 33
+    
+    observables.push_back(nu->GetInvisibleFourVector().E()); //. 34
+    observables.push_back(nu->GetInvisibleFourVector().Pz());//. 35
 
-    observables.push_back(nu->GetInvisibleFourVector().E()); //. 22
-    observables.push_back(nu->GetInvisibleFourVector().Pz());//. 23
-
-    observables.push_back(b->GetMass());//...................... 24
-    observables.push_back(minMlb_lv.M());//..................... 25
+    observables.push_back(b->GetMass());//...................... 36
+    observables.push_back(minMlb_lv.M());//..................... 37
 
     after_analysis();
 
