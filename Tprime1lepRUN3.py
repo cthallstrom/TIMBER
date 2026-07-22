@@ -393,11 +393,12 @@ def analyze(jesvar):
   lVars.Add("lepton_pt","assignleps[0]")
   lVars.Add("lepton_eta","assignleps[1]") 
   lVars.Add("lepton_phi","assignleps[2]")
-  # lVars.Add("lepton_sin_phi", "std::sin(lepton_phi)")
-  # lVars.Add("lepton_cos_phi", "std::cos(lepton_phi)")
+  lVars.Add("lepton_sin_phi", "sin(lepton_phi)")
+  lVars.Add("lepton_cos_phi", "cos(lepton_phi)")
   lVars.Add("lepton_mass","assignleps[3]")
   lVars.Add("lepton_miniIso","assignleps[4]")
   lVars.Add("lepton_ID","isMu ? 13 : 11")
+  lVars.Add("lepton_btag", "0")
 
   # ------------------ JET Cleaning and JERC ------------------
   jVars = VarGroup('JetCleaningVars')
@@ -434,6 +435,8 @@ def analyze(jesvar):
   metVars = VarGroup('METVars')
   metVars.Add("corrMET_pt","cleanMets[4][0]")
   metVars.Add("corrMET_phi","cleanMets[4][1]")
+  metVars.Add("corrMET_sin_phi", "sin(corrMET_phi)")
+  metVars.Add("corrMET_cos_phi", "cos(corrMET_phi)")
   metVars.Add("corrMET_dPhiLep","DeltaPhi(lepton_phi, corrMET_phi)")
 
   metCuts = CutGroup('METCuts')
@@ -456,6 +459,7 @@ def analyze(jesvar):
   gcjetVars.Add("goodcleanFatJets", "FatJet_pt > 200 && abs(FatJet_eta) < 2.4 && (DR_lepFatJets > 0.8 || ptrel_lepFatJets > 20)")
   gcjetVars.Add("NFatJets", "(int) Sum(goodcleanFatJets)")
   gcjetVars.Add("gcJet_ST","gcJet_HT + corrMET_pt + lepton_pt")
+  gcjetVars.Add("gcJet_leptag", "0")
   
   jCuts = CutGroup('JetCuts')  
   jCuts.Add('Pass HT > 510', 'gcJet_HT > 510')
@@ -491,14 +495,16 @@ def analyze(jesvar):
   jetVars.Add("gcFatJet_pt","reorder(gcFatJet_pt_unsort,gcFatJet_ptargsort)")  
   jetVars.Add("gcFatJet_eta", "reorder(FatJet_eta[goodcleanFatJets == true],gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_phi", "reorder(FatJet_phi[goodcleanFatJets == true],gcFatJet_ptargsort)")
-  # jetVars.Add("gcFatJet_sin_phi", "std::sin(gcFatJet_phi)")
-  # jetVars.Add("gcFatJet_cos_phi", "std::cos(gcFatJet_phi)")
+  jetVars.Add("gcFatJet_sin_phi", "sin(gcFatJet_phi)")
+  jetVars.Add("gcFatJet_cos_phi", "cos(gcFatJet_phi)")
   jetVars.Add("gcFatJet_mass", "reorder(FatJet_mass[goodcleanFatJets == true],gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_sdmass", "reorder(FatJet_msoftdrop[goodcleanFatJets == true],gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_subJetIdx1", "reorder(FatJet_subJetIdx1[goodcleanFatJets == true], gcFatJet_ptargsort)")
   jetVars.Add("gcFatJet_subJetIdx2", "reorder(FatJet_subJetIdx2[goodcleanFatJets == true], gcFatJet_ptargsort)")  
   jetVars.Add("gcFatJet_vetomap", "jetvetofunc(jetvetocorr, gcFatJet_eta, gcFatJet_phi)")
   jetVars.Add("gcFatJet_P4", "fVectorConstructor(gcFatJet_pt,gcFatJet_eta,gcFatJet_phi,gcFatJet_mass)")
+  jetVars.Add("gcFatJet_btag", "0")
+  jetVars.Add("gcFatJet_leptag", "0")
 
   bCuts = CutGroup("BTagCuts")
   bCuts.Add("Has bTags","NJets_BTagM > 0")
@@ -570,6 +576,8 @@ def analyze(jesvar):
     # tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
     # tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
     tagVars.Add("newDecayModes", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
+    tagVars.Add("true_T_decays", "newDecayModes[0]")
+    tagVars.Add("true_B_decays", "newDecayModes[1]")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
@@ -748,6 +756,7 @@ def analyze(jesvar):
      if col.startswith("RJR_"): continue
      if col.startswith("gcFatJet_tags"): continue
      if col.startswith("Wnu"): continue
+     if col.startswith("newD"): continue
 
      if col == "Isolated_AK4":
        columns.append(col)
