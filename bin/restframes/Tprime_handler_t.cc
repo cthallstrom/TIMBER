@@ -42,10 +42,9 @@ private:
   std::unique_ptr<SetRapidityInvJigsaw> NuR;
   std::unique_ptr<ContraBoostInvJigsaw> MinContraMt;
   
-  //std::unique_ptr<MinMassesCombJigsaw> MinMJets;
+  // std::unique_ptr<MinMassesCombJigsaw> MinMJets;
+  // std::unique_ptr<MinMassChi2CombJigsaw> MinChi2;
   std::unique_ptr<MinMassDiffCombJigsaw> MinDiffJets;
-  
-  std::unique_ptr<MinMassChi2CombJigsaw> MinChi2;
   
   void define_tree() override;
   void define_groups_jigsaws() override;
@@ -92,12 +91,12 @@ void Tprime_RestFrames_Handler_t::define_tree() {
 void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
     // Combinatoric Group for jets
     JETS.reset(new CombinatoricGroup("JETS", "Jet Jigsaws"));
-    // JETS->AddFrame(*J0);
+    JETS->AddFrame(*J0);
     JETS->AddFrame(*Tbar);
 
     // jet frames must have at least one element
-    // JETS->SetNElementsForFrame(*J0, 1);
-    JETS->SetNElementsForFrame(*Tbar, 2);
+    JETS->SetNElementsForFrame(*J0, 1);
+    JETS->SetNElementsForFrame(*Tbar, 2); //WORKED: 2
     
     // Combinatoric Group for SM top quark reconstruction
     // SMTOP.reset(new CombinatoricGroup("SMTOP", "Standard Model top Jigsaw"));
@@ -165,15 +164,18 @@ void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
 
 RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3, RVec<TLorentzVector> &AK4s,TLorentzVector &minMlb_lv) {
     before_analysis();
+
+    // TLorentzVector tbar_jet = jet2 + jet3;
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
     b->SetLabFrameFourVector(minMlb_lv);
-    J0->SetLabFrameFourVector(jet1);
+    // J0->SetLabFrameFourVector(jet1);
+    // Tbar->SetLabFrameFourVector(tbar_jet);
     
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    //JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
+    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
     
@@ -299,7 +301,8 @@ RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, f
   // fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
   // fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
   
-  // RVec<double> temp_observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv);
+  // observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv);
+
   return observables;
 }
 

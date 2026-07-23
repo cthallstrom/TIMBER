@@ -85,14 +85,14 @@ void Tprime_RestFrames_Handler_W::define_tree() {
 void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
     // Combinatoric Group for jets
     JETS.reset(new CombinatoricGroup("JETS", "Jet Jigsaws"));
-    //JETS->AddFrame(*b);
+    JETS->AddFrame(*b);
     JETS->AddFrame(*Tbar);
-    //JETS->AddFrame(*J1);
-    //JETS->AddFrame(*J0);
+    // JETS->AddFrame(*J1);
+    // JETS->AddFrame(*J0);
 
     // jet frames must have at least one element
-    // JETS->SetNElementsForFrame(*b, 1);
-    JETS->SetNElementsForFrame(*Tbar, 2);
+    JETS->SetNElementsForFrame(*b, 1);
+    JETS->SetNElementsForFrame(*Tbar, 2); //WORKED: 2
     //JETS->SetNElementsForFrame(*J1, 1);
     //JETS->SetNElementsForFrame(*J0, 1);
     
@@ -175,14 +175,17 @@ void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
 
 RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3) { //, TLorentzVector &jet4) {
     before_analysis();
+
+    TLorentzVector tbar_jet = jet2 + jet3;
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
-    b->SetLabFrameFourVector(jet1);
+    //b->SetLabFrameFourVector(jet1);
+    //Tbar->SetLabFrameFourVector(tbar_jet);
     
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    //JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
+    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
 
@@ -300,8 +303,7 @@ RVec<double> Tprime_RestFrames_Container_W::return_W_doubles(int thread_index, f
   // fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
   // fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
   
-  // RVec<double> temp_observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3);
-  
+  // observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3);
   return observables;
 }
 
