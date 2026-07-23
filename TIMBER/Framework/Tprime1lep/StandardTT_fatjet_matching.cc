@@ -1,6 +1,8 @@
 //contains fatjet_matching() and jet_tagging() 
+#include <algorithm>
 using namespace std;
 using namespace ROOT::VecOps;
+
 
 //'private' function for fatjet_matching
 auto get_daughters(int idx, unsigned int length, RVec<short> GenPart_genPartIdxMother) 
@@ -351,8 +353,14 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
 auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<float> gcFatJet_PNWM_Z, RVec<float> gcFatJet_PNWM_H, RVec<float> gcFatJet_PNWM_QCD, RVec<float> gcFatJet_GPT_T, RVec<float> gcFatJet_GPT_W, RVec<float> gcFatJet_GPT_ZH, RVec<float> gcFatJet_GPT_QCD, RVec<float> gcFatJet_GPT_regressedMass, RVec<float> gcFatJet_GPTWM_T, RVec<float> gcFatJet_GPTWM_W, RVec<float> gcFatJet_GPTWM_Z, RVec<float> gcFatJet_subJetIdx1, RVec<float> gcFatJet_subJetIdx2, RVec<float> SubJet_btagUParTAK4B, float UparTmed,RVec<TLorentzVector> gcJet_P4,RVec<TLorentzVector> gcFatJet_P4, RVec<float> gcJet_UParTM, RVec<float> gcFatJet_GPTWM_ToQCD, RVec<float> gcFatJet_GPTWM_WoQCD, RVec<float> gcFatJet_GPTWM_ZoQCD) //last three args currently unused
 {
   //std::cout << "Entering jet_tagging" << std::endl;
-  RVec<int> PNWMtag;
-  RVec<int> PNWMscore;
+  RVec<float> PNWMtag;
+  RVec<float> PNWMscore;
+  float nT = 0.;
+  float nH = 0.;
+  float nW = 0.;
+  float nZ = 0.;
+  float nB = 0.;
+  float PNWMmostTags;
   //RVec<int> GPTtag;
   //RVec<int> GPTWMtag;
   
@@ -361,24 +369,53 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
     std::vector<float> PNWMscores = {gcFatJet_PNWM_T[i], gcFatJet_PNWM_W[i], gcFatJet_PNWM_Z[i], gcFatJet_PNWM_H[i], gcFatJet_PNWM_QCD[i]};
     auto max_addr = std::max_element(PNWMscores.begin(), PNWMscores.end());
     int max_index = std::distance(PNWMscores.begin(), max_addr);
-    PNWMscore.push_back(PNWMscores[max_index]);
+    if(max_index == 0) {
+      PNWMtag.push_back(6.0);
+      PNWMscore.push_back(gcFatJet_PNWM_T[i]);
+      nT++;
+    }
+    if(max_index == 1) {
+      PNWMtag.push_back(24.0);
+      PNWMscore.push_back(gcFatJet_PNWM_W[i]);
+      nW++;
+    }
+    if(max_index == 2) {
+      PNWMtag.push_back(23.0);
+      PNWMscore.push_back(gcFatJet_PNWM_Z[i]);
+      nZ++;
+    }
+    if(max_index == 3) {
+      PNWMtag.push_back(25.0);
+      PNWMscore.push_back(gcFatJet_PNWM_H[i]);
+      nH++;
+    }
     
-    if(max_index == 0) PNWMtag.push_back(6);
-    if(max_index == 1) PNWMtag.push_back(24);
-    if(max_index == 2) PNWMtag.push_back(23);
-    if(max_index == 3) PNWMtag.push_back(25);
     if(max_index == 4)
     {
       int subjetIdx1 = gcFatJet_subJetIdx1[i];
       int subjetIdx2 = gcFatJet_subJetIdx2[i];
       if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed))
       {
-        PNWMtag.push_back(5);
-      }else{PNWMtag.push_back(0);}
+	PNWMscore.push_back(gcFatJet_PNWM_QCD[i]);
+        PNWMtag.push_back(5.0);
+	nB++;
+      }else{
+	PNWMscore.push_back(0.0);
+	PNWMtag.push_back(0.0);
+      }
     }
-    
   }
+
+  int max_type = max({nT, nW, nZ, nH, nB});
+  if (max_type == nT) PNWMmostTags = 1.0;
+  else if (max_type == nH) PNWMmostTags = 2.0;
+  else if (max_type == nZ) PNWMmostTags = 3.0;
+  else if (max_type == nW) PNWMmostTags = 4.0;
+  else if (max_type == nB) PNWMmostTags = 5.0;
+  else PNWMmostTags = 0.0;
+    
   //RVec<RVec<int>> taggerResults = {PNWMtag, GPTtag, GPTWMtag};
-  RVec<RVec<int>> taggerResults = {PNWMtag, PNWMscore};
+  RVec<float> PNWMints = {PNWMmostTags, nT, nH, nZ, nW, nB};
+  RVec<RVec<float>> taggerResults = {PNWMtag, PNWMscore, PNWMints};
   return taggerResults;
 }
