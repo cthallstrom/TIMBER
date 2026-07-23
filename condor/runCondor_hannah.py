@@ -10,9 +10,10 @@ exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read()) # this is a python2
 start_time = time.time()
 
 # --- Sample Dictionary ---
-sample_dic = samples_mc_standard
+sample_dic = samples_mc_test
+#sample_dic = samples_mc_standard
 #sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
-run2025 = True
+run2025 = False
 
 # --- Size of Condor Job ---
 filesPerJob = 999
@@ -169,7 +170,7 @@ Queue 1"""%dict)
 
             if run2025:
                 #PREFIX = PREFIX.replace("2024","2025")
-                jdfName=condorDir+prefix.replace("2024"."2025")+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
+                jdfName=condorDir+prefix.replace("2024","2025")+'/%(PREFIX)s_%(TESTNUM1)s.job'%dict
                 print ("jdfname: ",jdfName)
                 jdf=open(jdfName,'w')
                 jdf.write(
@@ -187,7 +188,7 @@ Arguments = %(FILENAME)s %(OUTPUTDIR)s %(TESTNUM1)s %(TESTNUM2)s 2025
 
 Queue 1"""%dict)
                 jdf.close()
-                os.chdir('%s/'%(condorDir+prefix.replace()))"2024","2025")))
+                os.chdir('%s/'%(condorDir+prefix.replace("2024","2025")))
                 os.system('condor_submit %(PREFIX)s_%(TESTNUM1)s.job'%dict)
                 os.system('sleep 0.5')                                
                 os.chdir('%s'%(runDir))
