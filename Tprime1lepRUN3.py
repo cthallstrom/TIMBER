@@ -135,8 +135,18 @@ ROOT.gInterpreter.ProcessLine('#include "TString.h"')
 # Enable using 4 threads
 ROOT.ROOT.EnableImplicitMT(num_threads)
 
-handler_name1 = 'Tprime_handler_W.cc'
-handler_name2 = 'Tprime_handler_t.cc'
+#plain RJR
+#handler_name1 = 'Tprime_handler_W.cc'
+#handler_name2 = 'Tprime_handler_t.cc'
+
+#RJR no comb
+#handler_name1 = 'Tprime_handler_W_noComb.cc'
+#handler_name2 = 'Tprime_handler_t_noComb.cc'
+
+#manRJR
+handler_name1 = 'Tprime_handler_W_manRJR.cc'
+handler_name2 = 'Tprime_handler_t_manRJR.cc'
+
 class_name1 = 'Tprime_RestFrames_Container_W'
 class_name2 = 'Tprime_RestFrames_Container_t'
 
@@ -554,22 +564,23 @@ def analyze(jesvar):
     tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
   
   tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
-  tagVars.Add("gcFatJet_PNWMtags", "gcFatJet_tags[0]")
+  tagVars.Add("gcFatJet_PNWMtags", "return ROOT::VecOps::RVec<int>(gcFatJet_tags[0]);")
   tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
-  #tagVars.Add("gcFatJet_GPTtags", "gcFatJet_tags[1]")
-  #tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
-
-  tagVars.Add("gcFatJet_nT","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 6) count++;} return count;")
-  tagVars.Add("gcFatJet_nW","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 24) count++;} return count;")
-  tagVars.Add("gcFatJet_nZ","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 23) count++;} return count;")
-  tagVars.Add("gcFatJet_nH","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 25) count++;} return count;")
-  tagVars.Add("gcFatJet_nB","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 0) count++;} return count;")
+  tagVars.Add("tags","gcFatJet_tags[2]")
+  tagVars.Add("gcFatJet_PNWM_mostTags","int(tags[0])")
+  tagVars.Add("gcFatJet_nT","int(tags[1])")
+  tagVars.Add("gcFatJet_nH","int(tags[2])")
+  tagVars.Add("gcFatJet_nZ","int(tags[3])")
+  tagVars.Add("gcFatJet_nW","int(tags[4])")
+  tagVars.Add("gcFatJet_nB","int(tags[5])")
 
   if isSig:
     #tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
-    tagVars.Add("newDecayModes", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
+    #tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    #tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
+    tagVars.Add("decays", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
+    tagVars.Add("true_decays_TT","decays[0]")
+    tagVars.Add("true_decays_BB","decays[1]")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
@@ -609,8 +620,8 @@ def analyze(jesvar):
   recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
   recoVars.Add("dRtl", "t_lv.DeltaR(lepton_lv)")
   recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
-  recoVars.Add("tagTdecays", "int(TBp[0])")
-  recoVars.Add("tagBdecays", "int(TBp[1])")
+  recoVars.Add("man_decays_TT", "int(TBp[0])")
+  recoVars.Add("man_decays_BB", "int(TBp[1])")
 
   if isTpTp:
     recoVars.Add("J0_idx", "TBp[28]")
@@ -742,7 +753,7 @@ def analyze(jesvar):
      if col.startswith("nOther") or col.startswith("nPS") or col.startswith("nPhoton"): continue
      if col.startswith("nSV") or col.startswith("nSub") or col.startswith("nTau") or col.startswith("nTrig"): continue
      if col.startswith("nboosted"): continue
-     if col == "tauBUG" or col == "Matching" or col == "ObjectList" or col == "manual": continue
+     if col == "tauBUG" or col == "Matching" or col == "ObjectList" or col == "manual" or col == "tags": continue
      if col.startswith("BeamSpot") or col.startswith("Lepton") or col.startswith("iLepton"): continue
      if col.startswith("MET") or col.startswith("RawPuppiMET"): continue
      if col.startswith("RJR_"): continue
