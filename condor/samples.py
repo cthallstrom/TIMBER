@@ -718,7 +718,7 @@ ZZ2L2Nu2024 = sample("ZZ2L2Nu2024", 1.031, "2024", "ZZ2L2Nu2024NanoList.txt", "/
 TTH2B2024 = sample("TTH2B2024", 0.5742, "2024", "TTH2B2024NanoList.txt", "/TTH-Hto2B_Par-M-125_TuneCP5_13p6TeV_powheg-pythia8/RunIII2024Summer24NanoAODv15-150X_mcRun3_2024_realistic_v2-v2/NANOAODSIM")
 
 sample_test = {
-    "SingleElecRun2022C":      SingleElecRun2022C,
+    "TpTp_M1700_2024": TpTp_M1700_2024 ,
 }
 
 samples_data = {

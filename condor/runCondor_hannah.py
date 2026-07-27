@@ -10,7 +10,7 @@ exec(open("/uscms_data/d3/jmanagan/EOSSafeUtils.py").read()) # this is a python2
 start_time = time.time()
 
 # --- Sample Dictionary ---
-sample_dic = samples_mc_test
+sample_dic = sample_test
 #sample_dic = samples_mc_standard
 #sample_dic = samples_data # This is the name of the list (using list of class objects to keep ordering)
 run2025 = False
