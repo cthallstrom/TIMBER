@@ -63,17 +63,17 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
 
   //std::cout << "Inside fatjet_matching. Will now beign matching:" << std::endl;
   //std::cout << "There are " << nGenPart << " particles in total."  << std::endl;
-  std::cout << "===================================" << std::endl;
+  //std::cout << "===================================" << std::endl;
   for(unsigned int i = 0; i < 60; i++){ //Changed top of range from nGenPart to 60
     int p = i; //initialize the parent idx
     int id = GenPart_pdgId[p];
-    std::cout << "Starting particle " << i << " it is a: " << id << " Mother is " << GenPart_genPartIdxMother[i] << " of type " << GenPart_pdgId[GenPart_genPartIdxMother[i]] << std::endl;
+    //std::cout << "Starting particle " << i << " it is a: " << id << " Mother is " << GenPart_genPartIdxMother[i] << " of type " << GenPart_pdgId[GenPart_genPartIdxMother[i]] << std::endl;
     
     bool hasRadiation = false;
     bool hasLepton = false;
 
     if(abs(id) == 23 || abs(id) == 24 || abs(id) == 25 || abs(id) == 6){
-      std::cout << "\t Now checking for radiation and leptons." << std::endl;
+      //std::cout << "\t Now checking for radiation and leptons." << std::endl;
       vector<unsigned int> daughters = get_daughters(p, nGenPart, GenPart_genPartIdxMother);
 
       //check for radiation and leptons
@@ -103,15 +103,15 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
 		    granddaughters = get_daughters(daughters[j], nGenPart, GenPart_genPartIdxMother);
 		  }
 		}
-		std::cout << "outside of while(granddaughters.size() == 1|| GenPart_pdgId[granddaughters[0]] == 22 || GenPart_pdgId[granddaughters[1]] == 22 || GenPart_pdgId[granddaughters[0]] == 21 || GenPart_pdgId[granddaughters[1]] == 21 || granddaughters[0] != 9999)" << std::endl;
+		//std::cout << "outside of while(granddaughters.size() == 1|| GenPart_pdgId[granddaughters[0]] == 22 || GenPart_pdgId[granddaughters[1]] == 22 || GenPart_pdgId[granddaughters[0]] == 21 || GenPart_pdgId[granddaughters[1]] == 21 || granddaughters[0] != 9999)" << std::endl;
 		if (granddaughters[0] == 9999) {
-		  std::cout << "skipping this event bc granddaughters[0] == 9999" << std::endl;
+		  //std::cout << "skipping this event bc granddaughters[0] == 9999" << std::endl;
 		  continue;
 		}
 		if(abs(GenPart_pdgId[granddaughters[0]]) > 10 && abs(GenPart_pdgId[granddaughters[0]]) < 17) {hasLepton = true;}
 		if(abs(GenPart_pdgId[granddaughters[1]]) > 10 && abs(GenPart_pdgId[granddaughters[1]]) < 17) {hasLepton = true;}
 	      }else if(abs(dID) > 10 && abs(dID) < 17) {hasLepton = true;}
-	      std::cout << "at bottom of loop" << std::endl;
+	      //std::cout << "at bottom of loop" << std::endl;
       }
       //if(hasRadiation || hasLepton || GenPart_pt[p] < 175) {
       //	      //std::cout << "\t \t Particle either has radiation, a lepton, or is too soft. skip this one." << std::endl;
@@ -179,7 +179,7 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
 	  if(dr < dRZZ) dRZZ = dr;
 	}
 
-	std::cout << "\t \t dR = " << dRZZ << std::endl;
+	//std::cout << "\t \t dR = " << dRZZ << std::endl;
 	if(dRZZ < 0.8) continue; // Z from merged H
       }
               
