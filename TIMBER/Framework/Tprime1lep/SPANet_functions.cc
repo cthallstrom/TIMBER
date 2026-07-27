@@ -257,19 +257,25 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
 
   RVec<float> fatjet_truth;
   RVec<float> fatjet_slot;
+  RVec<float> particle_slot (3, 0);
+  particle_slot.clear();
   RVec<float> fatjet_matchedPt;
 
-   std::cout << "===================== True Particle Candidates ====================" << std::endl;
-   std::cout << pIdx << ", " << pID << std::endl;
-   std::cout << "===================== leptonic and hadronic options ====================" << std::endl;
-   std::cout << GenPart_pdgId[Tlepidx] << " {" << lep2idx << ", " << had1idx << ", " << had2idx << "}" << "{" << GenPart_pdgId[lep2idx] << ", " << GenPart_pdgId[had1idx] << ", " << GenPart_pdgId[had2idx] << "}" << endl;
-
+  // if(pID.size() == 3){
+  //  std::cout << "===================== True Particle Candidates ====================" << std::endl;
+  //  std::cout << pIdx << ", " << pID << " Jets to match: " << gcFatJet_pt.size() <<std::endl;
+  //  std::cout << "===================== leptonic and hadronic options ====================" << std::endl;
+  //  std::cout << GenPart_pdgId[Tlepidx] << " {" << lep2idx << ", " << had1idx << ", " << had2idx << "}" << "{" << GenPart_pdgId[lep2idx] << ", " << GenPart_pdgId[had1idx] << ", " << GenPart_pdgId[had2idx] << "}" << endl;
+  // }
 
   //std::cout << "===================== Investigating " << gcFatJet_pt.size() << " fatJets ====================" << std::endl;
 
-  int lepFJIdx = -1;
-  int had1FJIdx = -1;
-  int had2FJIdx = -1;
+  cout << "Start of Event" << endl;
+  cout << particle_slot << endl;
+
+  int lepFJIdx = -3;
+  int had1FJIdx = -3;
+  int had2FJIdx = -3;
 
   for(unsigned int i = 0; i < gcFatJet_pt.size(); i++){
     TLorentzVector fatjet, truePart, d0, d1, d2;
@@ -279,7 +285,7 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
     float minDR = 1000;
     float matchedPt= -99;
     int matchedID = 0;
-	int matchedIdx = -1;
+	  int matchedIdx = -1;
     bool isWmatched = false;
     bool isHmatched = false;
     bool isZmatched = false;
@@ -289,19 +295,19 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
 
     for(unsigned int j = 0; j < pPt.size(); j++){
       truePart.SetPtEtaPhiM(pPt[j], pEta[j], pPhi[j], pM[j]);
-
+      cout << pIdx[j] << ", ";
       if(fatjet.DeltaR(truePart) < minDR) {
         //std::cout << "\t fatjet DeltaR with truePart " << j << " = " << fatjet.DeltaR(truePart) << std::endl;
         minDR = fatjet.DeltaR(truePart);
         matchedPt = pPt[j];
         matchedID = abs(pID[j]);
-		matchedIdx = pIdx[j];
+		    matchedIdx = pIdx[j];
         d0.SetPtEtaPhiM(d0Pt[j], d0Eta[j], d0Phi[j], d0M[j]);
         d1.SetPtEtaPhiM(d1Pt[j], d1Eta[j], d1Phi[j], d1M[j]);
         d2.SetPtEtaPhiM(d2Pt[j], d2Eta[j], d2Phi[j], d2M[j]);
         //std::cout << "\t Succesfully initialized daughter TLorentz Vecs" << std::endl;
       }
-    }
+    } cout << endl;
     
     bool WallDsInJet = false;
     bool TallDsInJet = false;
@@ -312,10 +318,25 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
     if(minDR < 0.8 && matchedID == 23 && WallDsInJet) isZmatched = true;
     if(minDR < 0.8 && matchedID == 6  && TallDsInJet) isTmatched = true;
 
-	if(matchedIdx == lep2idx) lepFJIdx = i;
-	if(matchedIdx == had1idx) had1FJIdx = i;
-	if(matchedIdx == had2idx) had2FJIdx = i;
-    
+    if(matchedIdx == lep2idx) {
+      std::cout << "Assigning lep2idx: " << matchedIdx<< endl;
+      lepFJIdx = i;
+      particle_slot[0] = matchedIdx;
+      cout << "part is: " << particle_slot[0] << endl;
+    }
+    if(matchedIdx == had1idx) {
+      std::cout << "Assigning had1idx: " << matchedIdx<< endl;
+      had1FJIdx = i;
+      particle_slot[1] = matchedIdx;
+      cout << "part is: " << particle_slot[1] << endl;
+    }
+    if(matchedIdx == had2idx) {
+      std::cout << "Assigning had2idx: " << matchedIdx<< endl;
+      had2FJIdx = i; 
+      particle_slot[2] = matchedIdx;
+      cout << "part is: " << particle_slot[2] << endl;
+    }
+
     if(isWmatched || isZmatched || isHmatched || isTmatched) {
       //std::cout << "\t Found a match for the fatjet: W - " << isWmatched << ", H - " << isHmatched << ", Z - " << isZmatched << ", t - " << isTmatched << std::endl;
       fatjet_matchedPt.push_back(matchedPt);
@@ -367,6 +388,8 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
   RVec<RVec<float>> returns;
   returns.push_back(fatjet_truth);
   returns.push_back(fatjet_slot);
+  returns.push_back(particle_slot);
+  std::cout << particle_slot << ", " << lep2idx << ", " << had1idx << ", " << had2idx << endl;
   return returns;
 }
 
@@ -519,14 +542,14 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
     int BleptonicIdx = -1;
     if((Tmode < 107 && Tmode > 100) || (Tmode < 1007 && Tmode > 1000)) {
         TdecayMode = Tmode;
-        if(leptonicT != -1) TleptonicIdx = leptonicT;
-        else if(leptonicW != -1) TleptonicIdx = leptonicW;
+        if(ogTidx != -1) TleptonicIdx = ogTidx;
+        else if(ogWidx != -1) TleptonicIdx = ogWidx;
     }
 	
     if((Bmode < 107 && Bmode > 100) || (Bmode < 1007 && Bmode > 1000)) {
         BdecayMode = Bmode;
-        if(leptonicT != -1) BleptonicIdx = leptonicT;
-        else if(leptonicW != -1) BleptonicIdx = leptonicW;
+        if(ogTidx != -1) BleptonicIdx = ogTidx;
+        else if(ogWidx != -1) BleptonicIdx = ogWidx;
     }
 
 	int idx = -1;
@@ -540,9 +563,9 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 
 	//cout << "idx, TleptonicIdx" << idx << ", " << TleptonicIdx << endl;
 
-	while (idx >= 0 && abs(GenPart_pdgId[GenPart_genPartIdxMother[idx]]) != 6000006) {
-    	idx = GenPart_genPartIdxMother[idx];
-	}
+	// while (idx >= 0 && abs(GenPart_pdgId[GenPart_genPartIdxMother[idx]]) != 6000006) {
+    // 	idx = GenPart_genPartIdxMother[idx];
+	// }
 	// std::cout << "lepVLQidx: " << GenPart_genPartIdxMother[idx] << std::endl;
 	// std::cout << "VLQ idxs: " << primes[0] << ", " << primes[1] << std::endl;
 	if(GenPart_genPartIdxMother[idx] != -1) lepVLQidx = GenPart_genPartIdxMother[idx];
@@ -588,8 +611,8 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 	RVec<int> decayModes;
 	decayModes.push_back(TdecayMode);
 	decayModes.push_back(BdecayMode);
-    decayModes.push_back(TleptonicIdx);
-    decayModes.push_back(BleptonicIdx);
+  decayModes.push_back(TleptonicIdx);
+  decayModes.push_back(BleptonicIdx);
 	decayModes.push_back(lep2idx);
 	decayModes.push_back(had1idx);
 	decayModes.push_back(had2idx);
