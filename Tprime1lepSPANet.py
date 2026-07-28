@@ -552,6 +552,7 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_GPTWM_W", "reorder(FatJet_globalParT3_withMassWvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_GPTWM_Z", "reorder(FatJet_globalParT3_withMassZvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   
+  tagVars.Add("isSig", "true" if isSig else "false")
   if isSig:
     tagVars.Add("isTpTp", "true" if isTpTp else "false")
     tagVars.Add("temp_newDecayModes", "SPADecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, isTpTp)")
@@ -562,6 +563,7 @@ def analyze(jesvar):
     tagVars.Add("lep2idx", "temp_newDecayModes[4]")
     tagVars.Add("had1idx", "temp_newDecayModes[5]")
     tagVars.Add("had2idx", "temp_newDecayModes[6]")
+    tagVars.Add("bidx", "temp_newDecayModes[7]")
     tagVars.Add("GenPart_P4", "fVectorConstructor(GenPart_pt,GenPart_eta,GenPart_phi,GenPart_mass)")
 
     trainCuts = CutGroup("trainCuts")
@@ -579,12 +581,13 @@ def analyze(jesvar):
     # tagVars.Add("gcFatJet_lep2partidx", "int(temp_gcFatJet_matching[2][0])")
     # tagVars.Add("gcFatJet_had1partidx", "int(temp_gcFatJet_matching[2][1])")
     # tagVars.Add("gcFatJet_had2partidx", "int(temp_gcFatJet_matching[2][2])")
-    tagVars.Add("gcFatJet_assignment", "SPAIndexMatcher(gcFatJet_eta, gcFatJet_phi, GenPart_eta, GenPart_phi, lep2idx, had1idx, had2idx)")
-    tagVars.Add("gcFatJet_lep2idx", "gcFatJet_assignment[0]")
-    tagVars.Add("gcFatJet_had1idx", "gcFatJet_assignment[1]")
-    tagVars.Add("gcFatJet_had2idx", "gcFatJet_assignment[2]")
+    tagVars.Add("index_assignment", "SPAIndexMatcher(gcJet_eta, gcJet_phi, gcJet_BTagM, gcFatJet_eta, gcFatJet_phi, GenPart_eta, GenPart_phi, lep2idx, had1idx, had2idx, bidx)")
+    tagVars.Add("gcFatJet_lep2idx", "index_assignment[0]")
+    tagVars.Add("gcFatJet_had1idx", "index_assignment[1]")
+    tagVars.Add("gcFatJet_had2idx", "index_assignment[2]")
+    tagVars.Add("gcJet_bidx", "index_assignment[3]")
 
-    trainCuts.Add("Has 3 matched jets", "gcFatJet_assignment[0] != -1")
+    trainCuts.Add("Has 3 matched jets", "index_assignment[0] != -1")
 
     # tagVars.Add("comp_primes", "get_lastcopy_tprimes(GenPart_pdgId, GenPart_statusFlags, GenPart_pt)")
     # tagVars.Add("comp_daughters", "get_tprime_daughters(comp_primes, GenPart_pdgId, GenPart_genPartIdxMother)")
