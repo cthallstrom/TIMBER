@@ -1,12 +1,13 @@
 import h5py, numpy as np
 from ROOT import TFile, TTree, TH1D, TH2D, TCanvas, gStyle, gPad, TLatex
 
-file_str = "RDF_TprimeTprime_Par-M-1200_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
+file_str = "SPA_TprimeTprime_Par-M-1400_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
 inFile = TFile.Open(file_str)
 
 t = inFile.Get("Events_Nominal")
+print("Opened ROOT file")
 
-n_events = t.GetEntries()
+n_events = 1000
 n_Ak8 = 10
 n_Ak4 = 10
 n_features = n_Ak4 + n_Ak8 + 1
@@ -26,9 +27,23 @@ met = np.zeros(n_events)
 met_cos_phi = np.zeros(n_events)
 met_sin_phi = np.zeros(n_events)
 
+# Initialize True Index Arrays
+lep2idx = np.zeros(n_events)
+had1idx = np.zeros(n_events)
+had2idx = np.zeros(n_events)
+bidx = np.zeros(n_events)
+lepidx = np.zeros(n_events)
 
-for event in range(t.GetEntries()):
+# Initialize isSig array
+isSig = np.zeros(n_events)
+
+print("Initialized np arrays, beginning to loop over events")
+
+for event in range(0,n_events):
+    holder = 0 # initialize holder for transferring b index values
     t.GetEntry(event)
+
+    print(f"Event #{event}")
 
     # Initialize padded fatjet arrays
     fatjet_padded_mass = np.full(n_Ak8, 0.0)
@@ -96,17 +111,37 @@ for event in range(t.GetEntries()):
     sin_phi_all[event] = sin_phi
     btag_all[event] = btag
     leptag_all[event] = leptag
-
-    # Fill MASK array
-    mask_all = (mass_all != 0) | (leptag_all != 0) | (btag_all != 0)
     
     # Append the MET values
     met[event] = t.corrMET_pt
     met_sin_phi[event] = t.corrMET_sin_phi
     met_cos_phi[event] = t.corrMET_cos_phi
 
+    # Pass in training truth indices
+    lepidx[event] = 0 # Lepton is always in the first slot
+    lep2idx[event] = t.gcFatJet_lep2idx + 1 # +1 in order to account for leptons in the front of the array
+    had1idx[event] = t.gcFatJet_had1idx + 1
+    had2idx[event] = t.gcFatJet_had2idx + 1
+    if t.gcJet_bidx != -1:
+        holder = t.gcJet_bidx + 11
+    else:
+         holder = -1
+    bidx[event] = holder # Need +11 since this is an ak4 index
+    #print(f"{t.gcJet_bidx}, {bidx[event]}")
+
+    # Assign isSig
+    isSig[event] = t.isSig
+
+# Fill MASK array
+mask_all = (mass_all != 0) | (btag_all != 0) | (leptag != 0)
+
+print("Finished looping events")
                 
-with h5py.File("NowwMET.h5", 'w') as f:
+with h5py.File("bidxTest.h5", 'w') as f:
+    Classifications = f.create_group('CLASSIFICATIONS')
+    cEvent = Classifications.create_group('EVENT')
+    Signal = cEvent.create_dataset('Signal', data=isSig)
+
     Inputs = f.create_group('INPUTS')
     Momenta = Inputs.create_group('Momenta')
     ds_mask = Momenta.create_dataset('MASK', data=mask_all)
@@ -122,3 +157,16 @@ with h5py.File("NowwMET.h5", 'w') as f:
     ds_met = Met.create_dataset('met', data=met)
     ds_met_cos_phi = Met.create_dataset('cos_phi', data=met_cos_phi)
     ds_met_sin_phi = Met.create_dataset('sin_phi', data=met_sin_phi)
+
+    Targets = f.create_group('TARGETS')
+    VLQ1 = Targets.create_group('VLQ1')
+    jet = VLQ1.create_dataset('jet', data=lep2idx)
+    lep = VLQ1.create_dataset('lep', data=lepidx)
+    b = VLQ1.create_dataset('b', data=bidx)
+
+    VLQ2 = Targets.create_group('VLQ2')
+    jet1 = VLQ2.create_dataset('jet1', data=had1idx)
+    jet2 = VLQ2.create_dataset('jet2', data=had2idx)
+
+    Regressions = f.create_group('REGRESSIONS')
+    rEvent = Regressions.create_group('EVENT')
