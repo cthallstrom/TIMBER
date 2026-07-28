@@ -47,10 +47,10 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
   RVec<float> d2Phi;
   RVec<float> d2M;
 
-  //std::cout << "Inside fatjet_matching. Will now beign matching:" << std::endl;
-  //std::cout << "There are " << nGenPart << " particles in total."  << std::endl;
+  // std::cout << "Inside fatjet_matching. Will now beign matching:" << std::endl;
+  // std::cout << "There are " << nGenPart << " particles in total."  << std::endl;
   //std::cout << "===================================" << std::endl;
-  for(unsigned int i = 0; i < 60; i++){ //Changed top of range from nGenPart to 60
+  for(unsigned int i = 0; i < 120; i++){ //Changed top of range from nGenPart to 60
     int p = i; //initialize the parent idx
     int id = GenPart_pdgId[p];
     //std::cout << "Starting particle " << i << " it is a: " << id << " Mother is " << GenPart_genPartIdxMother[i] << " of type " << GenPart_pdgId[GenPart_genPartIdxMother[i]] << std::endl;
@@ -270,8 +270,8 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
 
   //std::cout << "===================== Investigating " << gcFatJet_pt.size() << " fatJets ====================" << std::endl;
 
-  cout << "Start of Event" << endl;
-  cout << particle_slot << endl;
+  // cout << "Start of Event" << endl;
+  // cout << particle_slot << endl;
 
   int lepFJIdx = -3;
   int had1FJIdx = -3;
@@ -295,7 +295,7 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
 
     for(unsigned int j = 0; j < pPt.size(); j++){
       truePart.SetPtEtaPhiM(pPt[j], pEta[j], pPhi[j], pM[j]);
-      cout << pIdx[j] << ", ";
+      //cout << pIdx[j] << ", ";
       if(fatjet.DeltaR(truePart) < minDR) {
         //std::cout << "\t fatjet DeltaR with truePart " << j << " = " << fatjet.DeltaR(truePart) << std::endl;
         minDR = fatjet.DeltaR(truePart);
@@ -307,7 +307,7 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
         d2.SetPtEtaPhiM(d2Pt[j], d2Eta[j], d2Phi[j], d2M[j]);
         //std::cout << "\t Succesfully initialized daughter TLorentz Vecs" << std::endl;
       }
-    } cout << endl;
+    } //cout << endl;
     
     bool WallDsInJet = false;
     bool TallDsInJet = false;
@@ -319,22 +319,22 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
     if(minDR < 0.8 && matchedID == 6  && TallDsInJet) isTmatched = true;
 
     if(matchedIdx == lep2idx) {
-      std::cout << "Assigning lep2idx: " << matchedIdx<< endl;
+      //std::cout << "Assigning lep2idx: " << matchedIdx<< endl;
       lepFJIdx = i;
       particle_slot[0] = matchedIdx;
-      cout << "part is: " << particle_slot[0] << endl;
+      //cout << "part is: " << particle_slot[0] << endl;
     }
     if(matchedIdx == had1idx) {
-      std::cout << "Assigning had1idx: " << matchedIdx<< endl;
+      //std::cout << "Assigning had1idx: " << matchedIdx<< endl;
       had1FJIdx = i;
       particle_slot[1] = matchedIdx;
-      cout << "part is: " << particle_slot[1] << endl;
+      //cout << "part is: " << particle_slot[1] << endl;
     }
     if(matchedIdx == had2idx) {
-      std::cout << "Assigning had2idx: " << matchedIdx<< endl;
+      //std::cout << "Assigning had2idx: " << matchedIdx<< endl;
       had2FJIdx = i; 
       particle_slot[2] = matchedIdx;
-      cout << "part is: " << particle_slot[2] << endl;
+      //cout << "part is: " << particle_slot[2] << endl;
     }
 
     if(isWmatched || isZmatched || isHmatched || isTmatched) {
@@ -389,7 +389,7 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
   returns.push_back(fatjet_truth);
   returns.push_back(fatjet_slot);
   returns.push_back(particle_slot);
-  std::cout << particle_slot << ", " << lep2idx << ", " << had1idx << ", " << had2idx << endl;
+  //std::cout << particle_slot << ", " << lep2idx << ", " << had1idx << ", " << had2idx << endl;
   return returns;
 }
 
@@ -493,7 +493,6 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 	// Code taken from Nicolas's decay mode finder
 	int index, prev, child;
 	// W's
-    int leptonicW = -1;
 	int ogWidx = -1;
 	for (int i = 0; i < Ws.size(); i++) {
 		index = prev = Ws.at(i);
@@ -505,7 +504,6 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 				if (child == 24) { // it's a W
 				prev = index;
 				} else if (11 <= child && child <= 16) { // it's a lepton!
-                    leptonicW = index;
 					ogWidx = Ws.at(i);
 					Tmode += 100;
 					Bmode += 100;
@@ -516,7 +514,6 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 	}
 
 	// t's
-    int leptonicT = -1;
 	int ogTidx = -1;
 	for (int i = 0; i < ts.size(); i++) {
 		index = prev = ts.at(i);
@@ -524,33 +521,46 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 		for (++index; index < nGenPart; index++) {
 			if (GenPart_genPartIdxMother[index] == prev) { // Found a child of t!
 				child = abs(GenPart_pdgId[index]);
-
                 if (child == 6 || child ==24) { // it's a t or a W
                     prev = index;
                 } else if (11 <= child && child <= 16) { // it's a lepton!
-                    leptonicT = index;
-					ogTidx = ts.at(i);
+					          ogTidx = ts.at(i);
                     Tmode += 1000;
                     Bmode += 1000;
                     break;
                 } else { break; } // non-leptonic decay
 			}
-		}
+		}  
 	}
+
+  int current_top = ogTidx;
+	int bidx;
+  for (int i = ogTidx + 1; i < nGenPart; i++) {
+    if (GenPart_genPartIdxMother[i] == current_top && abs(GenPart_pdgId[i]) == 6) {
+      current_top = i; // Follow the top line to its final state
+    }
+  }
+  for (int i = 0; i < nGenPart; i++) {
+    if (GenPart_genPartIdxMother[i] == current_top && abs(GenPart_pdgId[i]) == 5) {
+      bidx = i;
+      break;
+    }
+  }
+
     
-    int TleptonicIdx = -1;
-    int BleptonicIdx = -1;
-    if((Tmode < 107 && Tmode > 100) || (Tmode < 1007 && Tmode > 1000)) {
-        TdecayMode = Tmode;
-        if(ogTidx != -1) TleptonicIdx = ogTidx;
-        else if(ogWidx != -1) TleptonicIdx = ogWidx;
-    }
-	
-    if((Bmode < 107 && Bmode > 100) || (Bmode < 1007 && Bmode > 1000)) {
-        BdecayMode = Bmode;
-        if(ogTidx != -1) BleptonicIdx = ogTidx;
-        else if(ogWidx != -1) BleptonicIdx = ogWidx;
-    }
+  int TleptonicIdx = -1;
+  int BleptonicIdx = -1;
+  if((Tmode < 107 && Tmode > 100) || (Tmode < 1007 && Tmode > 1000)) {
+      TdecayMode = Tmode;
+      if(ogTidx != -1) TleptonicIdx = ogTidx;
+      else if(ogWidx != -1) TleptonicIdx = ogWidx;
+  }
+
+  if((Bmode < 107 && Bmode > 100) || (Bmode < 1007 && Bmode > 1000)) {
+      BdecayMode = Bmode;
+      if(ogTidx != -1) BleptonicIdx = ogTidx;
+      else if(ogWidx != -1) BleptonicIdx = ogWidx;
+  }
 
 	int idx = -1;
 	int lepVLQidx = -1;
@@ -606,8 +616,8 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 		}
 	}
 	
-	// std::cout << "Modes are: " << TdecayMode << ", " << BdecayMode << std::endl;
-    // std::cout << TleptonicIdx << ", "<< leptonicT << ", " << leptonicW << std::endl;
+	//std::cout << "Modes are: " << TdecayMode << ", " << BdecayMode << std::endl;
+  //cout << bidx << endl;
 	RVec<int> decayModes;
 	decayModes.push_back(TdecayMode);
 	decayModes.push_back(BdecayMode);
@@ -616,6 +626,46 @@ auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPa
 	decayModes.push_back(lep2idx);
 	decayModes.push_back(had1idx);
 	decayModes.push_back(had2idx);
-
+  if((TdecayMode < 1007 && TdecayMode > 1000) || (BdecayMode < 1007 && BdecayMode > 1000)){
+    decayModes.push_back(bidx);
+  } else decayModes.push_back(-1);
+  //cout << decayModes[7] << " Leptonic pair is: " << GenPart_pdgId[lep2idx] << " idx is: " << lep2idx << endl;
 	return decayModes;
+}
+
+auto SPAIndexMatcher(RVec<float> gcFatJet_eta, RVec<float> gcFatJet_phi, RVec<float> GenPart_eta, RVec<float> GenPart_phi, int lep2idx, int had1idx, int had2idx)
+{
+  float minDRlep2 = 999.9;
+  float minDRhad1 = 999.9;
+  float minDRhad2 = 999.9;
+
+  int lep2FJidx = -1;
+  int had1FJidx = -1;
+  int had2FJidx = -1;
+
+  for(int ijet = 0; ijet < gcFatJet_eta.size(); ijet++){
+    if(DeltaR(gcFatJet_eta[ijet], GenPart_eta[lep2idx], gcFatJet_phi[ijet], GenPart_phi[lep2idx]) < minDRlep2) {
+      minDRlep2 = DeltaR(gcFatJet_eta[ijet], GenPart_eta[lep2idx], gcFatJet_phi[ijet], GenPart_phi[lep2idx]);
+      lep2FJidx = ijet;
+    }
+    if(DeltaR(gcFatJet_eta[ijet], GenPart_eta[had1idx], gcFatJet_phi[ijet], GenPart_phi[had1idx]) < minDRhad1) {
+      minDRhad1 = DeltaR(gcFatJet_eta[ijet], GenPart_eta[had1idx], gcFatJet_phi[ijet], GenPart_phi[had1idx]);
+      had1FJidx = ijet;
+    }
+    if(DeltaR(gcFatJet_eta[ijet], GenPart_eta[had2idx], gcFatJet_phi[ijet], GenPart_phi[had2idx]) < minDRhad2) {
+      minDRhad2 = DeltaR(gcFatJet_eta[ijet], GenPart_eta[had2idx], gcFatJet_phi[ijet], GenPart_phi[had2idx]);
+      had2FJidx = ijet;
+    }
+  }
+
+  RVec<int> indices;
+  if(lep2FJidx == had1FJidx || had1FJidx == had2FJidx || had2FJidx == lep2FJidx) indices.push_back(-1);
+  else{
+    indices.push_back(lep2FJidx);
+    indices.push_back(had1FJidx);
+    indices.push_back(had2FJidx);
+  }
+  //cout << indices << endl;
+
+  return indices;
 }

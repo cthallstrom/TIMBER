@@ -460,7 +460,6 @@ def analyze(jesvar):
   gcjetVars.Add("goodcleanFatJets", "FatJet_pt > 200 && abs(FatJet_eta) < 2.4 && (DR_lepFatJets > 0.8 || ptrel_lepFatJets > 20)")
   gcjetVars.Add("NFatJets", "(int) Sum(goodcleanFatJets)")
   gcjetVars.Add("gcJet_ST","gcJet_HT + corrMET_pt + lepton_pt")
-  gcjetVars.Add("gcJet_leptag", "0")
   
   jCuts = CutGroup('JetCuts')  
   jCuts.Add('Pass HT > 510', 'gcJet_HT > 510')
@@ -504,8 +503,6 @@ def analyze(jesvar):
   jetVars.Add("gcFatJet_subJetIdx2", "reorder(FatJet_subJetIdx2[goodcleanFatJets == true], gcFatJet_ptargsort)")  
   jetVars.Add("gcFatJet_vetomap", "jetvetofunc(jetvetocorr, gcFatJet_eta, gcFatJet_phi)")
   jetVars.Add("gcFatJet_P4", "fVectorConstructor(gcFatJet_pt,gcFatJet_eta,gcFatJet_phi,gcFatJet_mass)")
-  jetVars.Add("gcFatJet_btag", "0")
-  jetVars.Add("gcFatJet_leptag", "0")
   jetVars.Add("gcFatJet_subJetBTag", "SubJet_btagUParTAK4B")
 
   bCuts = CutGroup("BTagCuts")
@@ -565,6 +562,7 @@ def analyze(jesvar):
     tagVars.Add("lep2idx", "temp_newDecayModes[4]")
     tagVars.Add("had1idx", "temp_newDecayModes[5]")
     tagVars.Add("had2idx", "temp_newDecayModes[6]")
+    tagVars.Add("GenPart_P4", "fVectorConstructor(GenPart_pt,GenPart_eta,GenPart_phi,GenPart_mass)")
 
     trainCuts = CutGroup("trainCuts")
     if isTpTp:
@@ -575,17 +573,19 @@ def analyze(jesvar):
   if isMC:
     tagVars.Add("temp_gcFatJet_matching", "SPAfatjet_matching(region, nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, gcFatJet_hadronFlavour, SubJet_hadronFlavour, true_T_lepidx, true_B_lepidx, lep2idx, had1idx, had2idx)")
     tagVars.Add("gcFatJet_truth", "temp_gcFatJet_matching[0]")
-    tagVars.Add("gcFatJet_lep2idx", "int(temp_gcFatJet_matching[1][0])")
-    tagVars.Add("gcFatJet_had1idx", "int(temp_gcFatJet_matching[1][1])")
-    tagVars.Add("gcFatJet_had2idx", "int(temp_gcFatJet_matching[1][2])")
-    tagVars.Add("gcFatJet_lep2partidx", "int(temp_gcFatJet_matching[2][0])")
-    tagVars.Add("gcFatJet_had1partidx", "int(temp_gcFatJet_matching[2][1])")
-    tagVars.Add("gcFatJet_had2partidx", "int(temp_gcFatJet_matching[2][2])")
+    # tagVars.Add("gcFatJet_lep2idx", "int(temp_gcFatJet_matching[1][0])")
+    # tagVars.Add("gcFatJet_had1idx", "int(temp_gcFatJet_matching[1][1])")
+    # tagVars.Add("gcFatJet_had2idx", "int(temp_gcFatJet_matching[1][2])")
+    # tagVars.Add("gcFatJet_lep2partidx", "int(temp_gcFatJet_matching[2][0])")
+    # tagVars.Add("gcFatJet_had1partidx", "int(temp_gcFatJet_matching[2][1])")
+    # tagVars.Add("gcFatJet_had2partidx", "int(temp_gcFatJet_matching[2][2])")
+    tagVars.Add("gcFatJet_assignment", "SPAIndexMatcher(gcFatJet_eta, gcFatJet_phi, GenPart_eta, GenPart_phi, lep2idx, had1idx, had2idx)")
+    tagVars.Add("gcFatJet_lep2idx", "gcFatJet_assignment[0]")
+    tagVars.Add("gcFatJet_had1idx", "gcFatJet_assignment[1]")
+    tagVars.Add("gcFatJet_had2idx", "gcFatJet_assignment[2]")
 
-    # trainCuts.Add("Has 3 matched jets", "gcFatJet_pt.size() == 3 && gcFatJet_canParts.size() == 3")
+    trainCuts.Add("Has 3 matched jets", "gcFatJet_assignment[0] != -1")
 
-    # trainCuts.Add("Correct ak8 assignment", "gcFatJet_lep2partidx == lep2idx && (gcFatJet_had1partidx == had1idx || gcFatJet_had1partidx == had2idx) && (gcFatJet_had2partidx == had2idx || gcFatJet_had2partidx == had1idx)") 
-    trainCuts.Add("Correct ak8 assignment", "gcFatJet_lep2partidx == lep2idx") #&& gcFatJet_had1partidx == had1idx && gcFatJet_had2partidx == had2idx") 
     # tagVars.Add("comp_primes", "get_lastcopy_tprimes(GenPart_pdgId, GenPart_statusFlags, GenPart_pt)")
     # tagVars.Add("comp_daughters", "get_tprime_daughters(comp_primes, GenPart_pdgId, GenPart_genPartIdxMother)")
     # tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
