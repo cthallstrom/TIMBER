@@ -551,11 +551,12 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
   tagVars.Add("tags","gcFatJet_tags[2]")
   tagVars.Add("gcFatJet_PNWM_mostTags","int(tags[0])")
-  tagVars.Add("gcFatJet_nT","int(tags[1])")
-  tagVars.Add("gcFatJet_nH","int(tags[2])")
-  tagVars.Add("gcFatJet_nZ","int(tags[3])")
-  tagVars.Add("gcFatJet_nW","int(tags[4])")
-  tagVars.Add("gcFatJet_nB","int(tags[5])")
+  # tagVars.Add("gcFatJet_nT","int(tags[1])")
+  # tagVars.Add("gcFatJet_nH","int(tags[2])")
+  # tagVars.Add("gcFatJet_nZ","int(tags[3])")
+  # tagVars.Add("gcFatJet_nW","int(tags[4])")
+  # tagVars.Add("gcFatJet_nB","int(tags[5])")
+  # tagVars.Add("gcFatJet_nBV2","Sum(gcFatJet_PNWMtags==5)")
 
   if isSig:
     #tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
@@ -572,7 +573,7 @@ def analyze(jesvar):
   
   if isMC:
     lepSFs.Add('elrecoSF', 'elrecofunc(electroncorr,elecyr,lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
-    lepSFs.Add('elidSF', 'elidfunc(electroncorr,elecyr,"wp80noiso",elecidWP,lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
+    lepSFs.Add('elidSF', 'elidfunc(electroncorr,elecyr,"wp80noiso",lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
     lepSFs.Add('muonidSF', 'muidfunc(muonidcorr,lepton_pt,lepton_eta,lepton_ID)')
     lepSFs.Add('muonisoSF', 'muisofunc(muonisocorr,lepton_pt,lepton_eta,lepton_ID)')
    
@@ -685,8 +686,9 @@ def analyze(jesvar):
   
   rframeVars.Add("R_treeMODE", 'RJR_doubles[38]')  
 
-  rframeVars.Add("R_decays_TT", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  rframeVars.Add("R_decays_BB", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_TT", "R_decayTypes_TT(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_BB", "R_decayTypes_BB(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
   
   # -------------------------------------
   
@@ -711,7 +713,7 @@ def analyze(jesvar):
   newNode = a.ActiveNode.Apply(jVars)
   a.SetActiveNode(newNode)
   
-  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts,  tagVars])#, lepSF, recoVars, rframeVars])
+  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts,  tagVars, lepSFs, recoVars, rframeVars])
 
   allColumns = a.GetColumnNames()
   columns = [] #allColumns
@@ -759,7 +761,7 @@ def analyze(jesvar):
   if jesvar != "Nominal":
     mode = 'UPDATE'
   
-  a.Snapshot(columns, finalFile, "Events_"+jesvar, lazy=False, openOption=mode) #, saveRunChain=True)
+  a.Snapshot(columns, finalFile, "Events_"+jesvar, lazy=False, openOption=mode, saveRunChain=True)
 
   if jesvar == "Nominal":
     print("Cut statistics:")
