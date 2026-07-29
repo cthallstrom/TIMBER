@@ -42,9 +42,10 @@ private:
   std::unique_ptr<SetRapidityInvJigsaw> NuR;
   std::unique_ptr<ContraBoostInvJigsaw> MinContraMt;
   
-  // std::unique_ptr<MinMassesCombJigsaw> MinMJets;
-  // std::unique_ptr<MinMassChi2CombJigsaw> MinChi2;
+  //std::unique_ptr<MinMassesCombJigsaw> MinMJets;
   std::unique_ptr<MinMassDiffCombJigsaw> MinDiffJets;
+  
+  std::unique_ptr<MinMassChi2CombJigsaw> MinChi2;
   
   void define_tree() override;
   void define_groups_jigsaws() override;
@@ -96,7 +97,7 @@ void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
 
     // jet frames must have at least one element
     JETS->SetNElementsForFrame(*J0, 1);
-    JETS->SetNElementsForFrame(*Tbar, 2); //WORKED: 2
+    JETS->SetNElementsForFrame(*Tbar, 2);
     
     // Combinatoric Group for SM top quark reconstruction
     // SMTOP.reset(new CombinatoricGroup("SMTOP", "Standard Model top Jigsaw"));
@@ -164,14 +165,10 @@ void Tprime_RestFrames_Handler_t::define_groups_jigsaws() {
 
 RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &lepton, TVector3 &met3, TLorentzVector &jet1, TLorentzVector &jet2, TLorentzVector &jet3, RVec<TLorentzVector> &AK4s,TLorentzVector &minMlb_lv) {
     before_analysis();
-
-    // TLorentzVector tbar_jet = jet2 + jet3;
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
     b->SetLabFrameFourVector(minMlb_lv);
-    // J0->SetLabFrameFourVector(jet1);
-    // Tbar->SetLabFrameFourVector(tbar_jet);
     
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
@@ -195,48 +192,36 @@ RVec<double> Tprime_RestFrames_Handler_t::calculate_t_doubles(TLorentzVector &le
     observables.push_back(T->GetMass()); // .................... 3
     observables.push_back(T->GetCosDecayAngle()); //............ 4
     observables.push_back(T->GetDeltaPhiDecayAngle());//........ 5
-    observables.push_back(T->GetFourVector().Pt()); //.......... 6
-    observables.push_back(T->GetFourVector().Eta()); //......... 7
-    observables.push_back(T->GetFourVector().Phi()); //......... 8
     
-    observables.push_back(Tbar->GetMass()); //.................. 9
-    observables.push_back(Tbar->GetCosDecayAngle()); //......... 10
-    observables.push_back(Tbar->GetFourVector().Pt()); //....... 11
-    observables.push_back(Tbar->GetFourVector().Eta()); //...... 12
-    observables.push_back(Tbar->GetFourVector().Phi()); //...... 13
+    observables.push_back(Tbar->GetMass()); //.................. 6
+    observables.push_back(Tbar->GetCosDecayAngle()); //......... 7
     
-    observables.push_back(W->GetMass()); //..................... 14
-    observables.push_back(W->GetCosDecayAngle()); //............ 15
-    observables.push_back(W->GetDeltaPhiDecayAngle());//........ 16
-    observables.push_back(W->GetFourVector().Pt()); //.......... 17
-    observables.push_back(W->GetFourVector().Eta()); //......... 18
-    observables.push_back(W->GetFourVector().Phi()); //......... 19
+    observables.push_back(W->GetMass()); //..................... 8
+    observables.push_back(W->GetCosDecayAngle()); //............ 9
+    observables.push_back(W->GetDeltaPhiDecayAngle());//........ 10
     
-    observables.push_back(J0->GetMass()); //.................... 20
-    observables.push_back(J0->GetCosDecayAngle());//............ 21
+    observables.push_back(J0->GetMass()); //.................... 11
+    observables.push_back(J0->GetCosDecayAngle());//............ 12
 
-    observables.push_back(TTbar->GetDeltaPhiVisible()); //...... 22
-    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//.. 23
-    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//.. 24
-    observables.push_back(TTbar->GetVisibleShape());//.......... 25
+    observables.push_back(TTbar->GetDeltaPhiVisible()); //...... 13
+    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//.. 14
+    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//.. 15
+    observables.push_back(TTbar->GetVisibleShape());//.......... 16
     
     // Vectors isn't working as a separate function, because they don't operate one after the other on the same event!
     // Returning what I think we need to identify the 3 jets compared to our list.
-    observables.push_back(Tbar->GetFourVector().E()); // ....... 26
-    observables.push_back(J0->GetFourVector().E()); // ......... 27
+    observables.push_back(Tbar->GetFourVector().E()); // ....... 17
+    observables.push_back(J0->GetFourVector().E()); // ......... 18
 
-    observables.push_back(t->GetMass()); // .................... 28
-    observables.push_back(t->GetCosDecayAngle()); //............ 29
-    observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 30
-    observables.push_back(t->GetFourVector().Pt()); //.......... 31
-    observables.push_back(t->GetFourVector().Eta()); //......... 32
-    observables.push_back(t->GetFourVector().Phi()); //......... 33
-    
-    observables.push_back(nu->GetInvisibleFourVector().E()); //. 34
-    observables.push_back(nu->GetInvisibleFourVector().Pz());//. 35
+    observables.push_back(t->GetMass()); // .................... 19
+    observables.push_back(t->GetCosDecayAngle()); //............ 20
+    observables.push_back(t->GetDeltaPhiDecayAngle()); //....... 21
 
-    observables.push_back(b->GetMass());//...................... 36
-    observables.push_back(minMlb_lv.M());//..................... 37
+    observables.push_back(nu->GetInvisibleFourVector().E()); //. 22
+    observables.push_back(nu->GetInvisibleFourVector().Pz());//. 23
+
+    observables.push_back(b->GetMass());//...................... 24
+    observables.push_back(minMlb_lv.M());//..................... 25
 
     after_analysis();
 
@@ -249,7 +234,7 @@ class Tprime_RestFrames_Container_t : public RestFramesContainer {
         Tprime_RestFrames_Container_t(int num_threads);
         RestFramesHandler *create_handler() override;
 
-        RVec<double> return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv, int J0_idx, int VLQ1_idx, int VLQ2_idx);
+        RVec<double> return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv);
 	
 };
 
@@ -262,7 +247,7 @@ RestFramesHandler * Tprime_RestFrames_Container_t::create_handler() {
 }
 
 // return_doubles() returns all the masses, cos angles, and deltaPhi angles of the frames in the tree
-RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv, int J0_idx, int VLQ1_idx, int VLQ2_idx) {
+RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> jets, TLorentzVector minMlb_lv) {
 
   // This pointer should explicitly not be deleted!
   Tprime_RestFrames_Handler_t *rfht = static_cast<Tprime_RestFrames_Handler_t *>(get_handler(thread_index));
@@ -296,13 +281,7 @@ RVec<double> Tprime_RestFrames_Container_t::return_t_doubles(int thread_index, f
       minDiffVLQ = diffVLQ;
     }
   }
-
-  // fatjet_1.SetPtEtaPhiM(fatjet_pt[J0_idx],fatjet_eta[J0_idx],fatjet_phi[J0_idx],fatjet_mass[J0_idx]);
-  // fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
-  // fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
   
-  // observables = rfht->calculate_t_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3, jets, minMlb_lv);
-
   return observables;
 }
 
