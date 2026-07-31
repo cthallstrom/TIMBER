@@ -51,4 +51,4 @@ In order to efficiently train SPANet, GPU access is required. Instructions for a
 
 https://eafdocs.fnal.gov/master/03_proxy.html
 
-Once starting your server, make sure to select the CMS option to ensure that your files are accessible.
+Once starting your server, select the CMS option to ensure that your files are accessible.
