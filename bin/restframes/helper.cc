@@ -23,6 +23,12 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<TLorentzVector> fj) {
   int numOfLoops = 3;
   double diff = 1000;
   double diff_V = 1000;
+  // std::cout << "J0 E = " << J0_E << std::endl;
+  // std::cout << "VLQ2 E = " << VLQ2_E << std::endl;
+
+  // std::cout << "fj[0] E = " << fj[0].E() << std::endl;
+  // std::cout << "fj[1] E = " << fj[1].E() << std::endl;
+  // std::cout << "fj[2] E = " << fj[2].E() << std::endl;
 
   double d = 0.0001;
   
@@ -58,6 +64,7 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<TLorentzVector> fj) {
   }
     
   RVec<int> matched_idx = {j0_idx, vlq21_idx, vlq22_idx};
+
   return matched_idx;
 }
 
@@ -74,27 +81,27 @@ RVec<int> R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_i
   //  6 -> tHbW(bHtW)   7 -> tH(bH)      |
   //  8 -> tZ(bZ)       9 -> bW(tW)      |
   
-  int PNWM_ID = 0;
+  int mode = 0;
   int TB = 1;
   
   if (lepton_source == 0) { //W? ??
     if (PNWMtags.at(J0_idx) == 5) { //bW ??
       if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //bW t?
-	if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 6; //bW tH
-	if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 5; //bW tZ
+	      if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) mode = 6; //bW tH
+	      if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) mode = 5; //bW tZ
       }
       else if (PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //bW b?
-	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 1; //bW bW
+	      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) mode = 1; //bW bW
       }
     }
     else if (PNWMtags.at(J0_idx) == 6) { //tW ??
       TB = 0;
       if (PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tW t?
-	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 1; //tW tW
+	      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) mode = 1; //tW tW
       }
       else if (PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //tW b?
-	if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 5; //tW bZ
-	if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 6; //tW bH
+	      if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) mode = 5; //tW bZ
+	      if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) mode = 6; //tW bH
       }
     }
   }
@@ -102,56 +109,108 @@ RVec<int> R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_i
   else if (lepton_source == 1) { //t? ??
     if (PNWMtags.at(J0_idx) == 23) { //tZ ??
       if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tZ t?
-	if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 4; //tZ tH
-	if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 2; //tZ tZ
+	      if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) mode = 4; //tZ tH
+	      if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) mode = 2; //tZ tZ
       }
       else if (PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //tZ b?
-	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 5; //tZ bW
+	      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) mode = 5; //tZ bW
       }
     }
     else if (PNWMtags.at(J0_idx) == 25) { //tH ??
       if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tH t?
-	if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 4; //tH tZ
-	if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 3; //tH tH
+        if(PNWMtags.at(VLQ22_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) mode = 4; //tH tZ
+        if(PNWMtags.at(VLQ22_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) mode = 3; //tH tH
       }
       else if (PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //tH b?
-	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 5; //tH bW
+	      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) mode = 5; //tH bW
       }
     }
     else if (PNWMtags.at(J0_idx) == 23) { //tW ??
       TB = 0;
       if (PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tW t?
-	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 1; //tW tW
+	      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) mode = 1; //tW tW
       }
       else if (PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //tW b?
-	if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 5; //tW bZ
-	if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 6; //tW bH
+        if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) mode = 5; //tW bZ
+        if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) mode = 6; //tW bH
       }
-      else PNWM_ID = 9;
+      else mode = 9;
     }
   }
 
   if (PNWMtags.at(J0_idx) != 25 && PNWMtags.at(J0_idx) != 24 && PNWMtags.at(J0_idx) != 23 && PNWMtags.at(J0_idx) != 5) {//AK8 for lepVLQ doesnt match decay modes -> medium purity
     if(PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //b?
-      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 9; //medium purity, bW
+      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) mode = 9; //medium purity, bW
       if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) { //medium purity, bZ
-	PNWM_ID = 8; 
+	mode = 8; 
 	TB = 0;
       }
       if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) { //medium purity, bH
-	PNWM_ID = 7;
+	mode = 7;
 	TB = 0;
       }
     } else if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //t?
       if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) {//medium purity, tW
-	 PNWM_ID = 9;
+	 mode = 9;
 	 TB = 0;
       }
-      if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 8; //medium purity, tZ
-      if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 7; //medium purity, tH
+      if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) mode = 8; //medium purity, tZ
+      if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) mode = 7; //medium purity, tH
     }   
   }
-  return {PNWM_ID, TB};
+  return {mode, TB};
+}
+
+RVec<int> R_decayTypes_ct(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+
+  int nH = 0;
+  int nW = 0;
+  int nZ = 0;
+  int nt = 0;
+  int nb = 0;
+
+  if(lepton_source == 1) nt++;
+  else nb++;
+  int jet_tags[] = {PNWMtags[J0_idx], PNWMtags[VLQ21_idx], PNWMtags[VLQ22_idx]};
+  // std::cout << J0_idx << ", " << VLQ21_idx << ", " << VLQ22_idx << std::endl;
+  // std::cout << PNWMtags[J0_idx] << ", " << PNWMtags[VLQ21_idx] << ", " << PNWMtags[VLQ22_idx] << std::endl;
+	for(int i = 0; i < 3; i++){
+		if(jet_tags[i] == 25) nH++;
+		else if(jet_tags[i] == 24) nW++;
+		else if(jet_tags[i] == 23) nZ++;
+		else if(jet_tags[i] == 6) nt++;
+		else if (jet_tags[i] == 5) nb++;
+	}
+  //std::cout << nH << ", " << nW << ", " << nZ << ", " << nt << ", " << nb << std::endl;
+
+  int Tmode = 0;
+	// Assign TTbar decay mode
+	if(nb == 2 && nW == 2) Tmode = 1;
+	else if(nt == 2 && nZ == 2) Tmode = 2;
+	else if(nt == 2 && nH == 2) Tmode = 3;
+	else if(nt == 2 && nH == 1 && nZ == 1) Tmode = 4;
+	else if(nt == 1 && nZ == 1 && nb == 1 && nW == 1) Tmode = 5;
+	else if(nt == 1 && nH == 1 && nb == 1 && nW == 1) Tmode = 6;
+  else if((PNWMtags[VLQ21_idx] == 23 && PNWMtags[VLQ22_idx] == 6) || (PNWMtags[VLQ21_idx] == 6 && PNWMtags[VLQ22_idx] == 23)) Tmode = 7;
+  else if((PNWMtags[VLQ21_idx] == 25 && PNWMtags[VLQ22_idx] == 6) || (PNWMtags[VLQ21_idx] == 6 && PNWMtags[VLQ22_idx] == 25)) Tmode = 8;
+  else if((PNWMtags[VLQ21_idx] == 24 && PNWMtags[VLQ22_idx] == 5) || (PNWMtags[VLQ21_idx] == 5 && PNWMtags[VLQ22_idx] == 24)) Tmode = 9;
+	else Tmode = -1;
+
+	int Bmode = 0;
+	// Assign BBbar decay mode
+	if(nt == 2 && nW == 2) Bmode = 1;
+	else if(nb == 2 && nZ == 2) Bmode = 2;
+	else if(nb == 2 && nH == 2) Bmode = 3;
+	else if(nb == 2 && nH == 1 && nZ == 1) Bmode = 4;
+	else if(nb == 1 && nZ == 1 && nt == 1 && nW == 1) Bmode = 5;
+	else if(nb == 1 && nH == 1 && nt == 1 && nW == 1) Bmode = 6;
+  else if((PNWMtags[VLQ21_idx] == 23 && PNWMtags[VLQ22_idx] == 5) || (PNWMtags[VLQ21_idx] == 5 && PNWMtags[VLQ22_idx] == 23)) Tmode = 7;
+  else if((PNWMtags[VLQ21_idx] == 25 && PNWMtags[VLQ22_idx] == 5) || (PNWMtags[VLQ21_idx] == 5 && PNWMtags[VLQ22_idx] == 25)) Tmode = 8;
+  else if((PNWMtags[VLQ21_idx] == 24 && PNWMtags[VLQ22_idx] == 6) || (PNWMtags[VLQ21_idx] == 6 && PNWMtags[VLQ22_idx] == 24)) Tmode = 9;
+	else Bmode = -1;
+
+  //std::cout << "Decay Mode is: " << Tmode << std::endl;
+  return {Tmode, Bmode};
 }
 
 int R_decayTypes_TT(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {

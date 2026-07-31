@@ -399,7 +399,7 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
 auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<float> gcFatJet_PNWM_Z, RVec<float> gcFatJet_PNWM_H, RVec<float> gcFatJet_PNWM_QCD, RVec<float> gcFatJet_subJetIdx1, RVec<float> gcFatJet_subJetIdx2, RVec<float> SubJet_btagUParTAK4B, float UparTmed,RVec<TLorentzVector> gcJet_P4,RVec<TLorentzVector> gcFatJet_P4, RVec<float> gcJet_UParTM) 
 {
   //std::cout << "Entering jet_tagging" << std::endl;
-  RVec<float> PNWMtag;
+  RVec<int> PNWMtag;
   RVec<float> PNWMscore;
   float nT = 0.;
   float nH = 0.;
@@ -414,22 +414,22 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
     auto max_addr = std::max_element(PNWMscores.begin(), PNWMscores.end());
     int max_index = std::distance(PNWMscores.begin(), max_addr);
     if(max_index == 0) {
-      PNWMtag.push_back(6.0);
+      PNWMtag.push_back(6);
       PNWMscore.push_back(gcFatJet_PNWM_T[i]);
       nT++;
     }
     if(max_index == 1) {
-      PNWMtag.push_back(24.0);
+      PNWMtag.push_back(24);
       PNWMscore.push_back(gcFatJet_PNWM_W[i]);
       nW++;
     }
     if(max_index == 2) {
-      PNWMtag.push_back(23.0);
+      PNWMtag.push_back(23);
       PNWMscore.push_back(gcFatJet_PNWM_Z[i]);
       nZ++;
     }
     if(max_index == 3) {
-      PNWMtag.push_back(25.0);
+      PNWMtag.push_back(25);
       PNWMscore.push_back(gcFatJet_PNWM_H[i]);
       nH++;
     }
@@ -441,11 +441,11 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
       if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed))
       {
 	PNWMscore.push_back(gcFatJet_PNWM_QCD[i]);
-        PNWMtag.push_back(5.0);
+        PNWMtag.push_back(5);
 	nB++;
       }else{
 	PNWMscore.push_back(0.0);
-	PNWMtag.push_back(0.0);
+	PNWMtag.push_back(0);
       }
     }
   }
@@ -461,5 +461,5 @@ auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<
   //RVec<RVec<int>> taggerResults = {PNWMtag, GPTtag, GPTWMtag};
   RVec<float> PNWMints = {PNWMmostTags, nT, nH, nZ, nW, nB};
   RVec<RVec<float>> taggerResults = {PNWMtag, PNWMscore, PNWMints};
-  return taggerResults;
+  return PNWMtag;
 }

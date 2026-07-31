@@ -552,11 +552,11 @@ def analyze(jesvar):
     tagVars.Add("comp_daughters", "get_tprime_daughters(comp_primes, GenPart_pdgId, GenPart_genPartIdxMother)")
     tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
   
-  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM)")
-  tagVars.Add("gcFatJet_PNWMtags", "return ROOT::VecOps::RVec<int>(gcFatJet_tags[0]);")
-  tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
-  tagVars.Add("tags","gcFatJet_tags[2]")
-  tagVars.Add("gcFatJet_PNWM_mostTags","int(tags[0])")
+  tagVars.Add("gcFatJet_PNWMtags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM)")
+  #tagVars.Add("gcFatJet_PNWMtags", "return ROOT::VecOps::RVec<int>(gcFatJet_tags[0]);")
+  # tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
+  # tagVars.Add("tags","gcFatJet_tags[2]")
+  # tagVars.Add("gcFatJet_PNWM_mostTags","int(tags[0])")
   # tagVars.Add("gcFatJet_nT","int(tags[1])")
   # tagVars.Add("gcFatJet_nH","int(tags[2])")
   # tagVars.Add("gcFatJet_nZ","int(tags[3])")
@@ -568,9 +568,9 @@ def analyze(jesvar):
     #tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
     #tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
     #tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
-    tagVars.Add("decays", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
-    tagVars.Add("true_decays_TT","decays[0]")
-    tagVars.Add("true_decays_BB","decays[1]")
+    tagVars.Add("temp_decays", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
+    tagVars.Add("true_decays_TT","temp_decays[0]")
+    tagVars.Add("true_decays_BB","temp_decays[1]")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
@@ -636,66 +636,45 @@ def analyze(jesvar):
   rframeVars.Add("R_VLQ1_Mass", 'RJR_doubles[3]')
   rframeVars.Add("R_VLQ1_CosAngle", 'RJR_doubles[4]')
   rframeVars.Add("R_VLQ1_DeltaPhiAngle", 'RJR_doubles[5]')
-  rframeVars.Add("R_VLQ1_Pt", 'RJR_doubles[6]')     
-  rframeVars.Add("R_VLQ1_Eta", 'RJR_doubles[7]')
-  rframeVars.Add("R_VLQ1_Phi", 'RJR_doubles[8]')
   
-  rframeVars.Add("R_VLQ2_Mass", 'RJR_doubles[9]')
-  rframeVars.Add("R_VLQ2_CosAngle", 'RJR_doubles[10]')
-  rframeVars.Add("R_VLQ2_Pt", 'RJR_doubles[11]')     
-  rframeVars.Add("R_VLQ2_Eta", 'RJR_doubles[12]')
-  rframeVars.Add("R_VLQ2_Phi", 'RJR_doubles[13]')
-  
-  #rframeVars.Add("R_W_Mass", 'RJR_doubles[14]')
-  rframeVars.Add("R_W_CosAngle", 'RJR_doubles[15]')
-  rframeVars.Add("R_W_DeltaPhiAngle", 'RJR_doubles[16]')
-  #rframeVars.Add("R_W_Pt", 'RJR_doubles[17]')     
-  #rframeVars.Add("R_W_Eta", 'RJR_doubles[18]')
-  #rframeVars.Add("R_W_Phi", 'RJR_doubles[19]')
-  rframeVars.Add("R_W_lv","TLorentzVector top; top.SetPtEtaPhiM(RJR_doubles[17], RJR_doubles[18], RJR_doubles[19], RJR_doubles[14]); return top;")
-  rframeVars.Add("R_dRWl","R_W_lv.DeltaR(lepton_lv)")
-  
-  rframeVars.Add("R_J0_Mass", 'RJR_doubles[20]')
-  rframeVars.Add("R_J0_CosAngle", 'RJR_doubles[21]')
-  
-  rframeVars.Add("R_TTbar_DeltaPhiVisible","RJR_doubles[22]")
-  rframeVars.Add("R_TTbar_DeltaPhiDecayVisible","RJR_doubles[23]")
-  rframeVars.Add("R_TTbar_PhiBoostVisible","RJR_doubles[24]")
-  rframeVars.Add("R_TTbar_VisibleShape","RJR_doubles[25]")
+  rframeVars.Add("R_VLQ2_Mass", 'RJR_doubles[6]')
+  rframeVars.Add("R_VLQ2_CosAngle", 'RJR_doubles[7]')
 
-  rframeVars.Add("R_VLQ2_energy","RJR_doubles[26]")
-  rframeVars.Add("R_J0_energy","RJR_doubles[27]")
+  rframeVars.Add("R_W_Mass", 'RJR_doubles[8]')
+  rframeVars.Add("R_W_CosAngle", 'RJR_doubles[9]')
+  rframeVars.Add("R_W_DeltaPhiAngle", 'RJR_doubles[10]')
   
-  # Commented out for speed!
+  rframeVars.Add("R_J0_Mass", 'RJR_doubles[11]')
+  rframeVars.Add("R_J0_CosAngle", 'RJR_doubles[12]')
+  
+  rframeVars.Add("R_TTbar_DeltaPhiVisible","RJR_doubles[13]")
+  rframeVars.Add("R_TTbar_DeltaPhiDecayVisible","RJR_doubles[14]")
+  rframeVars.Add("R_TTbar_PhiBoostVisible","RJR_doubles[15]")
+  rframeVars.Add("R_TTbar_VisibleShape","RJR_doubles[16]")
+
+  rframeVars.Add("R_VLQ2_energy","RJR_doubles[17]")
+  rframeVars.Add("R_J0_energy","RJR_doubles[18]")
+
   rframeVars.Add("matched_idx","matchJets(R_J0_energy, R_VLQ2_energy, gcFatJet_P4)")
   rframeVars.Add("R_J0_idx","matched_idx[0]")
   rframeVars.Add("R_VLQ21_idx","matched_idx[1]")
   rframeVars.Add("R_VLQ22_idx","matched_idx[2]")
-
-  #rframeVars.Add("R_J0_idx","if ")
   
-  #rframeVars.Add("R_t_Mass","RJR_doubles[28]")
-  rframeVars.Add("R_t_CosAngle","RJR_doubles[29]")
-  rframeVars.Add("R_t_DeltaPhiAngle","RJR_doubles[30]")
-  #rframeVars.Add("R_t_Pt", 'RJR_doubles[31]')     
-  #rframeVars.Add("R_t_Eta", 'RJR_doubles[32]')
-  #rframeVars.Add("R_t_Phi", 'RJR_doubles[33]')
-
-  rframeVars.Add("R_t_lv","TLorentzVector top; top.SetPtEtaPhiM(RJR_doubles[31], RJR_doubles[32], RJR_doubles[33], RJR_doubles[28]); return top;")
-  rframeVars.Add("R_dRtl","R_t_lv.DeltaR(lepton_lv)")
+  rframeVars.Add("R_t_Mass","RJR_doubles[19]")
+  rframeVars.Add("R_t_CosAngle","RJR_doubles[20]")
+  rframeVars.Add("R_t_DeltaPhiAngle","RJR_doubles[21]")
   
-  rframeVars.Add("R_nu_Energy","RJR_doubles[34]")
-  rframeVars.Add("R_nu_Pz","RJR_doubles[35]")
+  rframeVars.Add("R_nu_Energy","RJR_doubles[22]")
+  rframeVars.Add("R_nu_Pz","RJR_doubles[23]")
 
-  rframeVars.Add("R_bJet_Mass","RJR_doubles[36]")
-  rframeVars.Add("R_minMlb_Mass","RJR_doubles[37]")
+  rframeVars.Add("R_bJet_Mass","RJR_doubles[24]")
+  rframeVars.Add("R_minMlb_Mass","RJR_doubles[25]")
   
-  rframeVars.Add("R_treeMODE", 'RJR_doubles[38]')  
+  rframeVars.Add("R_treeMODE", 'RJR_doubles[26]')  
 
-  rframeVars.Add("R_decays", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  rframeVars.Add("R_decays_TT", "R_decayTypes_TT(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  rframeVars.Add("R_decays_BB", "R_decayTypes_BB(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  
+  rframeVars.Add("R_decays_count", "R_decayTypes_ct(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_index", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+
   # -------------------------------------
   
   if isMC:
@@ -719,7 +698,7 @@ def analyze(jesvar):
   newNode = a.ActiveNode.Apply(jVars)
   a.SetActiveNode(newNode)
   
-  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts,  tagVars, lepSFs, recoVars, rframeVars])
+  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts,  tagVars, lepSFs, recoVars, rframeVars]) 
 
   allColumns = a.GetColumnNames()
   columns = [] #allColumns
@@ -751,6 +730,7 @@ def analyze(jesvar):
      if col.startswith("gcFatJet_tags"): continue
      if col.startswith("Wnu"): continue
      if col.startswith("newD"): continue
+     if col.startswith("temp_"): continue
 
      if col == "Isolated_AK4":
        columns.append(col)
