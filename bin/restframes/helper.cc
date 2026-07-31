@@ -2,7 +2,7 @@
 // These two functions help to differentiate between the bW and (H/Z)t trees
 #include <iostream>
 
-RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_RestFrames_Container_t * t_rfc, int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> bjets, TLorentzVector minMlb_lv, int decayMode, int J0_idx, int VLQ1_idx, int VLQ2_idx) {
+RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_RestFrames_Container_t * t_rfc, int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> bjets, TLorentzVector minMlb_lv, int decayMode) { // int J0_idx, int VLQ1_idx, int VLQ2_idx
 
   RVec<double> result;
   if (decayMode == 0) { // analyze bW tree
