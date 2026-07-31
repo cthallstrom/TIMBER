@@ -256,9 +256,6 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
   }
 
   RVec<float> fatjet_truth;
-  RVec<float> fatjet_slot;
-  RVec<float> particle_slot (3, 0);
-  particle_slot.clear();
   RVec<float> fatjet_matchedPt;
 
   // if(pID.size() == 3){
@@ -273,10 +270,6 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
   // cout << "Start of Event" << endl;
   // cout << particle_slot << endl;
 
-  int lepFJIdx = -3;
-  int had1FJIdx = -3;
-  int had2FJIdx = -3;
-
   for(unsigned int i = 0; i < gcFatJet_pt.size(); i++){
     TLorentzVector fatjet, truePart, d0, d1, d2;
     
@@ -285,7 +278,6 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
     float minDR = 1000;
     float matchedPt= -99;
     int matchedID = 0;
-	  int matchedIdx = -1;
     bool isWmatched = false;
     bool isHmatched = false;
     bool isZmatched = false;
@@ -301,7 +293,6 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
         minDR = fatjet.DeltaR(truePart);
         matchedPt = pPt[j];
         matchedID = abs(pID[j]);
-		    matchedIdx = pIdx[j];
         d0.SetPtEtaPhiM(d0Pt[j], d0Eta[j], d0Phi[j], d0M[j]);
         d1.SetPtEtaPhiM(d1Pt[j], d1Eta[j], d1Phi[j], d1M[j]);
         d2.SetPtEtaPhiM(d2Pt[j], d2Eta[j], d2Phi[j], d2M[j]);
@@ -317,25 +308,6 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
     if(minDR < 0.8 && matchedID == 25 && WallDsInJet) isHmatched = true;
     if(minDR < 0.8 && matchedID == 23 && WallDsInJet) isZmatched = true;
     if(minDR < 0.8 && matchedID == 6  && TallDsInJet) isTmatched = true;
-
-    if(matchedIdx == lep2idx) {
-      //std::cout << "Assigning lep2idx: " << matchedIdx<< endl;
-      lepFJIdx = i;
-      particle_slot[0] = matchedIdx;
-      //cout << "part is: " << particle_slot[0] << endl;
-    }
-    if(matchedIdx == had1idx) {
-      //std::cout << "Assigning had1idx: " << matchedIdx<< endl;
-      had1FJIdx = i;
-      particle_slot[1] = matchedIdx;
-      //cout << "part is: " << particle_slot[1] << endl;
-    }
-    if(matchedIdx == had2idx) {
-      //std::cout << "Assigning had2idx: " << matchedIdx<< endl;
-      had2FJIdx = i; 
-      particle_slot[2] = matchedIdx;
-      //cout << "part is: " << particle_slot[2] << endl;
-    }
 
     if(isWmatched || isZmatched || isHmatched || isTmatched) {
       //std::cout << "\t Found a match for the fatjet: W - " << isWmatched << ", H - " << isHmatched << ", Z - " << isZmatched << ", t - " << isTmatched << std::endl;
@@ -381,16 +353,8 @@ auto SPAfatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart
     // std::cout << "Truth is: " << fatjet_truth[i] << std::endl;
     // std::cout << "=============== Done with FatJets =================" << std::endl << std::endl << std::endl;
   }
-  fatjet_slot.push_back(lepFJIdx);
-  fatjet_slot.push_back(had1FJIdx);
-  fatjet_slot.push_back(had2FJIdx);
-
-  RVec<RVec<float>> returns;
-  returns.push_back(fatjet_truth);
-  returns.push_back(fatjet_slot);
-  returns.push_back(particle_slot);
-  //std::cout << particle_slot << ", " << lep2idx << ", " << had1idx << ", " << had2idx << endl;
-  return returns;
+  
+  return fatjet_truth;
 }
 
 auto SPADecayModeSelection(unsigned int nGenPart, ROOT::VecOps::RVec<int>& GenPart_pdgId, ROOT::VecOps::RVec<float>& GenPart_mass, ROOT::VecOps::RVec<float>& GenPart_pt, ROOT::VecOps::RVec<float>& GenPart_phi, ROOT::VecOps::RVec<float>& GenPart_eta, ROOT::VecOps::RVec<short>& GenPart_genPartIdxMother, ROOT::VecOps::RVec<int>& GenPart_status, ROOT::VecOps::RVec<short> GenPart_statusFlags, bool isTpTp)
