@@ -135,8 +135,18 @@ ROOT.gInterpreter.ProcessLine('#include "TString.h"')
 # Enable using 4 threads
 ROOT.ROOT.EnableImplicitMT(num_threads)
 
+#plain RJR
 handler_name1 = 'Tprime_handler_W.cc'
 handler_name2 = 'Tprime_handler_t.cc'
+
+#RJR no comb
+#handler_name1 = 'Tprime_handler_W_noComb.cc'
+#handler_name2 = 'Tprime_handler_t_noComb.cc'
+
+#manRJR
+#handler_name1 = 'Tprime_handler_W_manRJR.cc'
+#handler_name2 = 'Tprime_handler_t_manRJR.cc'
+
 class_name1 = 'Tprime_RestFrames_Container_W'
 class_name2 = 'Tprime_RestFrames_Container_t'
 
@@ -535,23 +545,6 @@ def analyze(jesvar):
   tagVars.Add("gcFatJet_PNWM_newQCD", "1.0 / (1.0 + gcFatJet_PNWM_ToQCD + gcFatJet_PNWM_WoQCD + gcFatJet_PNWM_ZoQCD + gcFatJet_PNWM_HoQCD)")
   tagVars.Add("gcFatJet_PNWM_QCD", "reorder(FatJet_particleNetWithMass_QCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   tagVars.Add("gcFatJet_PNWM_regressedMass", "reorder((FatJet_mass * FatJet_particleNet_massCorr)[goodcleanFatJets == true], gcFatJet_ptargsort)")
-
-# Unused GPT and GPTWM vars
-  tagVars.Add("gcFatJet_GPTWM_T", "reorder(FatJet_globalParT3_withMassTopvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_W", "reorder(FatJet_globalParT3_withMassWvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_Z", "reorder(FatJet_globalParT3_withMassZvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_ToQCD", "reorder((FatJet_globalParT3_withMassTopvsQCD/(1 - FatJet_globalParT3_withMassTopvsQCD))[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_WoQCD", "reorder((FatJet_globalParT3_withMassWvsQCD/(1 - FatJet_globalParT3_withMassWvsQCD))[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_ZoQCD", "reorder((FatJet_globalParT3_withMassZvsQCD/(1 - FatJet_globalParT3_withMassZvsQCD))[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPT_T", "reorder((FatJet_globalParT3_TopbWqq + FatJet_globalParT3_TopbWtauhv)[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPT_W", "reorder((FatJet_globalParT3_Xqq + FatJet_globalParT3_Xcs)[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPT_ZH", "reorder((FatJet_globalParT3_Xbb + FatJet_globalParT3_Xcc + FatJet_globalParT3_Xqq + FatJet_globalParT3_XWW4q)[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPT_QCD", "reorder(FatJet_globalParT3_QCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPT_regressedMass", "reorder((FatJet_globalParT3_massCorrX2p * FatJet_mass * (1 - FatJet_rawFactor))[goodcleanFatJets == true], gcFatJet_ptargsort)")
-
-  tagVars.Add("gcFatJet_GPTWM_T", "reorder(FatJet_globalParT3_withMassTopvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_W", "reorder(FatJet_globalParT3_withMassWvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
-  tagVars.Add("gcFatJet_GPTWM_Z", "reorder(FatJet_globalParT3_withMassZvsQCD[goodcleanFatJets == true], gcFatJet_ptargsort)")
   
   if isMC:
     tagVars.Add("gcFatJet_truth", "fatjet_matching(region, nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, gcFatJet_hadronFlavour, SubJet_hadronFlavour)")
@@ -559,25 +552,25 @@ def analyze(jesvar):
     tagVars.Add("comp_daughters", "get_tprime_daughters(comp_primes, GenPart_pdgId, GenPart_genPartIdxMother)")
     tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
   
-  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_GPT_T, gcFatJet_GPT_W, gcFatJet_GPT_ZH, gcFatJet_GPT_QCD, gcFatJet_GPT_regressedMass, gcFatJet_GPTWM_T, gcFatJet_GPTWM_W, gcFatJet_GPTWM_Z, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM, gcFatJet_GPTWM_ToQCD, gcFatJet_GPTWM_WoQCD, gcFatJet_GPTWM_ZoQCD)")
-  tagVars.Add("gcFatJet_PNWMtags", "gcFatJet_tags[0]")
+  tagVars.Add("gcFatJet_tags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM)")
+  tagVars.Add("gcFatJet_PNWMtags", "return ROOT::VecOps::RVec<int>(gcFatJet_tags[0]);")
   tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
-  #tagVars.Add("gcFatJet_GPTtags", "gcFatJet_tags[1]")
-  #tagVars.Add("gcFatJet_GPTWMtags", "gcFatJet_tags[2]")
-
-  tagVars.Add("gcFatJet_nT","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 6) count++;} return count;")
-  tagVars.Add("gcFatJet_nW","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 24) count++;} return count;")
-  tagVars.Add("gcFatJet_nZ","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 23) count++;} return count;")
-  tagVars.Add("gcFatJet_nH","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 25) count++;} return count;")
-  tagVars.Add("gcFatJet_nB","int count = 0; for(int i = 0; i < gcFatJet_PNWMtags.size();i++) { if(gcFatJet_PNWMtags[i] == 0) count++;} return count;")
+  tagVars.Add("tags","gcFatJet_tags[2]")
+  tagVars.Add("gcFatJet_PNWM_mostTags","int(tags[0])")
+  # tagVars.Add("gcFatJet_nT","int(tags[1])")
+  # tagVars.Add("gcFatJet_nH","int(tags[2])")
+  # tagVars.Add("gcFatJet_nZ","int(tags[3])")
+  # tagVars.Add("gcFatJet_nW","int(tags[4])")
+  # tagVars.Add("gcFatJet_nB","int(tags[5])")
+  # tagVars.Add("gcFatJet_nBV2","Sum(gcFatJet_PNWMtags==5)")
 
   if isSig:
-    # tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    # tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    # tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
-    tagVars.Add("newDecayModes", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
-    tagVars.Add("true_T_decays", "newDecayModes[0]")
-    tagVars.Add("true_B_decays", "newDecayModes[1]")
+    #tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    #tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
+    #tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
+    tagVars.Add("decays", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
+    tagVars.Add("true_decays_TT","decays[0]")
+    tagVars.Add("true_decays_BB","decays[1]")
   #WORK ON THIS MORE -- need to just be isolated from the 3 highest-pt fat jets, not any of them...
   #jVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
@@ -586,7 +579,7 @@ def analyze(jesvar):
   
   if isMC:
     lepSFs.Add('elrecoSF', 'elrecofunc(electroncorr,elecyr,lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
-    lepSFs.Add('elidSF', 'elidfunc(electroncorr,elecyr,"wp80noiso",elecidWP,lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
+    lepSFs.Add('elidSF', 'elidfunc(electroncorr,elecyr,"wp80noiso",lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
     lepSFs.Add('muonidSF', 'muidfunc(muonidcorr,lepton_pt,lepton_eta,lepton_ID)')
     lepSFs.Add('muonisoSF', 'muisofunc(muonisocorr,lepton_pt,lepton_eta,lepton_ID)')
    
@@ -617,8 +610,8 @@ def analyze(jesvar):
   recoVars.Add("t_lv", "TLorentzVector top; top.SetPtEtaPhiM(t_five[0], t_five[1], t_five[2], t_five[3]); return top;")
   recoVars.Add("dRtl", "t_lv.DeltaR(lepton_lv)")
   recoVars.Add("TBp", "TBprimeReco(t_lv, W_lv, lepton_source, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, gcFatJet_PNWMtags)")
-  recoVars.Add("tagTdecays", "int(TBp[0])")
-  recoVars.Add("tagBdecays", "int(TBp[1])")
+  recoVars.Add("man_decays_TT", "int(TBp[0])")
+  recoVars.Add("man_decays_BB", "int(TBp[1])")
 
   if isTpTp:
     recoVars.Add("J0_idx", "TBp[28]")
@@ -699,10 +692,11 @@ def analyze(jesvar):
   
   rframeVars.Add("R_treeMODE", 'RJR_doubles[38]')  
 
-  rframeVars.Add("R_decays_TT", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  rframeVars.Add("R_decays_BB", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_TT", "R_decayTypes_TT(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_BB", "R_decayTypes_BB(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
   
-  # # -------------------------------------
+  # -------------------------------------
   
   if isMC:
     nodeToPlot = a.Apply([flagCuts, gjsonVars, gjsonCuts, RandVars, Random, lVars, lCuts])
@@ -725,7 +719,7 @@ def analyze(jesvar):
   newNode = a.ActiveNode.Apply(jVars)
   a.SetActiveNode(newNode)
   
-  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts, tagVars, recoVars, rframeVars])
+  a.Apply([metVars, metCuts, gcjetVars, jCuts, jetVars, bCuts,  tagVars, lepSFs, recoVars, rframeVars])
 
   allColumns = a.GetColumnNames()
   columns = [] #allColumns
@@ -750,7 +744,7 @@ def analyze(jesvar):
      if col.startswith("nOther") or col.startswith("nPS") or col.startswith("nPhoton"): continue
      if col.startswith("nSV") or col.startswith("nSub") or col.startswith("nTau") or col.startswith("nTrig"): continue
      if col.startswith("nboosted"): continue
-     if col == "tauBUG" or col == "Matching" or col == "ObjectList" or col == "manual": continue
+     if col == "tauBUG" or col == "Matching" or col == "ObjectList" or col == "manual" or col == "tags": continue
      if col.startswith("BeamSpot") or col.startswith("Lepton") or col.startswith("iLepton"): continue
      if col.startswith("MET") or col.startswith("RawPuppiMET"): continue
      if col.startswith("RJR_"): continue
@@ -774,7 +768,7 @@ def analyze(jesvar):
   if jesvar != "Nominal":
     mode = 'UPDATE'
   
-  a.Snapshot(columns, finalFile, "Events_"+jesvar, lazy=False, openOption=mode) #, saveRunChain=True)
+  a.Snapshot(columns, finalFile, "Events_"+jesvar, lazy=False, openOption=mode, saveRunChain=True)
 
   if jesvar == "Nominal":
     print("Cut statistics:")

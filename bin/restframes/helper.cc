@@ -1,4 +1,4 @@
-// processDecayTree(), matchJets()
+// processDecayTree(), matchJets(), R_decays(), R_decays_TT(), R_decays_BB()
 // These two functions help to differentiate between the bW and (H/Z)t trees
 #include <iostream>
 
@@ -6,10 +6,10 @@ RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_Rest
 
   RVec<double> result;
   if (decayMode == 0) { // analyze bW tree
-    result = W_rfc->return_W_doubles(thread_index, lepton_pt, lepton_eta, lepton_phi, lepton_mass, fatjet_pt, fatjet_eta, fatjet_phi, fatjet_mass, met_pt, met_phi, J0_idx, VLQ1_idx, VLQ2_idx);
+    result = W_rfc->return_W_doubles(thread_index, lepton_pt, lepton_eta, lepton_phi, lepton_mass, fatjet_pt, fatjet_eta, fatjet_phi, fatjet_mass, met_pt, met_phi);//, J0_idx, VLQ1_idx, VLQ2_idx);
     result.push_back(0.0); // 0 is for W tree
   } else { // analyze (H/Z)t tree
-    result = t_rfc->return_t_doubles(thread_index, lepton_pt, lepton_eta, lepton_phi, lepton_mass, fatjet_pt, fatjet_eta, fatjet_phi, fatjet_mass, met_pt, met_phi, bjets, minMlb_lv, J0_idx, VLQ1_idx, VLQ2_idx);
+    result = t_rfc->return_t_doubles(thread_index, lepton_pt, lepton_eta, lepton_phi, lepton_mass, fatjet_pt, fatjet_eta, fatjet_phi, fatjet_mass, met_pt, met_phi, bjets, minMlb_lv);//, J0_idx, VLQ1_idx, VLQ2_idx);
     result.push_back(1.0); // 1 is for t tree
   }
   return result;
@@ -62,9 +62,9 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<TLorentzVector> fj) {
 }
 
 
-int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+RVec<int> R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
   if (J0_idx == -1 || VLQ21_idx == -1 || VLQ22_idx == -1) {
-    return 0;
+    return {-1, 0};
   }
   
   // PNWM_id key Tp(Bp):                 |    PNWM_tags key
@@ -73,9 +73,9 @@ int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RV
   //  4 -> tZtH(bZbH)   5 -> tZbW(bZtW)  |    6 -> t       25 -> H
   //  6 -> tHbW(bHtW)   7 -> tH(bH)      |
   //  8 -> tZ(bZ)       9 -> bW(tW)      |
-  // 2,3,4,7,8 should never be assigned for BpBp as there will never be a leptonic b
   
   int PNWM_ID = 0;
+  int TB = 1;
   
   if (lepton_source == 0) { //W? ??
     if (PNWMtags.at(J0_idx) == 5) { //bW ??
@@ -88,6 +88,7 @@ int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RV
       }
     }
     else if (PNWMtags.at(J0_idx) == 6) { //tW ??
+      TB = 0;
       if (PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tW t?
 	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 1; //tW tW
       }
@@ -118,6 +119,7 @@ int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RV
       }
     }
     else if (PNWMtags.at(J0_idx) == 23) { //tW ??
+      TB = 0;
       if (PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //tW t?
 	if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 1; //tW tW
       }
@@ -132,14 +134,34 @@ int R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RV
   if (PNWMtags.at(J0_idx) != 25 && PNWMtags.at(J0_idx) != 24 && PNWMtags.at(J0_idx) != 23 && PNWMtags.at(J0_idx) != 5) {//AK8 for lepVLQ doesnt match decay modes -> medium purity
     if(PNWMtags.at(VLQ21_idx) == 5 || PNWMtags.at(VLQ22_idx) == 5) { //b?
       if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) PNWM_ID = 9; //medium purity, bW
-      if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 8; //medium purity, bZ
-      if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 7; //medium purity, bH      
-    }
-    else if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //t?
+      if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) { //medium purity, bZ
+	PNWM_ID = 8; 
+	TB = 0;
+      }
+      if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) { //medium purity, bH
+	PNWM_ID = 7;
+	TB = 0;
+      }
+    } else if(PNWMtags.at(VLQ21_idx) == 6 || PNWMtags.at(VLQ22_idx) == 6) { //t?
+      if (PNWMtags.at(VLQ21_idx) == 24 || PNWMtags.at(VLQ22_idx) == 24) {//medium purity, tW
+	 PNWM_ID = 9;
+	 TB = 0;
+      }
       if (PNWMtags.at(VLQ21_idx) == 23 || PNWMtags.at(VLQ22_idx) == 23) PNWM_ID = 8; //medium purity, tZ
       if (PNWMtags.at(VLQ21_idx) == 25 || PNWMtags.at(VLQ22_idx) == 25) PNWM_ID = 7; //medium purity, tH
     }   
   }
-  return PNWM_ID;
+  return {PNWM_ID, TB};
 }
-  	
+
+int R_decayTypes_TT(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+  RVec<int> dec = R_decayTypes(lepton_source,J0_idx,VLQ21_idx,VLQ22_idx,PNWMtags);
+  if (dec[1] == 1) return dec[0];
+  return 0;
+}
+
+int R_decayTypes_BB(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+  RVec<int> dec = R_decayTypes(lepton_source,J0_idx,VLQ21_idx,VLQ22_idx,PNWMtags);
+  if (dec[1] == 0) return dec[0];
+  return 0;
+}

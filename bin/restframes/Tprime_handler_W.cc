@@ -85,13 +85,13 @@ void Tprime_RestFrames_Handler_W::define_tree() {
 void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
     // Combinatoric Group for jets
     JETS.reset(new CombinatoricGroup("JETS", "Jet Jigsaws"));
-    //JETS->AddFrame(*b);
+    JETS->AddFrame(*b);
     JETS->AddFrame(*Tbar);
     //JETS->AddFrame(*J1);
     //JETS->AddFrame(*J0);
 
     // jet frames must have at least one element
-    // JETS->SetNElementsForFrame(*b, 1);
+    JETS->SetNElementsForFrame(*b, 1);
     JETS->SetNElementsForFrame(*Tbar, 2);
     //JETS->SetNElementsForFrame(*J1, 1);
     //JETS->SetNElementsForFrame(*J0, 1);
@@ -178,11 +178,10 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
     
     INV->SetLabFrameThreeVector(met3);	
     l->SetLabFrameFourVector(lepton);
-    b->SetLabFrameFourVector(jet1);
-    
+
     std::vector<RFKey> JETS_ID; // ID for tracking jets in tree
     JETS_ID.clear();
-    //JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
+    JETS_ID.push_back(JETS->AddLabFrameFourVector(jet1));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet2));
     JETS_ID.push_back(JETS->AddLabFrameFourVector(jet3));
 
@@ -197,48 +196,36 @@ RVec<double> Tprime_RestFrames_Handler_W::calculate_W_doubles(TLorentzVector &le
     observables.push_back(T->GetMass());//..................... 3
     observables.push_back(T->GetCosDecayAngle());//............ 4
     observables.push_back(T->GetDeltaPhiDecayAngle());//....... 5
-    observables.push_back(T->GetFourVector().Pt()); //......... 6
-    observables.push_back(T->GetFourVector().Eta()); //........ 7
-    observables.push_back(T->GetFourVector().Phi()); //........ 8
     
-    observables.push_back(Tbar->GetMass()); //................. 9
-    observables.push_back(Tbar->GetCosDecayAngle()); //....... 10
-    observables.push_back(Tbar->GetFourVector().Pt()); //...... 11
-    observables.push_back(Tbar->GetFourVector().Eta()); //..... 12
-    observables.push_back(Tbar->GetFourVector().Phi()); //..... 13
+    observables.push_back(Tbar->GetMass());//.................. 6
+    observables.push_back(Tbar->GetCosDecayAngle());//......... 7
     
-    observables.push_back(W->GetMass()); //.................... 14
-    observables.push_back(W->GetCosDecayAngle()); //........... 15
-    observables.push_back(W->GetDeltaPhiDecayAngle());//....... 16
-    observables.push_back(W->GetFourVector().Pt()); //......... 17
-    observables.push_back(W->GetFourVector().Eta()); //........ 18
-    observables.push_back(W->GetFourVector().Phi()); //........ 19
+    observables.push_back(W->GetMass());//..................... 8
+    observables.push_back(W->GetCosDecayAngle());//............ 9
+    observables.push_back(W->GetDeltaPhiDecayAngle());//....... 10
+    
+    observables.push_back(b->GetMass());//..................... 11
+    observables.push_back(b->GetCosDecayAngle());//............ 12
 
-    observables.push_back(b->GetMass());//..................... 20
-    observables.push_back(b->GetCosDecayAngle());//............ 21
-
-    observables.push_back(TTbar->GetDeltaPhiVisible());//...... 22
-    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//. 23
-    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//. 24
-    observables.push_back(TTbar->GetVisibleShape());//......... 25
+    observables.push_back(TTbar->GetDeltaPhiVisible());//...... 13
+    observables.push_back(TTbar->GetDeltaPhiDecayVisible());//. 14
+    observables.push_back(TTbar->GetDeltaPhiBoostVisible());//. 15
+    observables.push_back(TTbar->GetVisibleShape());//......... 16
 
     // Vectors isn't working as a separate function, because they don't operate one after the other on the same event!
     // Returning what I think we need to identify the 3 jets compared to our list.
-    observables.push_back(Tbar->GetFourVector().E());//........ 26
-    observables.push_back(b->GetFourVector().E());//........... 27
+    observables.push_back(Tbar->GetFourVector().E());//........ 17
+    observables.push_back(b->GetFourVector().E());//........... 18
 
-    observables.push_back(-1); // dummy -1 for t mass ......... 28
-    observables.push_back(-1); // dummy -1 for t cos decay .... 29
-    observables.push_back(-1); // dummy -1 for t del phi decay. 30
-    observables.push_back(-1); // dummy -1 for t pt ........... 31
-    observables.push_back(-1); // dummy -1 for t eta .......... 32
-    observables.push_back(-1); // dummy -1 for t phi .......... 33
+    observables.push_back(-1); // dummy -1 for t mass ......... 19
+    observables.push_back(-1); // dummy -1 for t mass ......... 20
+    observables.push_back(-1); // dummy -1 for t mass ......... 21
 
-    observables.push_back(nu->GetInvisibleFourVector().E());//. 34
-    observables.push_back(nu->GetInvisibleFourVector().Pz());// 35
+    observables.push_back(nu->GetInvisibleFourVector().E());//. 22
+    observables.push_back(nu->GetInvisibleFourVector().Pz());// 23
 
-    observables.push_back(b->GetMass());//..................... 36
-    observables.push_back(-1);// dummy for minMlb mass ........ 37
+    observables.push_back(b->GetMass());//..................... 24
+    observables.push_back(-1);// dummy for minMlb mass ........ 25
 
     after_analysis();
 
@@ -251,7 +238,7 @@ class Tprime_RestFrames_Container_W : public RestFramesContainer {
         Tprime_RestFrames_Container_W(int num_threads);
         RestFramesHandler *create_handler() override;
 
-  RVec<double> return_W_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, int J0_idx, int VLQ1_idx, int VLQ2_idx);
+        RVec<double> return_W_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi);
 	
 };
 
@@ -264,7 +251,7 @@ RestFramesHandler * Tprime_RestFrames_Container_W::create_handler() {
 }
 
 // return_doubles() returns all the masses, cos angles, and deltaPhi angles of the frames in the tree
-RVec<double> Tprime_RestFrames_Container_W::return_W_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, int J0_idx, int VLQ1_idx, int VLQ2_idx) {
+RVec<double> Tprime_RestFrames_Container_W::return_W_doubles(int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi) {
 
   // This pointer should explicitly not be deleted!
   Tprime_RestFrames_Handler_W *rfhw = static_cast<Tprime_RestFrames_Handler_W *>(get_handler(thread_index));
@@ -295,12 +282,6 @@ RVec<double> Tprime_RestFrames_Container_W::return_W_doubles(int thread_index, f
     double diffVLQ = abs(temp_observables[3] - temp_observables[6]);
     if (diffVLQ < minDiffVLQ) observables = temp_observables;
   }
-
-  // fatjet_1.SetPtEtaPhiM(fatjet_pt[J0_idx],fatjet_eta[J0_idx],fatjet_phi[J0_idx],fatjet_mass[J0_idx]);
-  // fatjet_2.SetPtEtaPhiM(fatjet_pt[VLQ1_idx],fatjet_eta[VLQ1_idx],fatjet_phi[VLQ1_idx],fatjet_mass[VLQ1_idx]);
-  // fatjet_3.SetPtEtaPhiM(fatjet_pt[VLQ2_idx],fatjet_eta[VLQ2_idx],fatjet_phi[VLQ2_idx],fatjet_mass[VLQ2_idx]);
-  
-  // RVec<double> temp_observables = rfhw->calculate_W_doubles(lepton, met3, fatjet_1, fatjet_2, fatjet_3);
   
   return observables;
 }
