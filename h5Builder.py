@@ -1,7 +1,7 @@
 import h5py, numpy as np
 from ROOT import TFile, TTree, TH1D, TH2D, TCanvas, gStyle, gPad, TLatex
 
-file_str = "SPA_TprimeTprime_Par-M-1400_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
+file_str = "SPA_TprimeTprime_Par-M-1700_TuneCP5_13p6TeV_amcatnlo-pythia8_2024_0.root"
 inFile = TFile.Open(file_str)
 
 t = inFile.Get("Events_Nominal")
@@ -34,8 +34,12 @@ had2idx = np.zeros(n_events)
 bidx = np.zeros(n_events)
 lepidx = np.zeros(n_events)
 
-# Initialize isSig array
+# Initialize Classifications arrays
 isSig = np.zeros(n_events)
+decayMode = np.zeros(n_events)
+
+# Initialize Regression Arrays
+eventMass = np.zeros(n_events)
 
 print("Initialized np arrays, beginning to loop over events")
 
@@ -43,7 +47,7 @@ for event in range(0,n_events):
     holder = 0 # initialize holder for transferring b index values
     t.GetEntry(event)
 
-    print(f"Event #{event}")
+    #print(f"Event #{event}")
 
     # Initialize padded fatjet arrays
     fatjet_padded_mass = np.full(n_Ak8, 0.0)
@@ -129,18 +133,23 @@ for event in range(0,n_events):
     bidx[event] = holder # Need +11 since this is an ak4 index
     #print(f"{t.gcJet_bidx}, {bidx[event]}")
 
-    # Assign isSig
+    # Assign Classifications
     isSig[event] = t.isSig
+    decayMode[event] = t.true_T_decays
+
+    # Assign Regressions
+    eventMass[event] = 3400
 
 # Fill MASK array
 mask_all = (mass_all != 0) | (btag_all != 0) | (leptag != 0)
 
-print("Finished looping events")
+print("Finished looping events, now writing to h5")
                 
-with h5py.File("bidxTest.h5", 'w') as f:
+with h5py.File("training2.h5", 'w') as f:
     Classifications = f.create_group('CLASSIFICATIONS')
     cEvent = Classifications.create_group('EVENT')
     Signal = cEvent.create_dataset('Signal', data=isSig)
+    DecayMode = cEvent.create_dataset('Decay_Mode', data=decayMode)
 
     Inputs = f.create_group('INPUTS')
     Momenta = Inputs.create_group('Momenta')
@@ -161,7 +170,7 @@ with h5py.File("bidxTest.h5", 'w') as f:
     Targets = f.create_group('TARGETS')
     VLQ1 = Targets.create_group('VLQ1')
     jet = VLQ1.create_dataset('jet', data=lep2idx)
-    lep = VLQ1.create_dataset('lep', data=lepidx)
+    #lep = VLQ1.create_dataset('lep', data=lepidx)
     b = VLQ1.create_dataset('b', data=bidx)
 
     VLQ2 = Targets.create_group('VLQ2')
@@ -170,3 +179,4 @@ with h5py.File("bidxTest.h5", 'w') as f:
 
     Regressions = f.create_group('REGRESSIONS')
     rEvent = Regressions.create_group('EVENT')
+    eventMass = rEvent.create_dataset('Event_Mass', data=eventMass)
