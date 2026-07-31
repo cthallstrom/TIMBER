@@ -1,8 +1,8 @@
-// processDecayTree(), matchJets(), R_decays(), R_decays_TT(), R_decays_BB()
+// R_processDecayTree(), R_matchJets(), R_decays()
 // These two functions help to differentiate between the bW and (H/Z)t trees
 #include <iostream>
 
-RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_RestFrames_Container_t * t_rfc, int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> bjets, TLorentzVector minMlb_lv, int decayMode, int J0_idx, int VLQ1_idx, int VLQ2_idx) {
+RVec<double> R_processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_RestFrames_Container_t * t_rfc, int thread_index, float lepton_pt, float lepton_eta, float lepton_phi, float lepton_mass, RVec<float> fatjet_pt, RVec<float> fatjet_eta, RVec<float> fatjet_phi, RVec<float> fatjet_mass, float met_pt, float met_phi, RVec<TLorentzVector> bjets, TLorentzVector minMlb_lv, int decayMode, int J0_idx, int VLQ1_idx, int VLQ2_idx) {
 
   RVec<double> result;
   if (decayMode == 0) { // analyze bW tree
@@ -16,7 +16,7 @@ RVec<double> processDecayTree(Tprime_RestFrames_Container_W * W_rfc, Tprime_Rest
 }
 
 
-RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<TLorentzVector> fj) {
+RVec<int> R_matchJets(double J0_E, double VLQ2_E, RVec<TLorentzVector> fj) {
   int j0_idx = -1;
   int vlq21_idx = -1;
   int vlq22_idx = -1;
@@ -69,7 +69,7 @@ RVec<int> matchJets(double J0_E, double VLQ2_E, RVec<TLorentzVector> fj) {
 }
 
 
-RVec<int> R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+RVec<int> R_decayTypes_index(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
   if (J0_idx == -1 || VLQ21_idx == -1 || VLQ22_idx == -1) {
     return {-1, 0};
   }
@@ -161,7 +161,7 @@ RVec<int> R_decayTypes(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_i
   return {mode, TB};
 }
 
-RVec<int> R_decayTypes_ct(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
+RVec<int> R_decayTypes_count(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
 
   int nH = 0;
   int nW = 0;
@@ -213,14 +213,3 @@ RVec<int> R_decayTypes_ct(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ2
   return {Tmode, Bmode};
 }
 
-int R_decayTypes_TT(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
-  RVec<int> dec = R_decayTypes(lepton_source,J0_idx,VLQ21_idx,VLQ22_idx,PNWMtags);
-  if (dec[1] == 1) return dec[0];
-  return 0;
-}
-
-int R_decayTypes_BB(int lepton_source, int J0_idx, int VLQ21_idx, int VLQ22_idx, RVec<int> PNWMtags) {
-  RVec<int> dec = R_decayTypes(lepton_source,J0_idx,VLQ21_idx,VLQ22_idx,PNWMtags);
-  if (dec[1] == 0) return dec[0];
-  return 0;
-}

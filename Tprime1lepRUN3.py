@@ -1,3 +1,4 @@
+
 from TIMBER.Analyzer import *
 from TIMBER.Tools.Common import *
 
@@ -627,7 +628,7 @@ def analyze(jesvar):
 
   rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
-  rframeVars.Add('RJR_doubles', 'processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source, J0_idx, VLQ21_idx, VLQ22_idx)')
+  rframeVars.Add('RJR_doubles', 'R_processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source, J0_idx, VLQ21_idx, VLQ22_idx)')
 
   rframeVars.Add("R_TTbar_Mass", 'RJR_doubles[0]')
   rframeVars.Add("R_TTbar_CosAngle", 'RJR_doubles[1]')
@@ -655,7 +656,7 @@ def analyze(jesvar):
   rframeVars.Add("R_VLQ2_energy","RJR_doubles[17]")
   rframeVars.Add("R_J0_energy","RJR_doubles[18]")
 
-  rframeVars.Add("matched_idx","matchJets(R_J0_energy, R_VLQ2_energy, gcFatJet_P4)")
+  rframeVars.Add("matched_idx","R_matchJets(R_J0_energy, R_VLQ2_energy, gcFatJet_P4)")
   rframeVars.Add("R_J0_idx","matched_idx[0]")
   rframeVars.Add("R_VLQ21_idx","matched_idx[1]")
   rframeVars.Add("R_VLQ22_idx","matched_idx[2]")
@@ -672,8 +673,8 @@ def analyze(jesvar):
   
   rframeVars.Add("R_treeMODE", 'RJR_doubles[26]')  
 
-  rframeVars.Add("R_decays_count", "R_decayTypes_ct(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  rframeVars.Add("R_decays_index", "R_decayTypes(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_count", "R_decayTypes_count(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays_index", "R_decayTypes_index(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
 
   # -------------------------------------
   

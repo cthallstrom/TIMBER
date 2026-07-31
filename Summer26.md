@@ -29,7 +29,7 @@ Over the summer, we worked on three separate methods of reconstructing the event
 The manual reconstruction functions are found in eventReco.cc. Do not confuse this with manualreco.cc. That is a file from an older analysis, and it will not work. This reconstruction is running quite smoothly, and shouldn't require any work. There are two things to take note of: First, rather than using pdg Ids, the manual reco recasts them to 0-5 in this order: J, t, H, Z, W, b. This makes the code much simpler. Second, the manual reco returns the full and partial T prime decay modes as 0-9 in this order: bWbW, tZtZ, tHtH, tZtH, tZbW, tHbW, tZ, tH, bW. The same order is used for their Bprime analogs.
 
 ### Recursive Jigsaw Reconstruction (RJR)
-Firstly, RJR_decayModes (in TIMBER/TIMBER/bin/restframes/helper.cc) currently DOES NOT WORK. It runs quietly, but every decay gets assigned to -1. Someone will need to go in and fix this at some point.
+All RJR functions labeled R_[function_name] are stored in bin/restframe/helper
 
 RJR reconstruction has had some issues. Currently there are 6 different TIMBER/bin/restframes/Tprime_handler functions, split evenly between t and W decay modes. Currently the Tprime_handler_(t/W).cc works, and should be regarded as the working function. It had plotted a nice peak, but a couples changes happened before we caught that the peak had shifted from the right side of the curve to the left side. The commit that induced these changes was when we added four vector information about the t and W quarks to the return statement. I'm not sure why or how this happened, but it might be worth trying to implement the four vector information again to see if/how it changes the plotting again. 
 
