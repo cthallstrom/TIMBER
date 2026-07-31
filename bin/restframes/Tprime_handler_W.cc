@@ -22,8 +22,6 @@ private:
   
   std::unique_ptr<DecayRecoFrame> W;
   std::unique_ptr<VisibleRecoFrame> b;
-  //std::unique_ptr<VisibleRecoFrame> J0;
-  //std::unique_ptr<VisibleRecoFrame> J1;
   
   std::unique_ptr<VisibleRecoFrame> l;
   std::unique_ptr<InvisibleRecoFrame> nu;
@@ -69,12 +67,6 @@ void Tprime_RestFrames_Handler_W::define_tree() {
     b.reset(new VisibleRecoFrame("b", "b"));
     T->AddChildFrame(*W);
     T->AddChildFrame(*b);
-    
-    // J1.reset(new VisibleRecoFrame("J1", "J1_{AK8}"));
-    // J0.reset(new VisibleRecoFrame("J0","J0_{AK8}"));
-    // Tbar->AddChildFrame(*J1);
-    // Tbar->AddChildFrame(*J0);
-    
     // W -> l nu
     l.reset(new VisibleRecoFrame("l", "#it{l}"));
     nu.reset(new InvisibleRecoFrame("nu", "#nu"));
@@ -87,14 +79,10 @@ void Tprime_RestFrames_Handler_W::define_groups_jigsaws() {
     JETS.reset(new CombinatoricGroup("JETS", "Jet Jigsaws"));
     JETS->AddFrame(*b);
     JETS->AddFrame(*Tbar);
-    //JETS->AddFrame(*J1);
-    //JETS->AddFrame(*J0);
 
     // jet frames must have at least one element
     JETS->SetNElementsForFrame(*b, 1);
     JETS->SetNElementsForFrame(*Tbar, 2);
-    //JETS->SetNElementsForFrame(*J1, 1);
-    //JETS->SetNElementsForFrame(*J0, 1);
     
     // Invisible Group for Neutrino
     INV.reset(new InvisibleGroup("INV", "MET Jigsaws"));
