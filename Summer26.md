@@ -42,7 +42,7 @@ https://github.com/Alexanders101/SPANet/blob/master/README.md
 
 https://arxiv.org/pdf/2106.03898
 
-A clone of this github with some preliminary work for our analysis can be found at uscms_data/d1/cai/run3VLQ/SPANetTesting/SPANet. It keeps their examples intact and contains the necessary setup for our analysis, labeled as single_lepton_VLQ. Our git repo contains Tprime1lepSPANet.py, a slimmed TIMBER script, and h5Builder.py. These two scripts create a ROOT file and then convert it to the h5 format required by SPANet.
+A clone of this github with some preliminary work for our analysis can be found at uscms_data/d1/cai/run3VLQ/SPANetTesting/SPANet. It keeps their examples intact and contains the necessary setup for our analysis, labeled as single_lepton_VLQ. Our git repo contains Tprime1lepSPANet.py, a slimmed TIMBER script, and h5Builder.py. These two scripts create a ROOT file and then convert it to the h5 format required by SPANet. They use slightly modified functions found in SPANet_functions.cc.
 
 Currently, when attempting to train SPANet on one of our created h5 files, it crashes with a collision error. This supposedly occurs because two targets are trying to claim the same jet, or because of some issue with how the input file is formatted. We have not been successful in solving it.
 
