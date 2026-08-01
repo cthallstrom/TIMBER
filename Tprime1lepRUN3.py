@@ -136,17 +136,8 @@ ROOT.gInterpreter.ProcessLine('#include "TString.h"')
 # Enable using 4 threads
 ROOT.ROOT.EnableImplicitMT(num_threads)
 
-#plain RJR
 handler_name1 = 'Tprime_handler_W.cc'
 handler_name2 = 'Tprime_handler_t.cc'
-
-#RJR no comb
-#handler_name1 = 'Tprime_handler_W_noComb.cc'
-#handler_name2 = 'Tprime_handler_t_noComb.cc'
-
-#manRJR
-#handler_name1 = 'Tprime_handler_W_manRJR.cc'
-#handler_name2 = 'Tprime_handler_t_manRJR.cc'
 
 class_name1 = 'Tprime_RestFrames_Container_W'
 class_name2 = 'Tprime_RestFrames_Container_t'
@@ -159,11 +150,6 @@ load_restframes(num_threads, handler_name1, class_name1, 'W_rfc')
 load_restframes(num_threads, handler_name2, class_name2, 't_rfc')
 
 CompileCpp('bin/restframes/helper.cc')
-
-# load rest frames handler NEED TO UPDATE FOR CURRENT
-#handler_name = 'Tprime_handler_W.cc'
-#class_name = 'Tprime_RestFrames_Container_W'
-#load_restframes(num_threads, handler_name, class_name, 'rfc')
 
 # ------------------ Important Variables ------------------
 debug = False
@@ -315,15 +301,7 @@ def analyze(jesvar):
     auto ak4corrL1 = ak4corrset->at(jecyr+"_"+jecver+"_DATA_L1FastJet_AK4PFPuppi");
     auto ak8corr = ak8corrset->compound().at(jecyr+"_"+jecver+"_DATA_L1L2L3Res_AK8PFPuppi");
     """)
-  else:
-    print(f"{jecyr[year]}_{jecver[year]}_MC_L1L2L3Res_AK4PFPuppi")
-    print(f"{jecyr[year]}_{jecver[year]}_MC_L1FastJet_AK4PFPuppi")          
-    print(f"{jecyr[year]}_{jecver[year]}_MC_Total_AK4PFPuppi")        
-    print(f"{jeryr[year]}_MC_PtResolution_AK4PFPuppi")                
-    print(f"{jeryr[year]}_MC_ScaleFactor_AK4PFPuppi")                      
-    print(f"{jecyr[year]}_{jecver[year]}_MC_L1L2L3Res_AK8PFPuppi")     
-    print(f"{jecyr[year]}_{jecver[year]}_MC_Total_AK8PFPuppi")             
-
+  else:           
     ROOT.gInterpreter.Declare("""
     string jeryr = \""""+jeryr[year]+"""\";
     auto ak4corrset = correction::CorrectionSet::from_file("/cvmfs/cms-griddata.cern.ch/cat/metadata/JME/"+jmeyrstr+"/"+jmetag+"/jet_jerc.json.gz"); 
@@ -409,7 +387,6 @@ def analyze(jesvar):
   lVars.Add("lepton_mass","assignleps[3]")
   lVars.Add("lepton_miniIso","assignleps[4]")
   lVars.Add("lepton_ID","isMu ? 13 : 11")
-  lVars.Add("lepton_btag", "0")
 
   # ------------------ JET Cleaning and JERC ------------------
   jVars = VarGroup('JetCleaningVars')
@@ -554,21 +531,8 @@ def analyze(jesvar):
     tagVars.Add("gcFatJet_comp", "tag_ak8jets_with_genquarks(comp_daughters, GenPart_eta, GenPart_phi, GenPart_pdgId, gcFatJet_P4)")
   
   tagVars.Add("gcFatJet_PNWMtags", "jet_tagging(gcFatJet_PNWM_T, gcFatJet_PNWM_W, gcFatJet_PNWM_Z, gcFatJet_PNWM_H, gcFatJet_PNWM_QCD, gcFatJet_subJetIdx1, gcFatJet_subJetIdx2, SubJet_btagUParTAK4B, BTagM,gcJet_P4,gcFatJet_P4,gcJet_BTagM)")
-  #tagVars.Add("gcFatJet_PNWMtags", "return ROOT::VecOps::RVec<int>(gcFatJet_tags[0]);")
-  # tagVars.Add("gcFatJet_PNWM_MaxScores", "gcFatJet_tags[1]")
-  # tagVars.Add("tags","gcFatJet_tags[2]")
-  # tagVars.Add("gcFatJet_PNWM_mostTags","int(tags[0])")
-  # tagVars.Add("gcFatJet_nT","int(tags[1])")
-  # tagVars.Add("gcFatJet_nH","int(tags[2])")
-  # tagVars.Add("gcFatJet_nZ","int(tags[3])")
-  # tagVars.Add("gcFatJet_nW","int(tags[4])")
-  # tagVars.Add("gcFatJet_nB","int(tags[5])")
-  # tagVars.Add("gcFatJet_nBV2","Sum(gcFatJet_PNWMtags==5)")
 
   if isSig:
-    #tagVars.Add("decayModes", "decayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    #tagVars.Add("nicDecayModes", "nicolasDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status)")
-    #tagVars.Add("mod100DecayModes", "nicDecayModes % 100")
     tagVars.Add("temp_decays", "newDecayModeSelection(nGenPart, GenPart_pdgId, GenPart_mass, GenPart_pt, GenPart_phi, GenPart_eta, GenPart_genPartIdxMother, GenPart_status, GenPart_statusFlags)")
     tagVars.Add("true_decays_TT","temp_decays[0]")
     tagVars.Add("true_decays_BB","temp_decays[1]")
@@ -583,6 +547,7 @@ def analyze(jesvar):
     lepSFs.Add('elidSF', 'elidfunc(electroncorr,elecyr,"wp80noiso",lepton_pt,lepton_eta,lepton_phi,lepton_ID)')
     lepSFs.Add('muonidSF', 'muidfunc(muonidcorr,lepton_pt,lepton_eta,lepton_ID)')
     lepSFs.Add('muonisoSF', 'muisofunc(muonisocorr,lepton_pt,lepton_eta,lepton_ID)')
+    # TO DO: Add elisoSF
    
   #jVars.Add("leptonRecoSF", "recofunc(electroncorr, muonidcorr, yrstr, lepton_pt, lepton_eta, isEl)") ## this is not right, but we'll figure out what corrections we need later
   #jVars.Add("leptonIDSF", "idfunc(muonidcorr,elid_pts,elid_etas,elecidsfs,elecidsfuncs,yrstr, lepton_pt, lepton_eta, isEl)") #at(0) 
@@ -614,19 +579,18 @@ def analyze(jesvar):
   recoVars.Add("man_decays_TT", "int(TBp[0])")
   recoVars.Add("man_decays_BB", "int(TBp[1])")
 
-  if isTpTp:
-    recoVars.Add("J0_idx", "TBp[28]")
-    recoVars.Add("VLQ21_idx", "TBp[29]")
-    recoVars.Add("VLQ22_idx", "TBp[30]")
-  else:
-    recoVars.Add("J0_idx", "TBp[31]")
-    recoVars.Add("VLQ21_idx", "TBp[32]")
-    recoVars.Add("VLQ22_idx", "TBp[33]")
+  # These are the jet indices from the manual reco. Needed if trying to fix the manual + RJR combo (manRJR)
+  # if isTpTp:
+  #   recoVars.Add("J0_idx", "TBp[28]")
+  #   recoVars.Add("VLQ21_idx", "TBp[29]")
+  #   recoVars.Add("VLQ22_idx", "TBp[30]")
+  # else:
+  #   recoVars.Add("J0_idx", "TBp[31]")
+  #   recoVars.Add("VLQ21_idx", "TBp[32]")
+  #   recoVars.Add("VLQ22_idx", "TBp[33]")
 
   # # ------------------ Results ------------------  
   rframeVars = VarGroup('restFrameVars')
-
-  rframeVars.Add("Isolated_AK4","standalone_Jet(gcJet_eta, gcJet_phi, gcFatJet_eta, gcFatJet_phi)")
 
   rframeVars.Add('RJR_doubles', 'R_processDecayTree(&W_rfc, &t_rfc, rdfslot_, lepton_pt, lepton_eta, lepton_phi, lepton_mass, gcFatJet_pt, gcFatJet_eta, gcFatJet_phi, gcFatJet_mass, corrMET_pt, corrMET_phi, gcBJet_P4, gcJet_P4[minMlb_idx], lepton_source, J0_idx, VLQ21_idx, VLQ22_idx)')
 

@@ -36,11 +36,13 @@ RJR reconstruction has had some issues. Currently there are 6 different TIMBER/b
 The other functions currently cannot be evaluated, as they were based off of the script that produced shifted plots. Grace Cummings suggested taking the idx for J0, VLQ1, and VLQ2 produced by the manual reconstruction, and feeding those into the RJR script to replace the combinatorics group in RJR. Tprime_handler_(t/W)man.cc was supposed to accomplish this. Tprime_handler(t/W)_noComb.cc was supposed to test if RJR was even using the cambanatorics group. When we ran plain RJR, we found that the order we passed the jets into the function mattered in terms of which AK8 jet was assigned to J0. This is odd, as RJR is supposed to be looping over the jets to find which combination makes the best fit. Because of the 'hard coding', I believe the combanatorics group and/or the jets jigsaw isn't working correctly, and I think it would be worth testing out an RJR that doesnt use them, btu everything else is the same. We still manually check for the min VLQ mass difference, we still have the jigsaws in place for the invisible group, but test it without any JETS rules. I think this is worth checking if there is time.
 
 ### SPANet
-Reconstruction using SPANet is still in the early stages. The example github and paper are linked here:
+Reconstruction using SPANet is still in the early stages. The example github and paper are linked here, along with a helpful online h5 viewer:
 
 https://github.com/Alexanders101/SPANet/blob/master/README.md
 
 https://arxiv.org/pdf/2106.03898
+
+https://myhdf5.hdfgroup.org/
 
 A clone of this github with some preliminary work for our analysis can be found at uscms_data/d1/cai/run3VLQ/SPANetTesting/SPANet. It keeps their examples intact and contains the necessary setup for our analysis, labeled as single_lepton_VLQ. Our git repo contains Tprime1lepSPANet.py, a slimmed TIMBER script, and h5Builder.py. These two scripts create a ROOT file and then convert it to the h5 format required by SPANet. They use slightly modified functions found in SPANet_functions.cc.
 

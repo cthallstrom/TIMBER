@@ -8,19 +8,12 @@ using namespace ROOT::VecOps;
 auto get_daughters(int idx, unsigned int length, RVec<short> GenPart_genPartIdxMother) 
 {
   vector<unsigned int> daughters;
-  //  std::cout << daughters << std::endl;
   daughters.clear();
-  //std::cout << "inside daughters" << std::endl;
    for (unsigned int d = idx; d < length; d++){
     if (GenPart_genPartIdxMother[d]!=idx) continue;
     daughters.push_back(d); //get a list of all the daughters of this particle
   }
-  // if (daughters.empty()) {
-  //   //std::cout << "daughters is empty" << std::endl;
-  //   daughters = {9999, 9999};
-  //   //std::cout << "SHOULD BE 9999!!! daughters[0] == " << daughters[0] << std::endl;  
-  // }
-  // //std::cout << "outside daughters loop, daughters[1] == " << daughters[1] << std::endl;
+
   return daughters;
 }
 
@@ -398,69 +391,25 @@ auto fatjet_matching(string sample, unsigned int nGenPart, RVec<int> &GenPart_pd
 
 auto jet_tagging(RVec<float> gcFatJet_PNWM_T, RVec<float> gcFatJet_PNWM_W, RVec<float> gcFatJet_PNWM_Z, RVec<float> gcFatJet_PNWM_H, RVec<float> gcFatJet_PNWM_QCD, RVec<float> gcFatJet_subJetIdx1, RVec<float> gcFatJet_subJetIdx2, RVec<float> SubJet_btagUParTAK4B, float UparTmed,RVec<TLorentzVector> gcJet_P4,RVec<TLorentzVector> gcFatJet_P4, RVec<float> gcJet_UParTM) 
 {
-  //std::cout << "Entering jet_tagging" << std::endl;
   RVec<int> PNWMtag;
-  RVec<float> PNWMscore;
-  float nT = 0.;
-  float nH = 0.;
-  float nW = 0.;
-  float nZ = 0.;
-  float nB = 0.;
-  float PNWMmostTags;
   
   for(int i = 0; i < gcFatJet_PNWM_T.size(); i++)
   {
     std::vector<float> PNWMscores = {gcFatJet_PNWM_T[i], gcFatJet_PNWM_W[i], gcFatJet_PNWM_Z[i], gcFatJet_PNWM_H[i], gcFatJet_PNWM_QCD[i]};
     auto max_addr = std::max_element(PNWMscores.begin(), PNWMscores.end());
     int max_index = std::distance(PNWMscores.begin(), max_addr);
-    if(max_index == 0) {
-      PNWMtag.push_back(6);
-      PNWMscore.push_back(gcFatJet_PNWM_T[i]);
-      nT++;
-    }
-    if(max_index == 1) {
-      PNWMtag.push_back(24);
-      PNWMscore.push_back(gcFatJet_PNWM_W[i]);
-      nW++;
-    }
-    if(max_index == 2) {
-      PNWMtag.push_back(23);
-      PNWMscore.push_back(gcFatJet_PNWM_Z[i]);
-      nZ++;
-    }
-    if(max_index == 3) {
-      PNWMtag.push_back(25);
-      PNWMscore.push_back(gcFatJet_PNWM_H[i]);
-      nH++;
-    }
-    
-    if(max_index == 4)
-    {
+    if(max_index == 0) PNWMtag.push_back(6);
+    if(max_index == 1) PNWMtag.push_back(24);
+    if(max_index == 2) PNWMtag.push_back(23);
+    if(max_index == 3) PNWMtag.push_back(25);
+    if(max_index == 4) {
       int subjetIdx1 = gcFatJet_subJetIdx1[i];
       int subjetIdx2 = gcFatJet_subJetIdx2[i];
-      if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed))
-      {
-	PNWMscore.push_back(gcFatJet_PNWM_QCD[i]);
-        PNWMtag.push_back(5);
-	nB++;
-      }else{
-	PNWMscore.push_back(0.0);
-	PNWMtag.push_back(0);
-      }
+      if((subjetIdx1 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx1] >= UparTmed) || (subjetIdx2 >= 0 &&  SubJet_btagUParTAK4B[subjetIdx2] >= UparTmed)) PNWMtag.push_back(5);
+      else PNWMtag.push_back(0);
     }
   }
 
-  int max_type = max({nT, nW, nZ, nH, nB});
-  if (max_type == nT) PNWMmostTags = 1.0;
-  else if (max_type == nH) PNWMmostTags = 2.0;
-  else if (max_type == nZ) PNWMmostTags = 3.0;
-  else if (max_type == nW) PNWMmostTags = 4.0;
-  else if (max_type == nB) PNWMmostTags = 5.0;
-  else PNWMmostTags = 0.0;
-    
-  //RVec<RVec<int>> taggerResults = {PNWMtag, GPTtag, GPTWMtag};
-  RVec<float> PNWMints = {PNWMmostTags, nT, nH, nZ, nW, nB};
-  RVec<RVec<float>> taggerResults = {PNWMtag, PNWMscore, PNWMints};
   return PNWMtag;
 }
 
