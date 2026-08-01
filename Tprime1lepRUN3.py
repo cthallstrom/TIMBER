@@ -673,8 +673,7 @@ def analyze(jesvar):
   
   rframeVars.Add("R_treeMODE", 'RJR_doubles[26]')  
 
-  rframeVars.Add("R_decays_count", "R_decayTypes_count(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
-  rframeVars.Add("R_decays_index", "R_decayTypes_index(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
+  rframeVars.Add("R_decays", "R_decays(lepton_source, R_J0_idx, R_VLQ21_idx, R_VLQ22_idx, gcFatJet_PNWMtags)")
 
   # -------------------------------------
   
